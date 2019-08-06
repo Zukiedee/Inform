@@ -20,5 +20,5 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_newsfeed" />
-
+    <include layout="@layout/content_newsfeed"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

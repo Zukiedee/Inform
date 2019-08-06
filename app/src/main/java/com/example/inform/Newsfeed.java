@@ -1,9 +1,9 @@
 package com.example.inform;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.view.View;
 
@@ -30,14 +30,18 @@ public class Newsfeed extends AppCompatActivity
         setContentView(R.layout.activity_newsfeed);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
+
+        //Create a notice button
+        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
+                startActivity(intentCreateNotice);
             }
         });
+
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -71,9 +75,10 @@ public class Newsfeed extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        //Directs back to welcome screen
+        if (id == R.id.logout) {
+            Intent intentWelcome = new Intent(Newsfeed.this, Welcome.class);
+            startActivity(intentWelcome);
         }
 
         return super.onOptionsItemSelected(item);
@@ -86,16 +91,16 @@ public class Newsfeed extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_tools) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+            //show newsfeed
+        } else if (id == R.id.nav_profile) {
+            //Edit profile screen
+            Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
+            startActivity(intentProfile);
+        } else if (id == R.id.nav_inbox) {
+            //View Notifications notifications
+            Intent intentInbox = new Intent(Newsfeed.this, Notifications.class);
+            startActivity(intentInbox);
+        } else if (id == R.id.nav_reminders) {
 
         }
 

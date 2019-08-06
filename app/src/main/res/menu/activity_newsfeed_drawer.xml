@@ -5,22 +5,31 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_user"
+            android:title="@string/menu_profile" />
+        <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_home"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+            android:id="@+id/nav_inbox"
+            android:icon="@drawable/ic_notifications"
+            android:title="@string/menu_notifications" />
+        <item
+            android:id="@+id/nav_reminders"
+            android:icon="@drawable/ic_reminder"
+            android:title="@string/menu_reminders" />
     </group>
-
-    <item android:title="Communities">
+    <item android:title="@string/community">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_location"
+                android:id="@+id/nav_locality1"
                 android:title="Area 1" />
             <item
-                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_location"
+                android:id="@+id/nav_locality2"
                 android:title="Area 2" />
         </menu>
     </item>
