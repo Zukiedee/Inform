@@ -22,3 +22,4 @@
 
     <include layout="@layout/content_newsfeed" />
 
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
