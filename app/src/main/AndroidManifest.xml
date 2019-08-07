@@ -9,9 +9,12 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Notifications"></activity>
-        <activity android:name=".Profile" />
-        <activity android:name=".createNotice"></activity>
+        <activity android:name=".Notifications"
+            android:label="@string/title_activity_notifications"/>
+        <activity android:name=".Profile"
+            android:label="@string/title_activity_profile"/>
+        <activity android:name=".createNotice"
+            android:label="@string/title_activity_createNotice"/>
         <activity
             android:name=".Newsfeed"
             android:label="@string/title_activity_newsfeed"

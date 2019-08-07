@@ -25,6 +25,8 @@
     <!-- Strings related title of activities -->
     <string name="title_activity_newsfeed">Newsfeed</string>
     <string name="title_activity_profile">Edit Profile</string>
+    <string name="title_activity_createNotice">Create Notice</string>
+    <string name="title_activity_notifications">Notifications</string>
 
     <!-- random text -->
     <string name="random">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor..</string>
