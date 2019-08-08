@@ -18,9 +18,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
+import android.view.View.OnClickListener;
 
+import java.util.ArrayList;
+
+/**
+ * Community posts will be displayed here
+ */
 public class Newsfeed extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -31,9 +39,15 @@ public class Newsfeed extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        RecyclerView.Adapter noticeAdapter = new NoticeAdapter(this, getNtoiceList());
+        noticeRecyclerView.setAdapter(noticeAdapter);
+
         //Create a notice button
-        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(new View.OnClickListener() {
+       FloatingActionButton fab = findViewById(R.id.floatingActionButton);
+        fab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
@@ -49,6 +63,17 @@ public class Newsfeed extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private ArrayList<NoticeItem> getNtoiceList() {
+        ArrayList<NoticeItem> noticeList = new ArrayList<>();
+
+        noticeList.add(new NoticeItem("Crime Report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019"));
+        noticeList.add(new NoticeItem("Latest News", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019"));
+        noticeList.add(new NoticeItem("Missing Pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019"));
+
+        return noticeList;
+
     }
 
     @Override
@@ -75,7 +100,7 @@ public class Newsfeed extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //Directs back to welcome screen
+        //Directs back to Welcome screen
         if (id == R.id.logout) {
             Intent intentWelcome = new Intent(Newsfeed.this, Welcome.class);
             startActivity(intentWelcome);
@@ -97,7 +122,7 @@ public class Newsfeed extends AppCompatActivity
             Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
-            //View Notifications notifications
+            //View Notifications Notifications
             Intent intentInbox = new Intent(Newsfeed.this, Notifications.class);
             startActivity(intentInbox);
         } else if (id == R.id.nav_reminders) {

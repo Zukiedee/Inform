@@ -4,131 +4,115 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E1E9D1"
     tools:context=".Profile">
 
-    <ImageView
-        android:id="@+id/profile"
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:layout_marginStart="165dp"
-        android:layout_marginLeft="165dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="166dp"
-        android:layout_marginRight="166dp"
-        android:layout_marginBottom="5dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollView"
-        app:srcCompat="@drawable/ic_profile" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <ImageView
+            android:id="@+id/profile"
+            android:contentDescription="@string/profile_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            app:srcCompat="@drawable/ic_profile" />
 
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="406dp"
-        android:layout_height="728dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <LinearLayout
+            <LinearLayout
 
-            android:layout_width="319dp"
-            android:layout_height="445dp"
-            android:layout_marginStart="43dp"
-            android:layout_marginLeft="43dp"
-            android:layout_marginTop="142dp"
-            android:layout_marginEnd="43dp"
-            android:layout_marginRight="43dp"
-            android:layout_marginBottom="130dp"
-            android:background="#FFFFFF"
-            android:orientation="vertical"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0">
-
-            <TextView
-                android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Enter Username"
-                android:textSize="16sp" />
+                android:layout_margin="15dp"
+                android:background="#FFFFFF"
+                android:orientation="vertical"
+                android:padding="10dp">
 
-            <EditText
-                android:id="@+id/username_hint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Username" />
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/preferred_username"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
-            <Spinner
-                android:id="@+id/userTypeCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:entries="@array/user_type" />
+                <EditText
+                    android:id="@+id/username_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:hint="@string/enter_username"
+                  />
 
-            <TextView
-                android:id="@+id/select_communities_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Select communities to follow"
-                android:textSize="16sp" />
+                <Spinner
+                    android:id="@+id/userTypeCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:entries="@array/user_type" />
 
-            <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Area 1" />
+                <TextView
+                    android:id="@+id/select_communities_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/select_communities_to_follow"
+                    android:textColor="#312D2D"
+                    android:textSize="16sp" />
 
-            <CheckBox
-                android:id="@+id/checkBox2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Area 2" />
+                <CheckBox
+                    android:id="@+id/checkBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Area 1" />
 
-            <CheckBox
-                android:id="@+id/checkBox3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Area 3" />
+                <CheckBox
+                    android:id="@+id/checkBox2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Area 2" />
 
-            <CheckBox
-                android:id="@+id/checkBox4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Area 4" />
+                <CheckBox
+                    android:id="@+id/checkBox3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Area 3" />
 
-            <Button
-                android:id="@+id/submit_profile"
-                android:layout_width="@dimen/submit_width"
-                android:layout_height="@dimen/submit_height"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
+                <CheckBox
+                    android:id="@+id/checkBox4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Area 4" />
 
-                android:background="@color/colorPrimary"
-                android:text="Submit" />
+                <Button
+                    android:id="@+id/submit_profile"
+                    android:layout_width="@dimen/submit_width"
+                    android:layout_height="@dimen/submit_height"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
 
-        </LinearLayout>
-    </ScrollView>
+                    android:background="@color/colorPrimary"
+                    android:text="@string/submit" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
