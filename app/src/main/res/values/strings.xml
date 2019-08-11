@@ -59,6 +59,8 @@
     <string name="area_1">Area 1</string>
     <string name="area_2">Area 2</string>
     <string name="user_type">Type of user</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

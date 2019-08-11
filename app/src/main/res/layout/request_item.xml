@@ -69,6 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_below="@+id/news"
+            android:id="@+id/user_info"
             android:layout_marginTop="10dp">
 
             <View
@@ -135,5 +136,52 @@
 
         </RelativeLayout>
 
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:background="?android:attr/listDivider" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/user_info"
+            android:gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/accept_btn"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
+                android:layout_marginRight="48dp"
+                android:background="@color/color_accept"
+                android:text="@string/accept"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reject_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintWidth_percent="0.5" />
+
+            <Button
+                android:id="@+id/reject_btn"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginLeft="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/color_reject"
+                android:text="@string/reject"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/accept_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
+
+
 </androidx.cardview.widget.CardView>

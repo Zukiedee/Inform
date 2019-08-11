@@ -25,4 +25,6 @@
 
     <!-- Buttons -->
     <color name="colorBtn">#CED467</color>
+    <color name="color_accept">#4CAF50</color>
+    <color name="color_reject">#F44336</color>
 </resources>
