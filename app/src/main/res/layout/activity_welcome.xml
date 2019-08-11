@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2F2F2"
+    android:background="#fff"
     tools:context=".Welcome">
 
     <LinearLayout
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:text="@string/connecting_communities"
             android:textAlignment="center"
-
+            android:layout_marginBottom="30dp"
             android:textColor="#9A9C98"
             android:textSize="20sp"
             android:typeface="normal"
@@ -56,14 +56,16 @@
             android:id="@+id/sign_in"
             android:layout_width="280dp"
             android:layout_height="56dp"
-            android:background="#CED468"
+            android:background="@drawable/rounded_btn"
             android:gravity="center"
             android:paddingLeft="15dp"
+            android:layout_marginTop="40dp"
             android:drawableLeft="@drawable/google"
             android:text="@string/action_sign_in_google"
             android:textColor="#fff"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:focusable="true"
             android:paddingStart="15dp"
             android:drawableStart="@drawable/google" />
 

@@ -1,13 +1,16 @@
 package com.example.inform;
 
 public class NoticeItem {
-    private String Title, Description, Username, Date;
+    private int imgResource;
+    private String Title, Category, Description, Username, Date;
 
-    public NoticeItem(String title, String body, String username, String date) {
+    public NoticeItem(String title, String cat, String body, String username, String date, int img) {
         Title = title;
+        Category = cat;
         Description = body;
         Username = username;
         Date = date;
+        imgResource = img;
     }
 
     public void setTitle(String title) {
@@ -40,5 +43,21 @@ public class NoticeItem {
 
     public String getUsername(){
         return Username;
+    }
+
+    public void setImgResource(int imgResource) {
+        this.imgResource = imgResource;
+    }
+
+    public int getImgResource() {
+        return imgResource;
+    }
+
+    public String getCategory() {
+        return Category;
+    }
+
+    public void setCategory(String category) {
+        Category = category;
     }
 }

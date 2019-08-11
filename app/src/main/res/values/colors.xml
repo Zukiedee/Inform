@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#BEC75A</color>
-    <color name="colorPrimaryDark">#5D6617</color>
-    <color name="colorAccent">#FB3B31</color>
+    <color name="colorPrimary">#5C8F29</color>
+    <color name="colorPrimaryDark">#124C0D</color>
+    <color name="colorAccent">#FA9A10</color>
+    
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+
+    <!-- Inbox colors-->
+    <color name="colorBackground">#CEEAB0</color>
+    <color name="colorCard">#fff</color>
+    <color name="colorSubject">#5C8F29</color>
+    <color name="colorMessage">#353535</color>
+    <color name="colorDate">#9A9A9A</color>
+    <color name="colorReminder">#FA9A10</color>
+
+    <!-- Notice colors-->
+    <color name="colorNewsfeedBackground">#F1F1F1</color>
+    <color name="colorNewsfeedCard">@color/cardview_light_background</color>
+    <color name="colorHeadline">#124C0D</color>
+    <color name="colorCategory">#9A9A9A</color>
+    <color name="colorDescription">#353535</color>
+    <color name="colorPosted">#01798D</color>
+
+    <!-- Buttons -->
+    <color name="colorBtn">#CED467</color>
 </resources>

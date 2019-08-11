@@ -5,20 +5,20 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_user"
-            android:title="@string/menu_profile" />
-        <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home"
+            android:icon="@drawable/ic_main"
             android:title="@string/menu_home" />
         <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_edit_profile"
+            android:title="@string/menu_profile" />
+        <item
             android:id="@+id/nav_inbox"
-            android:icon="@drawable/ic_notifications"
-            android:title="@string/menu_notifications" />
+            android:icon="@drawable/ic_inbox"
+            android:title="@string/inbox" />
         <item
             android:id="@+id/nav_reminders"
-            android:icon="@drawable/ic_reminder"
+            android:icon="@drawable/ic_notification"
             android:title="@string/menu_reminders" />
     </group>
     <item android:title="@string/community">
@@ -26,11 +26,11 @@
             <item
                 android:icon="@drawable/ic_location"
                 android:id="@+id/nav_locality1"
-                android:title="Area 1" />
+                android:title="@string/area_1" />
             <item
                 android:icon="@drawable/ic_location"
                 android:id="@+id/nav_locality2"
-                android:title="Area 2" />
+                android:title="@string/area_2" />
         </menu>
     </item>
 

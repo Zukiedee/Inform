@@ -34,8 +34,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:entries="@array/categories" />
+                android:layout_marginRight="8dp" />
 
             <View
                 android:id="@+id/divider"
@@ -54,11 +53,9 @@
                 android:layout_width="300dp"
                 android:layout_height="46dp"
                 android:layout_margin="8dp"
-                android:contentDescription="@string/notice_headline"
                 android:ems="10"
                 android:hint="@string/headline"
                 android:inputType="textPersonName"
-                android:autofillHints="@string/headline"
                 android:visibility="visible" />
 
             <EditText
@@ -68,7 +65,6 @@
                 android:layout_margin="8dp"
                 android:ems="10"
                 android:hint="@string/subheadline"
-                android:autofillHints="@string/subheadline"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -78,7 +74,6 @@
                 android:ems="10"
                 android:gravity="start|top"
                 android:hint="@string/body"
-                android:autofillHints="@string/body"
                 android:inputType="textMultiLine" />
 
             <EditText
@@ -88,7 +83,6 @@
                 android:layout_margin="8dp"
                 android:ems="10"
                 android:hint="@string/author"
-                android:autofillHints="@string/author"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -97,7 +91,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:ems="10"
-                android:autofillHints="@string/more_information"
                 android:hint="@string/more_information"
                 android:inputType="textPersonName"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -142,7 +135,7 @@
                 android:layout_width="180dp"
                 android:layout_height="49dp"
                 android:layout_margin="30dp"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/rounded_btn"
                 android:text="@string/submit" />
 
         </LinearLayout>

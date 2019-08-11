@@ -1,5 +1,6 @@
 package com.example.inform;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -7,6 +8,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -23,17 +25,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
 /**
  * Community posts will be displayed here
  */
-public class Newsfeed extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ArrayList<Integer> userReminder = new ArrayList<>();
+    private Button reminder;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -46,7 +51,7 @@ public class Newsfeed extends AppCompatActivity
         noticeRecyclerView.setAdapter(noticeAdapter);
 
         //Create a notice button
-       FloatingActionButton fab = findViewById(R.id.floatingActionButton);
+        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,6 +59,16 @@ public class Newsfeed extends AppCompatActivity
                 startActivity(intentCreateNotice);
             }
         });
+
+        //add reminder button
+        reminder = findViewById(R.id.add_reminder);
+        /*reminder.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //show options to user
+                ;
+            }
+        });*/
 
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -68,9 +83,9 @@ public class Newsfeed extends AppCompatActivity
     private ArrayList<NoticeItem> getNtoiceList() {
         ArrayList<NoticeItem> noticeList = new ArrayList<>();
 
-        noticeList.add(new NoticeItem("Crime Report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019"));
-        noticeList.add(new NoticeItem("Latest News", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019"));
-        noticeList.add(new NoticeItem("Missing Pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019"));
+        noticeList.add(new NoticeItem("Crime Report", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
+        noticeList.add(new NoticeItem("Latest News", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
+        noticeList.add(new NoticeItem("Missing Pet", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
 
         return noticeList;
 
@@ -122,8 +137,8 @@ public class Newsfeed extends AppCompatActivity
             Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
-            //View Notifications Notifications
-            Intent intentInbox = new Intent(Newsfeed.this, Notifications.class);
+            //View Inbox Inbox
+            Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
             startActivity(intentInbox);
         } else if (id == R.id.nav_reminders) {
 

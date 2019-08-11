@@ -35,7 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageHolder> {
     }
 
     /**
-     * The number of messages to appear in Notifications.
+     * The number of messages to appear in Inbox.
      * @return Amount of messages.
      */
     @Override

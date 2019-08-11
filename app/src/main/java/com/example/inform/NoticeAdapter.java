@@ -29,13 +29,15 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeHolder> {
     @Override
     public void onBindViewHolder(@NonNull NoticeHolder holder, int position) {
         holder.Title.setText(NoticeList.get(position).getTitle());
+        holder.Category.setText(NoticeList.get(position).getTitle());
         holder.Description.setText(NoticeList.get(position).getDescription());
         holder.Username.setText(NoticeList.get(position).getUsername());
         holder.Date.setText(NoticeList.get(position).getDate());
+        holder.imgResource.setImageResource(NoticeList.get(position).getImgResource());
     }
 
     /**
-     * The number of messages to appear in Notifications.
+     * The number of messages to appear in Inbox.
      * @return Amount of messages.
      */
     @Override

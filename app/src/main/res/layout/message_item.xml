@@ -5,20 +5,22 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="5dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/colorCard"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="2dp"
     android:background="#fff"
     app:cardUseCompatPadding="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
+        android:layout_margin="12dp">
 
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/MsgDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorDate"
             android:text="@string/date"
             android:textSize="12sp"
             android:layout_alignParentTop="true"
@@ -30,8 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/subject"
-            android:textColor="#000"
-            android:textSize="18sp"
+            android:textColor="@color/colorSubject"
+            android:textSize="17sp"
             android:textStyle="bold"
             android:layout_alignParentTop="true" />
 
@@ -40,10 +42,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/message"
+            android:textColor="@color/colorMessage"
             android:textSize="16sp"
-            android:layout_below="@+id/subject"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" />
+            android:layout_below="@+id/subject" />
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

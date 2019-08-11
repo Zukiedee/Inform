@@ -42,18 +42,23 @@
     <string name="subject">Subject</string>
     <string name="date">Date</string>
     <string name="events">Events</string>
-    <string name="add_reminder">Reminder</string>
+    <string name="add_reminder">Remind me</string>
     <string name="lost_pet">Lost Pet</string>
     <string name="description">Description</string>
     <string name="Title">Title</string>
     <string name="username">Username</string>
-    <string name="preferred_username">Preferred Username</string>
+    <string name="preferred_username">Username</string>
     <string name="enter_username">Enter username</string>
     <string name="select_communities_to_follow">Select communities to follow</string>
     <string name="profile_icon">profile icon</string>
     <string name="welcome_to_the_community_app">Welcome to the Community App!</string>
     <string name="connecting_communities">Connecting communities</string>
     <string name="logo">logo</string>
+    <string name="category">category</string>
+    <string name="inbox">Inbox</string>
+    <string name="area_1">Area 1</string>
+    <string name="area_2">Area 2</string>
+    <string name="user_type">Type of user</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
@@ -61,13 +66,4 @@
         <item>Organization</item>
     </string-array>
 
-    <!-- Strings related to post types -->
-    <string-array name="categories">
-        <item>Local news</item>
-        <item>Crime</item>
-        <item>Lost pets</item>
-        <item>Events/Entertainment</item>
-        <item>Tradesmen referrals</item>
-        <item>Recommendations</item>
-    </string-array>
 </resources>

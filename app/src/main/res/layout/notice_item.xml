@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="5dp"
+    android:padding="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true">
@@ -12,84 +12,128 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:layout_margin="12dp">
 
         <LinearLayout
             android:id="@+id/news"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:textStyle="bold"
                 android:text="@string/Title"
-                android:textColor="#000"
+                android:textColor="@color/colorHeadline"
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/description"
-                android:layout_width="250dp"
+                android:id="@+id/category"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/category"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
+                android:id="@+id/file"
+                app:srcCompat="@drawable/ic_image" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/colorDescription"
                 android:text="@string/description"
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="87dp"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/news"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            app:srcCompat="@drawable/ic_image" />
+
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_below="@+id/news"
             android:layout_marginTop="10dp">
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/listDivider" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_add_reminder"
-                android:textSize="12sp"
-               android:layout_alignParentEnd="true"
-                android:text="@string/add_reminder"
+                android:id="@+id/add_reminder"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
+                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
+                android:paddingRight="5dp"
+                android:paddingEnd="5dp"
+                android:background="@drawable/reminder_btn"
                 android:drawableStart="@drawable/ic_add_reminder"
-                android:layout_alignParentRight="true" />
+                android:drawableLeft="@drawable/ic_add_reminder"
+                android:focusable="auto"
+                android:text="@string/add_reminder"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_user"
+                android:layout_centerVertical="true"
+                android:padding="1dp"
+                app:srcCompat="@drawable/ic_user_profile"
                 android:id="@+id/user"/>
 
             <TextView
                 android:id="@+id/userPosted"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/username"
-                android:layout_toRightOf="@id/user"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:layout_toEndOf="@id/user"
-                android:textColor="#000"
+                android:layout_toRightOf="@id/user"
+                android:text="@string/username"
+                android:textColor="@color/colorPosted"
                 android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/datePosted"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="@string/date"
-                android:textSize="12sp"
-                android:layout_marginStart="10dp"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_toEndOf="@id/userPosted"
                 android:layout_toRightOf="@id/userPosted"
-                android:layout_toEndOf="@id/userPosted" />
+                android:gravity="center"
+                android:text="@string/date"
+                android:textSize="12sp" />
+
+
         </RelativeLayout>
+
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

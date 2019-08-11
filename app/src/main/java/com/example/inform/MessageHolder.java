@@ -13,6 +13,6 @@ public class MessageHolder extends RecyclerView.ViewHolder {
             super(view);
             Subject = itemView.findViewById(R.id.subject);
             Message = itemView.findViewById(R.id.message);
-            Date = itemView.findViewById(R.id.date);
+            Date = itemView.findViewById(R.id.MsgDate);
         }
 }

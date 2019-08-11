@@ -18,14 +18,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Notifications"
-            android:label="@string/title_activity_notifications"/>
+            android:name=".Inbox"
+            android:label="@string/title_activity_notifications"
+            android:parentActivityName=".Newsfeed"/>
         <activity
             android:name=".Profile"
-            android:label="@string/title_activity_profile"/>
+            android:parentActivityName=".Newsfeed"
+            />
         <activity
             android:name=".createNotice"
-            android:label="@string/title_activity_createNotice" />
+            android:parentActivityName=".Newsfeed"/>
         <activity
             android:name=".Newsfeed"
             android:label="@string/title_activity_newsfeed"
