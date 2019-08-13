@@ -22,6 +22,10 @@
             android:label="@string/title_activity_notifications"
             android:parentActivityName=".Newsfeed"/>
         <activity
+            android:name=".Admin_Inbox"
+            android:label="@string/title_activity_notifications"
+            android:parentActivityName=".Newsfeed"/>
+        <activity
             android:name=".Profile"
             android:parentActivityName=".Newsfeed"
             />

@@ -138,7 +138,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
             //View Inbox Inbox
-            Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
+            Intent intentInbox = new Intent(Newsfeed.this, Admin_Inbox.class);
             startActivity(intentInbox);
         } else if (id == R.id.nav_reminders) {
 
