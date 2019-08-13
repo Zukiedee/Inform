@@ -38,13 +38,22 @@
             android:layout_alignParentTop="true" />
 
         <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status"
+            android:textColor="@color/colorDate"
+            android:textSize="12sp"
+            android:layout_below="@+id/subject" />
+
+        <TextView
             android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/message"
             android:textColor="@color/colorMessage"
             android:textSize="16sp"
-            android:layout_below="@+id/subject" />
+            android:layout_below="@+id/status"/>
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

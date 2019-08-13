@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.View;
 
 import android.os.Bundle;
 
@@ -6,7 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.inform.R;
+
 import java.util.ArrayList;
+
+import com.communityapp.inform.Model.NoticeItem;
+import com.communityapp.inform.Presenter.RequestAdapter;
 
 /**
  * Inbox from admin regarding post status will be posted here

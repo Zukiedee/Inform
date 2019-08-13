@@ -1,10 +1,12 @@
-package com.example.inform;
+package com.communityapp.inform.Presenter;
 
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.inform.R;
 
 public class NoticeHolder extends RecyclerView.ViewHolder {
     TextView Title, Category, Description, Date, Username;

@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.Presenter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.communityapp.inform.Model.MessageItem;
+import com.example.inform.R;
 
 import java.util.ArrayList;
 
@@ -30,6 +33,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageHolder> {
     @Override
     public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
         holder.Subject.setText(MessageList.get(position).getTitle());
+        holder.Status.setText(MessageList.get(position).getStatus());
         holder.Message.setText(MessageList.get(position).getMessage());
         holder.Date.setText(MessageList.get(position).getDate());
     }

@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.Presenter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,13 +8,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.example.inform.R;
 
-public class NoticeAdapter extends RecyclerView.Adapter<NoticeHolder> {
+import java.util.ArrayList;
+import com.communityapp.inform.Model.NoticeItem;
+
+public class RequestAdapter extends RecyclerView.Adapter<NoticeHolder> {
     private ArrayList<NoticeItem> NoticeList;
     private Context context;
 
-    public NoticeAdapter (Context c, ArrayList<NoticeItem> noticeList){
+    public RequestAdapter(Context c, ArrayList<NoticeItem> noticeList){
         this.context = c;
         this.NoticeList = noticeList;
     }
@@ -22,14 +25,14 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeHolder> {
     @NonNull
     @Override
     public NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.notice_item, null);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_request_item, null);
         return new NoticeHolder(v); //returns view to holder class
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoticeHolder holder, int position) {
         holder.Title.setText(NoticeList.get(position).getTitle());
-        holder.Category.setText(NoticeList.get(position).getTitle());
+        holder.Category.setText(NoticeList.get(position).getCategory());
         holder.Description.setText(NoticeList.get(position).getDescription());
         holder.Username.setText(NoticeList.get(position).getUsername());
         holder.Date.setText(NoticeList.get(position).getDate());

@@ -1,14 +1,13 @@
-package com.example.inform;
+package com.communityapp.inform.View;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.inform.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -28,6 +27,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import java.util.ArrayList;
+
+import com.communityapp.inform.Model.NoticeItem;
+import com.communityapp.inform.Presenter.NoticeAdapter;
 
 /**
  * Community posts will be displayed here
@@ -64,7 +66,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         reminder = findViewById(R.id.add_reminder);
         /*reminder.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(com.communityapp.inform.View view) {
                 //show options to user
                 ;
             }
@@ -83,9 +85,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private ArrayList<NoticeItem> getNtoiceList() {
         ArrayList<NoticeItem> noticeList = new ArrayList<>();
 
-        noticeList.add(new NoticeItem("Crime Report", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
-        noticeList.add(new NoticeItem("Latest News", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
-        noticeList.add(new NoticeItem("Missing Pet", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
+        noticeList.add(new NoticeItem("Man shot twice in Area 1", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
+        noticeList.add(new NoticeItem("Interest rates are expected to increase", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
+        noticeList.add(new NoticeItem("Our dog, Sally, is Missing", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
 
         return noticeList;
 
@@ -137,7 +139,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
-            //View Inbox Inbox
+            //com.communityapp.inform.View Inbox Inbox
             Intent intentInbox = new Intent(Newsfeed.this, Admin_Inbox.class);
             startActivity(intentInbox);
         } else if (id == R.id.nav_reminders) {

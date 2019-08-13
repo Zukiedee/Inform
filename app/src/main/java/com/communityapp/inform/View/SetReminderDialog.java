@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.View;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

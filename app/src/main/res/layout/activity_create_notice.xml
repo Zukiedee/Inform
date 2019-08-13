@@ -7,7 +7,7 @@
     android:fadeScrollbars="true"
     android:isScrollContainer="true"
     android:scrollbarAlwaysDrawVerticalTrack="true"
-    tools:context=".createNotice">
+    tools:context="com.communityapp.inform.View.createNotice">
 
     <ScrollView
         android:layout_width="match_parent"

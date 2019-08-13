@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.inform.R;
 
 public class Welcome extends AppCompatActivity {
 
