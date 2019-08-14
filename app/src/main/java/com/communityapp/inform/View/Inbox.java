@@ -28,7 +28,7 @@ public class Inbox extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Notification layouts
-        RecyclerView msgRecyclerView = findViewById(R.id.recyclerView);
+        RecyclerView msgRecyclerView = findViewById(R.id.inbox_recyclerView);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         RecyclerView.Adapter msgAdapter = new User_NotificationAdapter(this, getMessageList());
