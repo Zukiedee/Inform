@@ -69,4 +69,11 @@
         <item>Organization</item>
     </string-array>
 
+    <string-array name="reminder_options">
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>1 day</item>
+        <item>1 week</item>
+    </string-array>
+
 </resources>

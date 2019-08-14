@@ -8,30 +8,30 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.communityapp.inform.Model.MessageItem;
+import com.communityapp.inform.Model.Notification;
 import com.example.inform.R;
 
 import java.util.ArrayList;
 
 //myHolder
-public class MessageAdapter extends RecyclerView.Adapter<MessageHolder> {
-    private ArrayList<MessageItem> MessageList;
+public class User_NotificationAdapter extends RecyclerView.Adapter<User_NotificationHolder> {
+    private ArrayList<Notification> MessageList;
     private Context context;
 
-    public MessageAdapter (Context c, ArrayList<MessageItem> messageList){
+    public User_NotificationAdapter(Context c, ArrayList<Notification> messageList){
         this.context = c;
         this.MessageList = messageList;
     }
 
     @NonNull
     @Override
-    public MessageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public User_NotificationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, null);
-        return new MessageHolder(v); //returns view to holder class
+        return new User_NotificationHolder(v); //returns view to holder class
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
+    public void onBindViewHolder(@NonNull User_NotificationHolder holder, int position) {
         holder.Subject.setText(MessageList.get(position).getTitle());
         holder.Status.setText(MessageList.get(position).getStatus());
         holder.Message.setText(MessageList.get(position).getMessage());

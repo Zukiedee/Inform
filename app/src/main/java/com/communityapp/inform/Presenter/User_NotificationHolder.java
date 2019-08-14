@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inform.R;
 
-public class MessageHolder extends RecyclerView.ViewHolder {
+public class User_NotificationHolder extends RecyclerView.ViewHolder {
     TextView Subject, Status, Message, Date;
 
-    public MessageHolder(View view){
+    public User_NotificationHolder(View view){
             super(view);
             Subject = itemView.findViewById(R.id.subject);
             Status = itemView.findViewById(R.id.status);

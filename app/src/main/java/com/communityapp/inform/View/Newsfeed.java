@@ -28,8 +28,8 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
-import com.communityapp.inform.Model.NoticeItem;
-import com.communityapp.inform.Presenter.NoticeAdapter;
+import com.communityapp.inform.Model.Notice;
+import com.communityapp.inform.Presenter.User_NoticeAdapter;
 
 /**
  * Community posts will be displayed here
@@ -37,6 +37,7 @@ import com.communityapp.inform.Presenter.NoticeAdapter;
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ArrayList<Integer> userReminder = new ArrayList<>();
+    private String[] reminder_list = {"30 min", "1 hour", "1 day", "1 week", "1 month"};
     private Button reminder;
 
     @Override
@@ -49,7 +50,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerView.Adapter noticeAdapter = new NoticeAdapter(this, getNtoiceList());
+        RecyclerView.Adapter noticeAdapter = new User_NoticeAdapter(this, getNtoiceList());
         noticeRecyclerView.setAdapter(noticeAdapter);
 
         //Create a notice button
@@ -57,19 +58,51 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         fab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
+                Intent intentCreateNotice = new Intent(Newsfeed.this, Create_Notice.class);
                 startActivity(intentCreateNotice);
             }
         });
 
         //add reminder button
         reminder = findViewById(R.id.add_reminder);
-        /*reminder.setOnClickListener(new OnClickListener() {
+        /*reminder.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(com.communityapp.inform.View view) {
+            public void onClick(View view) {
                 //show options to user
-                ;
+                AlertDialog.Builder dialogue = new AlertDialog.Builder(Newsfeed.this);
+                dialogue.setTitle("Select communities");
+                boolean[] checkedCommunities = new boolean[reminder_list.length];;
+                dialogue.setMultiChoiceItems(reminder_list, checkedCommunities, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
+                    }
+                });
+
+                dialogue.setCancelable(false);
+                dialogue.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int position) {
+                        //
+                    }
+                });
+
+                dialogue.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                dialogue.setNeutralButton("Clear all", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int pos) {
+                        //
+                    }
+                });
+                AlertDialog mDialog = dialogue.create();
+                mDialog.show();
             }
+
         });*/
 
 
@@ -82,12 +115,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private ArrayList<NoticeItem> getNtoiceList() {
-        ArrayList<NoticeItem> noticeList = new ArrayList<>();
+    private ArrayList<Notice> getNtoiceList() {
+        ArrayList<Notice> noticeList = new ArrayList<>();
 
-        noticeList.add(new NoticeItem("Man shot twice in Area 1", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
-        noticeList.add(new NoticeItem("Interest rates are expected to increase", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
-        noticeList.add(new NoticeItem("Our dog, Sally, is Missing", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
+        noticeList.add(new Notice("Man shot twice in Area 1", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
+        noticeList.add(new Notice("Interest rates are expected to increase", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
+        noticeList.add(new Notice("Our dog, Sally, is Missing", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
 
         return noticeList;
 
@@ -140,7 +173,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
             //com.communityapp.inform.View Inbox Inbox
-            Intent intentInbox = new Intent(Newsfeed.this, Admin_Inbox.class);
+            Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
             startActivity(intentInbox);
         } else if (id == R.id.nav_reminders) {
 

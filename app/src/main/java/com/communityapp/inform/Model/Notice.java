@@ -1,10 +1,10 @@
 package com.communityapp.inform.Model;
 
-public class NoticeItem {
+public class Notice {
     private int imgResource;
     private String Title, Category, Description, Username, Date;
 
-    public NoticeItem(String title, String cat, String body, String username, String date, int img) {
+    public Notice(String title, String cat, String body, String username, String date, int img) {
         Title = title;
         Category = cat;
         Description = body;

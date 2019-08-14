@@ -17,7 +17,7 @@ import com.example.inform.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class createNotice extends AppCompatActivity {
+public class Create_Notice extends AppCompatActivity {
 
     private Spinner spinner;
 
@@ -43,7 +43,7 @@ public class createNotice extends AppCompatActivity {
         categories.add("Recommendations");
 
         //Style and populate the category spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, categories
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(Create_Notice.this, android.R.layout.simple_spinner_item, categories
         );
 
         //Dropdown layout style
@@ -79,11 +79,10 @@ public class createNotice extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(view.getContext(), "Notice submitted!", Toast.LENGTH_LONG);
-                Intent intentMain = new Intent(createNotice.this, Newsfeed.class);
+                Intent intentMain = new Intent(Create_Notice.this, Newsfeed.class);
                 startActivity(intentMain);
             }
         });
-
     }
 
     @Override

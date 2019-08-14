@@ -1,10 +1,10 @@
 package com.communityapp.inform.Model;
 
 //model
-public class MessageItem {
+public class Notification {
     private String Title, Status, Message, Date;
 
-    public MessageItem(String header, String status, String msg, String date) {
+    public Notification(String header, String status, String msg, String date) {
         Title = header;
         Status = status;
         Message = msg;
@@ -24,6 +24,6 @@ public class MessageItem {
     }
 
     public String getStatus() {
-        return Status;
+        return "Status: "+ Status;
     }
 }

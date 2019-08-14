@@ -11,26 +11,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inform.R;
 
 import java.util.ArrayList;
-import com.communityapp.inform.Model.NoticeItem;
+import com.communityapp.inform.Model.Notice;
 
-public class RequestAdapter extends RecyclerView.Adapter<NoticeHolder> {
-    private ArrayList<NoticeItem> NoticeList;
+public class Admin_RequestAdapter extends RecyclerView.Adapter<User_NoticeHolder> {
+    private ArrayList<Notice> NoticeList;
     private Context context;
 
-    public RequestAdapter(Context c, ArrayList<NoticeItem> noticeList){
+    public Admin_RequestAdapter(Context c, ArrayList<Notice> noticeList){
         this.context = c;
         this.NoticeList = noticeList;
     }
 
     @NonNull
     @Override
-    public NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public User_NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_request_item, null);
-        return new NoticeHolder(v); //returns view to holder class
+        return new User_NoticeHolder(v); //returns view to holder class
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NoticeHolder holder, int position) {
+    public void onBindViewHolder(@NonNull User_NoticeHolder holder, int position) {
         holder.Title.setText(NoticeList.get(position).getTitle());
         holder.Category.setText(NoticeList.get(position).getCategory());
         holder.Description.setText(NoticeList.get(position).getDescription());

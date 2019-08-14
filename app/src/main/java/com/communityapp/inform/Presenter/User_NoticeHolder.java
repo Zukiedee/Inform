@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inform.R;
 
-public class NoticeHolder extends RecyclerView.ViewHolder {
+public class User_NoticeHolder extends RecyclerView.ViewHolder {
     TextView Title, Category, Description, Date, Username;
     ImageView imgResource;
 
-    public NoticeHolder(View view){
+    public User_NoticeHolder(View view){
         super(view);
         Title = itemView.findViewById(R.id.title);
         Category = itemView.findViewById(R.id.category);
