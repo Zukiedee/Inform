@@ -5,10 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_main"
-            android:title="@string/menu_home" />
-        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_edit_profile"
             android:title="@string/menu_profile" />
@@ -16,10 +12,6 @@
             android:id="@+id/nav_inbox"
             android:icon="@drawable/ic_inbox"
             android:title="@string/inbox" />
-        <item
-            android:id="@+id/nav_reminders"
-            android:icon="@drawable/ic_notification"
-            android:title="@string/menu_reminders" />
     </group>
     <item android:title="@string/community">
         <menu>
@@ -33,5 +25,40 @@
                 android:title="@string/area_2" />
         </menu>
     </item>
+
+    <item android:title="@string/filterby">
+        <menu>
+            <item
+                android:icon="@drawable/ic_crime"
+                android:id="@+id/crime"
+                android:title="@string/crime_report" />
+            <item
+                android:icon="@drawable/ic_news"
+                android:id="@+id/news"
+                android:title="@string/local_news" />
+            <item
+                android:icon="@drawable/ic_pets"
+                android:id="@+id/pet"
+                android:title="@string/missing_pet" />
+            <item
+                android:icon="@drawable/ic_events"
+                android:id="@+id/events"
+                android:title="@string/events" />
+            <item
+                android:icon="@drawable/ic_tradesmen"
+                android:id="@+id/tradesmen"
+                android:title="@string/tradesmen_refferals" />
+            <item
+                android:icon="@drawable/ic_fundraiser"
+                android:id="@+id/fundraiser"
+                android:title="@string/fundraiser" />
+            <item
+                android:icon="@drawable/ic_recommendations"
+                android:id="@+id/recommendations"
+                android:title="Recommendations" />
+        </menu>
+    </item>
+
+
 
 </menu>

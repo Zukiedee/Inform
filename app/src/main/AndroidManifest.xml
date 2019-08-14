@@ -27,8 +27,7 @@
             android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
         <activity
             android:name="com.communityapp.inform.View.Profile"
-            android:parentActivityName="com.communityapp.inform.View.Newsfeed"
-            />
+            android:parentActivityName="com.communityapp.inform.View.Newsfeed" />
         <activity
             android:name="com.communityapp.inform.View.Create_Notice"
             android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>

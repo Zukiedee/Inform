@@ -165,9 +165,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            //show newsfeed
-        } else if (id == R.id.nav_profile) {
+        if (id == R.id.nav_profile) {
             //Edit profile screen
             Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
             startActivity(intentProfile);
@@ -175,8 +173,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             //com.communityapp.inform.View Inbox Inbox
             Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
             startActivity(intentInbox);
-        } else if (id == R.id.nav_reminders) {
-
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
