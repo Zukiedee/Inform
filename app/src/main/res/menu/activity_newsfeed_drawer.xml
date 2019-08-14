@@ -55,7 +55,7 @@
             <item
                 android:icon="@drawable/ic_recommendations"
                 android:id="@+id/recommendations"
-                android:title="Recommendations" />
+                android:title="@string/recommendations" />
         </menu>
     </item>
 

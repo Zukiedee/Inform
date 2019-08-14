@@ -59,6 +59,9 @@
             android:background="@drawable/rounded_btn"
             android:gravity="center"
             android:paddingLeft="15dp"
+            android:paddingStart="15dp"
+            android:paddingRight="15dp"
+            android:paddingEnd="15dp"
             android:layout_marginTop="60dp"
             android:drawableLeft="@drawable/google"
             android:text="@string/action_sign_in_google"
@@ -66,7 +69,6 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:focusable="true"
-            android:paddingStart="15dp"
             android:drawableStart="@drawable/google" />
 
     </LinearLayout>
