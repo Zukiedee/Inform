@@ -3,14 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.communityapp.inform.View.Inbox">
+    tools:context="com.communityapp.inform.View.Admin_Inbox">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/inbox_recyclerView"
+        android:id="@+id/Admin_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBackground"
         android:padding="5dp"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical">
+    </androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>
