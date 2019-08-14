@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.Presenter;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -6,11 +6,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class NoticeHolder extends RecyclerView.ViewHolder {
+import com.example.inform.R;
+
+public class User_NoticeHolder extends RecyclerView.ViewHolder {
     TextView Title, Category, Description, Date, Username;
     ImageView imgResource;
 
-    public NoticeHolder(View view){
+    public User_NoticeHolder(View view){
         super(view);
         Title = itemView.findViewById(R.id.title);
         Category = itemView.findViewById(R.id.category);

@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Welcome"
+            android:name="com.communityapp.inform.View.Welcome"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,18 +18,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Inbox"
+            android:name="com.communityapp.inform.View.Inbox"
             android:label="@string/title_activity_notifications"
-            android:parentActivityName=".Newsfeed"/>
+            android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
         <activity
-            android:name=".Profile"
-            android:parentActivityName=".Newsfeed"
+            android:name="com.communityapp.inform.View.Admin_Inbox"
+            android:label="@string/title_activity_notifications"
+            android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
+        <activity
+            android:name="com.communityapp.inform.View.Profile"
+            android:parentActivityName="com.communityapp.inform.View.Newsfeed"
             />
         <activity
-            android:name=".createNotice"
-            android:parentActivityName=".Newsfeed"/>
+            android:name="com.communityapp.inform.View.Create_Notice"
+            android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
         <activity
-            android:name=".Newsfeed"
+            android:name="com.communityapp.inform.View.Newsfeed"
             android:label="@string/title_activity_newsfeed"
             android:theme="@style/AppTheme.NoActionBar">
 

@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
@@ -63,12 +62,11 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_below="@+id/news"
+            android:id="@+id/user_info"
             android:layout_marginTop="10dp">
 
             <View
@@ -115,6 +113,8 @@
                 android:gravity="center"
                 android:layout_toEndOf="@id/user"
                 android:layout_toRightOf="@id/user"
+                android:layout_marginStart="2dp"
+                android:layout_marginLeft="2dp"
                 android:text="@string/username"
                 android:textColor="@color/colorPosted"
                 android:textSize="12sp" />
@@ -131,7 +131,6 @@
                 android:gravity="center"
                 android:text="@string/date"
                 android:textSize="12sp" />
-
 
         </RelativeLayout>
 

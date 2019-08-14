@@ -61,11 +61,19 @@
     <string name="user_type">Type of user</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
+    <string name="status">Status</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
         <item>General user</item>
         <item>Organization</item>
+    </string-array>
+
+    <string-array name="reminder_options">
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>1 day</item>
+        <item>1 week</item>
     </string-array>
 
 </resources>

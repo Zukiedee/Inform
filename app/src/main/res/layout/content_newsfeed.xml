@@ -7,7 +7,7 @@
         android:background="@color/colorNewsfeedBackground"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".Newsfeed"
+        tools:context="com.communityapp.inform.View.Newsfeed"
         tools:showIn="@layout/app_bar_newsfeed">
 
     <androidx.recyclerview.widget.RecyclerView

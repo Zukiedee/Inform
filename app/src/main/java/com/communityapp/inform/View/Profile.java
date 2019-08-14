@@ -1,4 +1,4 @@
-package com.example.inform;
+package com.communityapp.inform.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+
+import com.example.inform.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ public class Profile extends AppCompatActivity {
         getSupportActionBar().setTitle("Edit Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        /**
+        /*
          * User type category selection using spinner
          */
         //Notice category selections
@@ -84,7 +86,7 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        /**
+        /*
          * User community selections
          */
         add_communities = (Button) findViewById(R.id.add_community_btn);
@@ -122,10 +124,10 @@ public class Profile extends AppCompatActivity {
                         String item = "";
                         for(int j = 0; j <userCommunities.size(); j++){
                             item = listCommunities[userCommunities.get(j)];
-                                if(!shownList.contains(item)){
-                                    shownList.add(item);
-                                    community_list_Adapter.notifyDataSetChanged();
-                                }
+                            if(!shownList.contains(item)){
+                                shownList.add(item);
+                                community_list_Adapter.notifyDataSetChanged();
+                            }
                         }
                     }
                 });
@@ -152,7 +154,6 @@ public class Profile extends AppCompatActivity {
                 mDialog.show();
             }
         });
-
     }
 
     @Override
