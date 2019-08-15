@@ -19,12 +19,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -34,24 +36,20 @@ import com.communityapp.inform.Presenter.User_NoticeAdapter;
 /**
  * Community posts will be displayed here
  */
-public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
 
-    private ArrayList<Integer> userReminder = new ArrayList<>();
-    private String[] reminder_list = {"30 min", "1 hour", "1 day", "1 week", "1 month"};
-    private Button reminder;
+    private RecyclerView noticeRecyclerView;
+    private User_NoticeAdapter noticeAdapter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
-        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        showMenu();
 
-        RecyclerView.Adapter noticeAdapter = new User_NoticeAdapter(this, getNtoiceList());
-        noticeRecyclerView.setAdapter(noticeAdapter);
+        buildRecyclerView();
 
         //Create a notice button
         FloatingActionButton fab = findViewById(R.id.floatingActionButton);
@@ -62,49 +60,57 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(intentCreateNotice);
             }
         });
+    }
 
-        //add reminder button
-        reminder = findViewById(R.id.add_reminder);
-        /*reminder.setOnClickListener(new View.OnClickListener() {
+    public void removeNotice(int position){
+        getNoticeList().remove(position);
+        noticeAdapter.notifyItemChanged(position);
+    }
+    /**
+     * List of notices to be posted
+     * Needs to be in databse
+     * @return notice lists to be displayed in cardview on Newsfeed
+     */
+    private ArrayList<Notice> getNoticeList() {
+        ArrayList<Notice> noticeList = new ArrayList<>();
+
+        noticeList.add(new Notice("Man shot twice in Area 1", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
+        noticeList.add(new Notice("Interest rates are expected to increase", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
+        noticeList.add(new Notice("Our dog, Sally, is Missing", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
+
+        return noticeList;
+    }
+
+    /**
+     * Constructs recyclerView which stores the notices
+     */
+    public void buildRecyclerView(){
+        noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        noticeAdapter = new User_NoticeAdapter(this, getNoticeList());
+        noticeRecyclerView.setAdapter(noticeAdapter);
+
+        noticeAdapter.setOnItemClickListener(new User_NoticeAdapter.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                //show options to user
-                AlertDialog.Builder dialogue = new AlertDialog.Builder(Newsfeed.this);
-                dialogue.setTitle("Select communities");
-                boolean[] checkedCommunities = new boolean[reminder_list.length];;
-                dialogue.setMultiChoiceItems(reminder_list, checkedCommunities, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
-                    }
-                });
+            public void onReminderClick(int position) {
+                DialogFragment reminder = new ReminderDialog();
+                reminder.setCancelable(false);
+                reminder.show(getSupportFragmentManager(), "Set Reminder");;
 
-                dialogue.setCancelable(false);
-                dialogue.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int position) {
-                        //
-                    }
-                });
-
-                dialogue.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-
-                dialogue.setNeutralButton("Clear all", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int pos) {
-                        //
-                    }
-                });
-                AlertDialog mDialog = dialogue.create();
-                mDialog.show();
             }
 
-        });*/
+            @Override
+            public void onDeleteClick(int position) {
+                removeNotice(position);
+            }
+        });
 
+    }
+
+    public void showMenu(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -113,17 +119,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private ArrayList<Notice> getNtoiceList() {
-        ArrayList<Notice> noticeList = new ArrayList<>();
-
-        noticeList.add(new Notice("Man shot twice in Area 1", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
-        noticeList.add(new Notice("Interest rates are expected to increase", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
-        noticeList.add(new Notice("Our dog, Sally, is Missing", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
-
-        return noticeList;
-
     }
 
     @Override
@@ -178,5 +173,15 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onPositiveButtonClicked(String[] list, int pos) {
+        //
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+//
     }
 }

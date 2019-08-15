@@ -64,7 +64,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="50dp"
             android:layout_below="@+id/news"
             android:id="@+id/user_info"
             android:layout_marginTop="10dp">
@@ -99,38 +99,63 @@
                 android:textSize="12sp" />
 
             <ImageView
+                android:id="@+id/user"
+                android:layout_width="35dp"
+                android:layout_height="34dp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_user_profile" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toRightOf="@+id/user"
+                android:layout_toEndOf="@+id/user"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_centerVertical="true"
-                android:padding="1dp"
-                app:srcCompat="@drawable/ic_user_profile"
-                android:id="@+id/user"/>
+                android:id="@+id/userDetails">
 
-            <TextView
-                android:id="@+id/userPosted"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_toEndOf="@id/user"
-                android:layout_toRightOf="@id/user"
-                android:layout_marginStart="2dp"
-                android:layout_marginLeft="2dp"
-                android:text="@string/username"
-                android:textColor="@color/colorPosted"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/userPosted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/username"
+                    android:textColor="@color/colorPosted"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/datePosted"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/datePosted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:text="@string/date"
+                    android:textSize="12sp" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <View
+                android:id="@+id/seperator"
+                android:layout_width="1dp"
                 android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/userDetails"
+                android:layout_toEndOf="@+id/userDetails"
+                android:background="?android:attr/listDivider"
+                android:layout_margin="10dp" />
+            <TextView
+                android:id="@+id/area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_toEndOf="@id/userPosted"
-                android:layout_toRightOf="@id/userPosted"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/seperator"
                 android:gravity="center"
-                android:text="@string/date"
-                android:textSize="12sp" />
+                android:text="@string/area"
+                android:textSize="14sp"
+                android:layout_toEndOf="@+id/seperator" />
+
+
 
         </RelativeLayout>
 

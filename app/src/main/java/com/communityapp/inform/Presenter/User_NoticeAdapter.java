@@ -16,27 +16,40 @@ import java.util.ArrayList;
 public class User_NoticeAdapter extends RecyclerView.Adapter<User_NoticeHolder> {
     private ArrayList<Notice> NoticeList;
     private Context context;
+    private OnItemClickListener mListener;
 
-    public User_NoticeAdapter(Context c, ArrayList<Notice> noticeList){
-        this.context = c;
+    public interface OnItemClickListener {
+        void onReminderClick(int position);
+        void onDeleteClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        mListener = listener;
+
+    }
+
+    public User_NoticeAdapter(Context context, ArrayList<Notice> noticeList){
         this.NoticeList = noticeList;
+        this.context = context;
     }
 
     @NonNull
     @Override
     public User_NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.notice_item, null);
-        return new User_NoticeHolder(v); //returns view to holder class
+        return new User_NoticeHolder(v, mListener); //returns view to holder class
     }
 
     @Override
     public void onBindViewHolder(@NonNull User_NoticeHolder holder, int position) {
-        holder.Title.setText(NoticeList.get(position).getTitle());
-        holder.Category.setText(NoticeList.get(position).getCategory());
-        holder.Description.setText(NoticeList.get(position).getDescription());
-        holder.Username.setText(NoticeList.get(position).getUsername());
-        holder.Date.setText(NoticeList.get(position).getDate());
-        holder.imgResource.setImageResource(NoticeList.get(position).getImgResource());
+        Notice currentItem = NoticeList.get(position);
+
+        holder.Title.setText(currentItem.getTitle());
+        holder.Category.setText(currentItem.getCategory());
+        holder.Description.setText(currentItem.getDescription());
+        holder.Username.setText(currentItem.getUsername());
+        holder.Date.setText(currentItem.getDate());
+        holder.imgResource.setImageResource(currentItem.getImgResource());
     }
 
     /**

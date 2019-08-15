@@ -12,18 +12,35 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.inform.R;
 
-public class SetReminderOptionsDialog extends DialogFragment {
+public class ReminderDialog extends DialogFragment {
 
-    int position = 0; //default selected option
+    int position = 0;// default selection
+
+    public interface SingleChoiceListener {
+        void onPositiveButtonClicked (String[] list, int pos );
+        void onNegativeButtonClicked ();
+    }
+
+    SingleChoiceListener mListener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (SingleChoiceListener) context;
+        } catch (Exception e){
+            throw new ClassCastException(getActivity().toString()+"SingleChoiceListener must be implemented");
+        }
+
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         final String[] reminder_list = getActivity().getResources().getStringArray(R.array.reminder_options);
 
-        builder.setTitle("Select Reminder Choice")
+        builder.setTitle("Select reminder")
                 .setSingleChoiceItems(reminder_list, 0, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -33,16 +50,18 @@ public class SetReminderOptionsDialog extends DialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        mListener.onPositiveButtonClicked(reminder_list, position);
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        mListener.onNegativeButtonClicked();
                     }
                 });
 
+
         return builder.create();
+
     }
 }

@@ -69,6 +69,7 @@
     <string name="tradesmen_refferals">Tradesmen Refferals</string>
     <string name="fundraiser">Fundraiser</string>
     <string name="recommendations">Recommendations</string>
+    <string name="area">Area</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

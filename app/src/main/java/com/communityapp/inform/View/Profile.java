@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.inform.R;
 
@@ -172,6 +173,8 @@ public class Profile extends AppCompatActivity {
 
         //Submits profile
         if (id == R.id.submit_profile) {
+            Toast done = Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_LONG);
+            done.show();
             Intent intentMain = new Intent(Profile.this, Newsfeed.class);
             startActivity(intentMain);
         }
