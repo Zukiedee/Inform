@@ -59,31 +59,13 @@
                 android:visibility="visible" />
 
             <EditText
-                android:id="@+id/notice_subheadline"
-                android:layout_width="300dp"
-                android:layout_height="49dp"
-                android:layout_margin="8dp"
-                android:ems="10"
-                android:hint="@string/subheadline"
-                android:inputType="textPersonName" />
-
-            <EditText
                 android:id="@+id/notice_body"
                 android:layout_width="300dp"
-                android:layout_height="wrap_content"
+                android:layout_height="172dp"
                 android:ems="10"
                 android:gravity="start|top"
                 android:hint="@string/body"
                 android:inputType="textMultiLine" />
-
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:ems="10"
-                android:hint="@string/author"
-                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/editText6"
@@ -91,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:ems="10"
-                android:hint="@string/more_information"
+                android:hint="@string/area"
                 android:inputType="textPersonName"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +90,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageButton"
+                    android:id="@+id/add_image"
                     android:contentDescription="@string/attach_a_file"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -129,6 +111,12 @@
                     android:text="@string/attach_a_file"
                     android:textSize="18sp" />
             </LinearLayout>
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:id="@+id/upload_image"
+                />
 
             <Button
                 android:id="@+id/submit"

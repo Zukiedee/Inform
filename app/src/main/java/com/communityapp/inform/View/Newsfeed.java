@@ -62,13 +62,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         });
     }
 
-    public void removeNotice(int position){
-        getNoticeList().remove(position);
-        noticeAdapter.notifyItemChanged(position);
-    }
     /**
      * List of notices to be posted
-     * Needs to be in databse
+     * Needs to be in database
      * @return notice lists to be displayed in cardview on Newsfeed
      */
     private ArrayList<Notice> getNoticeList() {
@@ -98,11 +94,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 reminder.setCancelable(false);
                 reminder.show(getSupportFragmentManager(), "Set Reminder");;
 
-            }
-
-            @Override
-            public void onDeleteClick(int position) {
-                removeNotice(position);
             }
         });
 

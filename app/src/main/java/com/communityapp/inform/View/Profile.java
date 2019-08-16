@@ -173,7 +173,7 @@ public class Profile extends AppCompatActivity {
 
         //Submits profile
         if (id == R.id.submit_profile) {
-            Toast done = Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_LONG);
+            Toast done = Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT);
             done.show();
             Intent intentMain = new Intent(Profile.this, Newsfeed.class);
             startActivity(intentMain);

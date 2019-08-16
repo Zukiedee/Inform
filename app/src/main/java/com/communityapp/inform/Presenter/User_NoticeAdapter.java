@@ -20,7 +20,6 @@ public class User_NoticeAdapter extends RecyclerView.Adapter<User_NoticeHolder> 
 
     public interface OnItemClickListener {
         void onReminderClick(int position);
-        void onDeleteClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){

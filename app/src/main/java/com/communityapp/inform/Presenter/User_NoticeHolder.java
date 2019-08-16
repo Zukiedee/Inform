@@ -13,7 +13,6 @@ public class User_NoticeHolder extends RecyclerView.ViewHolder {
     public TextView Title, Category, Description, Date, Username;
     public ImageView imgResource;
     public Button reminder;
-    //public Button remove;
 
     public User_NoticeHolder(View view, final User_NoticeAdapter.OnItemClickListener listener){
         super(view);
@@ -24,7 +23,6 @@ public class User_NoticeHolder extends RecyclerView.ViewHolder {
         Username = itemView.findViewById(R.id.userPosted);
         imgResource = itemView.findViewById(R.id.file);
         reminder = itemView.findViewById(R.id.add_reminder);
-        //remove = itemView.findViewById(R.id.remove);
 
         reminder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,17 +35,5 @@ public class User_NoticeHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
-
-        /*remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener!=null){
-                    int position = getAdapterPosition();
-                    if (position!= RecyclerView.NO_POSITION){
-                        listener.onDeleteClick(position);
-                    }
-                }
-            }
-        });*/
     }
 }
