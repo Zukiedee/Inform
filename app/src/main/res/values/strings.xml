@@ -73,8 +73,20 @@
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
+        <item>Select type of user</item>
         <item>General user</item>
         <item>Organization</item>
+        <item>Admin</item>
+    </string-array>
+
+    <string-array name="communities_options">
+        <item>Area 1</item>
+        <item>Area 2</item>
+        <item>Area 3</item>
+        <item>Area 4</item>
+        <item>Area 5</item>
+        <item>Area 6</item>
+        <item>Area 7</item>
     </string-array>
 
     <string-array name="reminder_options">

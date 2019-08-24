@@ -1,4 +1,4 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.Presenter;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,6 +12,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.inform.R;
 
+/**
+ * Dialog to display the reminder options.
+ */
 public class ReminderDialog extends DialogFragment {
 
     int position = 0;// default selection
@@ -31,7 +34,6 @@ public class ReminderDialog extends DialogFragment {
         } catch (Exception e){
             throw new ClassCastException(getActivity().toString()+"SingleChoiceListener must be implemented");
         }
-
     }
 
     @NonNull

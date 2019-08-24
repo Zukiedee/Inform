@@ -3,6 +3,7 @@ package com.communityapp.inform.View;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.communityapp.inform.Presenter.ReminderDialog;
 import com.example.inform.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -25,8 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -34,13 +33,13 @@ import com.communityapp.inform.Model.Notice;
 import com.communityapp.inform.Presenter.User_NoticeAdapter;
 
 /**
- * Community posts will be displayed here
+ * The main screen.
+ * Community posts will be displayed here.
  */
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
 
     private RecyclerView noticeRecyclerView;
     private User_NoticeAdapter noticeAdapter;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +63,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
     /**
      * List of notices to be posted
-     * Needs to be in database
+     * Needs to be extracted from the database
      * @return notice lists to be displayed in cardview on Newsfeed
      */
     private ArrayList<Notice> getNoticeList() {
@@ -92,13 +91,14 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             public void onReminderClick(int position) {
                 DialogFragment reminder = new ReminderDialog();
                 reminder.setCancelable(false);
-                reminder.show(getSupportFragmentManager(), "Set Reminder");;
-
+                reminder.show(getSupportFragmentManager(), "Set Reminder");
             }
         });
-
     }
 
+    /**
+     * Handles drawer navigation menu.
+     */
     public void showMenu(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -148,15 +148,15 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Handles navigation view item clicks.
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            //Edit profile screen
+            //Navigate to user profile screen
             Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
-            //com.communityapp.inform.View Inbox Inbox
+            //Navigate to user inbox
             Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
             startActivity(intentInbox);
         }
@@ -173,6 +173,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
     @Override
     public void onNegativeButtonClicked() {
-//
+        //
     }
 }
