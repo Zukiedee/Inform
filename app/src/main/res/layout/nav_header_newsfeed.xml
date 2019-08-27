@@ -16,7 +16,7 @@
         android:padding="10dp">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/main_profile_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/nav_header_desc"
@@ -32,6 +32,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/main_username"
                 android:padding="@dimen/nav_header_vertical_spacing"
                 android:text="@string/nav_header_title"
                 android:textAllCaps="false"
@@ -42,7 +43,7 @@
                 app:fontFamily="serif" />
 
             <TextView
-                android:id="@+id/email"
+                android:id="@+id/main_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/nav_header_vertical_spacing"

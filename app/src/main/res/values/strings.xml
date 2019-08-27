@@ -72,6 +72,7 @@
     <string name="area">Area</string>
     <string name="remove">Remove</string>
     <string name="file_attachment">file attachment</string>
+    <string name="enter_email">Enter email address</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

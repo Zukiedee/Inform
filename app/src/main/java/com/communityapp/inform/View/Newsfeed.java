@@ -1,6 +1,8 @@
 package com.communityapp.inform.View;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.communityapp.inform.Presenter.ReminderDialog;
@@ -22,6 +24,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +35,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import com.communityapp.inform.Model.Notice;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * The main screen.
@@ -41,11 +46,21 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
     private RecyclerView noticeRecyclerView;
     private User_NoticeHolder.User_NoticeAdapter noticeAdapter;
+    private TextView username, email;
+    private FirebaseAuth mAuth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
+
+        /*
+         * Set user's username and email on navbar
+         */
+        username = findViewById(R.id.main_username);
+        email = findViewById(R.id.main_email);
+
+        mAuth = FirebaseAuth.getInstance();
 
         showMenu();
 
@@ -93,9 +108,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 DialogFragment reminder = new ReminderDialog();
                 reminder.setCancelable(false);
                 reminder.show(getSupportFragmentManager(), "Set Reminder");
-                TextView r = findViewById(R.id.add_reminder);
-                r.setTextColor(getResources().getColor(R.color.colorReminder));
-                r.setText("Reminder Set");
+                //TextView r = findViewById(R.id.add_reminder);
+                //r.setTextColor(getResources().getColor(R.color.colorReminder));
+                //r.setText("Reminder Set");
             }
         });
     }
@@ -114,6 +129,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -140,8 +156,13 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //Directs back to Welcome screen
+        /*
+         * Logs user out of application
+         * Directs user back to Welcome screen
+         */
         if (id == R.id.logout) {
+            mAuth.signOut();
+
             Intent intentWelcome = new Intent(Newsfeed.this, Welcome.class);
             startActivity(intentWelcome);
         }
@@ -149,7 +170,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handles navigation view item clicks.
@@ -178,5 +198,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     @Override
     public void onNegativeButtonClicked() {
         //
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
     }
 }

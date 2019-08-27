@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -20,6 +21,9 @@ import android.widget.Toast;
 
 import com.communityapp.inform.Presenter.Add_Communities_Dialog;
 import com.example.inform.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 
@@ -28,7 +32,8 @@ import java.util.ArrayList;
  * User edits name, account type and communities to follow
  */
 public class Profile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
-    private TextView username;
+    private EditText username;
+    private TextView email;
     private Spinner user_type_spinner;                                                              //spinner with types of user
     private Button add_communities;                                                                 //button to select communities
 
@@ -37,13 +42,15 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     public ArrayList<String> shownList;
     public ArrayAdapter<String> community_list_Adapter;                                             //display of user selected communities
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
         //Sets up back button on toolbar
-        getSupportActionBar().setTitle("Profile");
+        getSupportActionBar().setTitle("Edit Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setCategory();
@@ -51,7 +58,20 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         add_communities = (Button) findViewById(R.id.add_community_btn);
         setCommunities();
 
+        mAuth = FirebaseAuth.getInstance();
 
+        //Returns user's username and displays it in editable username textbar
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        username = findViewById(R.id.username_hint);
+        if (currentUser.getDisplayName()!=null){
+            username.setText(currentUser.getDisplayName());
+        }
+
+        email = findViewById(R.id.email_hint);
+        if (currentUser.getEmail()!=null){
+            email.setText(currentUser.getEmail());
+        }
     }
 
     @Override
@@ -70,10 +90,19 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         //Submits profile
         if (id == R.id.submit_profile) {
-            Toast done = Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT);
-            done.show();
-            Intent intentMain = new Intent(Profile.this, Newsfeed.class);
-            startActivity(intentMain);
+            try {
+                UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(username.getText().toString())
+                        .build();
+                Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
+                Intent intentMain = new Intent(Profile.this, Newsfeed.class);
+                startActivity(intentMain);
+
+            }catch (Error e){
+                Toast.makeText(Profile.this, "Error Occured updating profile!", Toast.LENGTH_LONG).show();
+            }
+
+
         }
 
         return super.onOptionsItemSelected(menuItem);
