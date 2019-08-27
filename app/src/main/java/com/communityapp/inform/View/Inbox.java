@@ -6,15 +6,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.communityapp.inform.Presenter.User_NotificationHolder;
 import com.example.inform.R;
 
 import java.util.ArrayList;
 
 import com.communityapp.inform.Model.Notification;
-import com.communityapp.inform.Presenter.User_NotificationAdapter;
 
 /**
- * Inbox from admin regarding post status will be posted here
+ * Inbox from admin regarding post notification statuses will be posted here
  */
 public class Inbox extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class Inbox extends AppCompatActivity {
         RecyclerView msgRecyclerView = findViewById(R.id.inbox_recyclerView);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerView.Adapter msgAdapter = new User_NotificationAdapter(this, getMessageList());
+        RecyclerView.Adapter msgAdapter = new User_NotificationHolder.User_NotificationAdapter(this, getMessageList());
         msgRecyclerView.setAdapter(msgAdapter);
     }
 
@@ -39,12 +39,15 @@ public class Inbox extends AppCompatActivity {
         ArrayList<Notification> messageList = new ArrayList<>();
 
         //Hardcoded dummy notification post inserts
-        messageList.add(new Notification("Our dog, Sally, is missing!", "Pending","Your request to post a notice has been received. We are currently reviewing your notice and will let you know of the outcome as soon as possible.", "1 Apr 2019"));
-        messageList.add(new Notification("Fundraiser in Memorial Hall", "Accepted","Your post has been approved! Your notice now appears in the newsfeed.", "23 Mar 2019"));
-        messageList.add(new Notification("Fundraiser in Memorial Hall", "Pending", "Your request to post a notice has been received. We are currently reviewing your notice and will let you know of the outcome as soon as possible.", "23 Apr 2019"));
-        messageList.add(new Notification("Man dancing naked", "Rejected", "Unfortunately your post has been rejected.", "20 Mar 2019"));
+        Notification n1 = new Notification("Our dog, Sally, is missing!", "1 Apr 2019");
+        messageList.add(n1);
+        Notification n2 = new Notification("Fundraiser in Memorial Hall", "23 Mar 2019");
+        n2.approve();
+        messageList.add(n2);
+        Notification n3 = new Notification("Man dancing naked", "20 Mar 2019");
+        n3.reject();
+        messageList.add(n3);
 
         return messageList;
-
     }
 }

@@ -76,27 +76,40 @@
                 android:layout_marginBottom="10dp"
                 android:background="?android:attr/listDivider" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
+            <TextView
                 android:id="@+id/add_reminder"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="2dp"
-                android:layout_marginEnd="2dp"
-                android:paddingLeft="5dp"
-                android:paddingStart="5dp"
-                android:paddingRight="5dp"
-                android:paddingEnd="5dp"
-                android:background="@drawable/reminder_btn"
-                android:drawableStart="@drawable/ic_add_reminder"
-                android:drawableLeft="@drawable/ic_add_reminder"
-                android:focusable="auto"
+                android:layout_margin="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_add_reminder"
                 android:text="@string/add_reminder"
                 android:textAllCaps="false"
-                android:textColor="@color/white"
+                android:textColor="@color/colorDate"
                 android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/removeNotice"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:drawableTop="@drawable/ic_delete"
+                android:text="@string/remove"
+                android:layout_margin="5dp"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAllCaps="false"
+                android:visibility="visible"
+                android:textColor="@color/colorDate"
+                android:background="@color/white"
+                android:layout_toLeftOf="@+id/add_reminder"
+                android:layout_toStartOf="@+id/add_reminder" />
+
 
             <ImageView
                 android:id="@+id/user"
@@ -152,9 +165,8 @@
                 android:layout_toRightOf="@+id/seperator"
                 android:gravity="center"
                 android:text="@string/area"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:layout_toEndOf="@+id/seperator" />
-
 
 
         </RelativeLayout>

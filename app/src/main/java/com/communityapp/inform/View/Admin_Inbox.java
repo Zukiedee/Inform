@@ -21,14 +21,14 @@ public class Admin_Inbox extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.admin_inbox);
+        setContentView(R.layout.activity_inbox);
 
         //Back button on toolbar
         getSupportActionBar().setTitle("Inbox");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Notification layouts
-        RecyclerView requestRecyclerView = findViewById(R.id.Admin_recyclerView);
+        RecyclerView requestRecyclerView = findViewById(R.id.inbox_recyclerView);
         requestRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         RecyclerView.Adapter noticeAdapter = new Admin_RequestAdapter(this, getNoticeList());

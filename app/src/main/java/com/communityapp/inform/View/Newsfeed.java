@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.communityapp.inform.Presenter.ReminderDialog;
+import com.communityapp.inform.Presenter.User_NoticeHolder;
 import com.example.inform.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -26,11 +27,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import com.communityapp.inform.Model.Notice;
-import com.communityapp.inform.Presenter.User_NoticeAdapter;
 
 /**
  * The main screen.
@@ -39,7 +40,7 @@ import com.communityapp.inform.Presenter.User_NoticeAdapter;
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
 
     private RecyclerView noticeRecyclerView;
-    private User_NoticeAdapter noticeAdapter;
+    private User_NoticeHolder.User_NoticeAdapter noticeAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,15 +84,18 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        noticeAdapter = new User_NoticeAdapter(this, getNoticeList());
+        noticeAdapter = new User_NoticeHolder.User_NoticeAdapter(this, getNoticeList());
         noticeRecyclerView.setAdapter(noticeAdapter);
 
-        noticeAdapter.setOnItemClickListener(new User_NoticeAdapter.OnItemClickListener() {
+        noticeAdapter.setOnItemClickListener(new User_NoticeHolder.User_NoticeAdapter.OnItemClickListener() {
             @Override
             public void onReminderClick(int position) {
                 DialogFragment reminder = new ReminderDialog();
                 reminder.setCancelable(false);
                 reminder.show(getSupportFragmentManager(), "Set Reminder");
+                TextView r = findViewById(R.id.add_reminder);
+                r.setTextColor(getResources().getColor(R.color.colorReminder));
+                r.setText("Reminder Set");
             }
         });
     }

@@ -5,6 +5,8 @@ import androidx.fragment.app.DialogFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.communityapp.inform.Presenter.Add_Communities_Dialog;
 import com.example.inform.R;
 
 import java.util.ArrayList;
@@ -24,6 +28,7 @@ import java.util.ArrayList;
  * User edits name, account type and communities to follow
  */
 public class Profile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
+    private TextView username;
     private Spinner user_type_spinner;                                                              //spinner with types of user
     private Button add_communities;                                                                 //button to select communities
 
@@ -45,6 +50,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         add_communities = (Button) findViewById(R.id.add_community_btn);
         setCommunities();
+
 
     }
 
@@ -83,6 +89,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                 shownList.add(item);
             }
         }
+        selectedCommunities.setVisibility(View.VISIBLE);
         community_list_Adapter.notifyDataSetChanged();
     }
 

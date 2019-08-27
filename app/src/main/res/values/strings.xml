@@ -70,6 +70,8 @@
     <string name="fundraiser">Fundraiser</string>
     <string name="recommendations">Recommendations</string>
     <string name="area">Area</string>
+    <string name="remove">Remove</string>
+    <string name="file_attachment">file attachment</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
@@ -94,6 +96,17 @@
         <item>1 hour</item>
         <item>1 day</item>
         <item>1 week</item>
+    </string-array>
+
+    <string-array name="notice_categories">
+        <item>Select a Category</item>
+        <item>Local News</item>
+        <item>Crime Report</item>
+        <item>Events/Entertainment</item>
+        <item>Fundraiser</item>
+        <item>Missing Pet</item>
+        <item>Tradesmen Referrals</item>
+        <item>Recommendations</item>
     </string-array>
 
 </resources>

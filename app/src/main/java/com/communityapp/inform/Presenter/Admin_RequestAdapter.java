@@ -16,14 +16,14 @@ import com.communityapp.inform.Model.Notice;
 public class Admin_RequestAdapter extends RecyclerView.Adapter<User_NoticeHolder> {
     private ArrayList<Notice> NoticeList;
     private Context context;
-    private User_NoticeAdapter.OnItemClickListener mListener;
+    private User_NoticeHolder.User_NoticeAdapter.OnItemClickListener mListener;
 
     public interface OnItemClickListener {
         //void onReminderClick(int position);
         void onDeleteClick(int position);
     }
 
-    public void setOnItemClickListener(User_NoticeAdapter.OnItemClickListener listener){
+    public void setOnItemClickListener(User_NoticeHolder.User_NoticeAdapter.OnItemClickListener listener){
         mListener = listener;
 
     }

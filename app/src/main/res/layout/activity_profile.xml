@@ -79,6 +79,12 @@
             android:layout_margin="10dp"
             android:background="?android:attr/listDivider" />
 
+        <ListView
+            android:id="@+id/selectedCommunities"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
         <Button
             android:id="@+id/add_community_btn"
             android:layout_width="match_parent"
@@ -86,20 +92,15 @@
             android:elevation="3dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
+            android:paddingLeft="18dp"
+            android:paddingStart="18dp"
             android:paddingRight="8dp"
             android:paddingEnd="8dp"
             android:background="@drawable/rounded_btn"
             android:drawableLeft="@drawable/ic_add_location"
             android:drawableStart="@drawable/ic_add_location"
             android:text="@string/select_communities_to_follow"
-            android:textColor="#312D2D"
+            android:textColor="@color/white"
             android:textSize="14sp" />
-
-        <ListView
-            android:id="@+id/selectedCommunities"
-            android:layout_width="match_parent"
-            android:layout_height="313dp" />
     </LinearLayout>
 </ScrollView>

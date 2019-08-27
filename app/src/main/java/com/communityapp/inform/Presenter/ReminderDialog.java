@@ -24,7 +24,7 @@ public class ReminderDialog extends DialogFragment {
         void onNegativeButtonClicked ();
     }
 
-    SingleChoiceListener mListener;
+    private SingleChoiceListener mListener;
 
     @Override
     public void onAttach(Context context) {
