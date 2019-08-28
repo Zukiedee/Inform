@@ -1,9 +1,8 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.Editable;
@@ -13,16 +12,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.inform.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User creates a notice by selecting a notice category, relevant notices are then shown and user submits notice.

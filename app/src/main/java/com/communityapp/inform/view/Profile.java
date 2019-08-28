@@ -1,12 +1,12 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.view;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +19,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.communityapp.inform.Presenter.Add_Communities_Dialog;
+import com.communityapp.inform.presenter.Add_Communities_Dialog;
 import com.example.inform.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * User profile interface
@@ -43,6 +49,11 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     public ArrayAdapter<String> community_list_Adapter;                                             //display of user selected communities
 
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
+    String currentUserID, user_type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,25 +64,58 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         getSupportActionBar().setTitle("Edit Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+
+        //init firebase
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users");
+
+        //init views
+        add_communities = findViewById(R.id.add_community_btn);
+        username = findViewById(R.id.username_hint);
+        email = findViewById(R.id.email_hint);
+
+        currentUserID = mAuth.getCurrentUser().getUid();
+
+        //set deafault user parameters
+        setDefaultInfo();
+
         setCategory();
 
-        add_communities = (Button) findViewById(R.id.add_community_btn);
         setCommunities();
+    }
 
-        mAuth = FirebaseAuth.getInstance();
-
+    /**
+     * Sets the default username from gmail account i.e. username and email address
+     */
+    private void setDefaultInfo() {
         //Returns user's username and displays it in editable username textbar
-        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        username = findViewById(R.id.username_hint);
-        if (currentUser.getDisplayName()!=null){
-            username.setText(currentUser.getDisplayName());
-        }
+        Query query = databaseReference.orderByChild("email").equalTo(user.getEmail());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //checks until required data get
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    //get data
+                    String uname = ""+ ds.child("username").getValue();
+                    String uemail = ""+ ds.child("email").getValue();
+                    //String type = ""+ ds.child("type").getValue();
+                    //Object communities = ds.child("communities").getValue();
 
-        email = findViewById(R.id.email_hint);
-        if (currentUser.getEmail()!=null){
-            email.setText(currentUser.getEmail());
-        }
+                    username.setText(uname);
+                    email.setText(uemail);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -88,24 +132,64 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         // as you specify a parent activity in AndroidManifest.xml.
         int id = menuItem.getItemId();
 
-        //Submits profile
+        //Saving profile information
         if (id == R.id.submit_profile) {
             try {
-                UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(username.getText().toString())
-                        .build();
-                Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
-                Intent intentMain = new Intent(Profile.this, Newsfeed.class);
-                startActivity(intentMain);
+                saveUserInfo();
+
 
             }catch (Error e){
                 Toast.makeText(Profile.this, "Error Occured updating profile!", Toast.LENGTH_LONG).show();
             }
-
-
         }
 
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    /**
+     * Saves user information from input fields
+     */
+    private void saveUserInfo() {
+        String uname = username.getText().toString();
+        String type = user_type_spinner.getSelectedItem().toString().trim();
+        String uemail = user.getEmail();
+        ArrayList<String> communities = shownList;
+        String uid = user.getUid();
+
+        final String[] categories = getResources().getStringArray(R.array.user_type);
+
+        if (TextUtils.isEmpty(uname)){
+            //notify user that username is not entered
+            Toast.makeText(this, "Please fill in username", Toast.LENGTH_SHORT).show();
+        }
+        if (type.equalsIgnoreCase(categories[0].trim())){
+            //notify user that user type is not entered
+            Toast.makeText(this, "Please select in user type", Toast.LENGTH_SHORT).show();
+        }
+        if (communities.isEmpty()){
+            //notify user that communities are not entered
+            Toast.makeText(this, "Please select at least one community to follow", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            //save information to firebase
+            HashMap<Object, Object> userMap = new HashMap<>();
+            userMap.put("username", uname);
+            userMap.put("email", uemail);
+            userMap.put("type", type);
+            userMap.put("communities", communities);
+            //databaseReference.updateChildren(userMap).add
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            //path to store use data
+            DatabaseReference reference = database.getReference("Users");
+            //put data within hashmap in database
+            reference.child(uid).setValue(userMap);
+
+            Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
+
+            Intent intentMain = new Intent(Profile.this, Newsfeed.class);
+            startActivity(intentMain);
+        }
     }
 
     @Override
@@ -151,20 +235,20 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         user_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (adapterView.getItemAtPosition(i).equals("Select type of user")){
+                if (adapterView.getItemAtPosition(i).toString().equals(categories[0])){
                     //do nothing
+                    user_type = "";
                 }
                 else {
                     //on selecting a user_type_spinner
-                    String item = adapterView.getItemAtPosition(i).toString();
-
+                    user_type = adapterView.getItemAtPosition(i).toString();
                     //Store user type in database
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                user_type = "";
             }
         });
     }

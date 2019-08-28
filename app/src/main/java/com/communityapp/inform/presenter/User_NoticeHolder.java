@@ -1,4 +1,4 @@
-package com.communityapp.inform.Presenter;
+package com.communityapp.inform.presenter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.communityapp.inform.Model.Notice;
+import com.communityapp.inform.model.Notice;
 import com.example.inform.R;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.communityapp.inform.Model;
+package com.communityapp.inform.model;
 
 /**
  * Notifications sent to the user regarding their notice requests from the admin.

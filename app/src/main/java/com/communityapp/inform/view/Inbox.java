@@ -1,4 +1,4 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-import com.communityapp.inform.Presenter.User_NotificationHolder;
+import com.communityapp.inform.presenter.User_NotificationHolder;
 import com.example.inform.R;
 
 import java.util.ArrayList;
 
-import com.communityapp.inform.Model.Notification;
+import com.communityapp.inform.model.Notification;
 
 /**
  * Inbox from admin regarding post notification statuses will be posted here

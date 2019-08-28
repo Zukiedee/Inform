@@ -1,12 +1,11 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
-import com.communityapp.inform.Presenter.ReminderDialog;
-import com.communityapp.inform.Presenter.User_NoticeHolder;
+import com.communityapp.inform.presenter.ReminderDialog;
+import com.communityapp.inform.presenter.User_NoticeHolder;
 import com.example.inform.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -34,7 +33,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import com.communityapp.inform.Model.Notice;
+import com.communityapp.inform.model.Notice;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -48,6 +47,20 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private User_NoticeHolder.User_NoticeAdapter noticeAdapter;
     private TextView username, email;
     private FirebaseAuth mAuth;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //If user is not logged in, redirect to sign in screen
+        if (currentUser== null){
+            Intent loginIntent = new Intent(Newsfeed.this, Welcome.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(loginIntent);
+            finish();
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

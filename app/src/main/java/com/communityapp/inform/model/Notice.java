@@ -1,4 +1,4 @@
-package com.communityapp.inform.Model;
+package com.communityapp.inform.model;
 
 public class Notice {
     private int imgResource;

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="com.communityapp.inform.View.Profile">
+    tools:context="com.communityapp.inform.view.Profile">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -113,12 +113,6 @@
             android:layout_margin="10dp"
             android:background="?android:attr/listDivider" />
 
-        <ListView
-            android:id="@+id/selectedCommunities"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
         <Button
             android:id="@+id/add_community_btn"
             android:layout_width="match_parent"
@@ -136,5 +130,12 @@
             android:text="@string/select_communities_to_follow"
             android:textColor="@color/white"
             android:textSize="14sp" />
+
+        <ListView
+            android:id="@+id/selectedCommunities"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 </ScrollView>

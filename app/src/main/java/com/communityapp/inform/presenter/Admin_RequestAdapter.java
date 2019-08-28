@@ -1,4 +1,4 @@
-package com.communityapp.inform.Presenter;
+package com.communityapp.inform.presenter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inform.R;
 
 import java.util.ArrayList;
-import com.communityapp.inform.Model.Notice;
+import com.communityapp.inform.model.Notice;
 
 public class Admin_RequestAdapter extends RecyclerView.Adapter<User_NoticeHolder> {
     private ArrayList<Notice> NoticeList;

@@ -1,26 +1,20 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.view;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.communityapp.inform.Model.User;
 import com.example.inform.R;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,14 +35,13 @@ public class Welcome extends AppCompatActivity {
     private final static int GOOGLE_SIGN_IN = 234;
     private GoogleSignInClient client;
     private FirebaseAuth mAuth;
-    private SignInButton signInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        signInButton = findViewById(R.id.sign_in_button);
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -123,6 +116,7 @@ public class Welcome extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             //FirebaseUser user = mAuth.getCurrentUser();
+                            Snackbar.make(findViewById(R.id.main_layout),  "Successfully signed in!", Snackbar.LENGTH_SHORT).show();
 
                             Intent intentProfile = new Intent(Welcome.this, Profile.class);
                             startActivity(intentProfile);
@@ -145,6 +139,7 @@ public class Welcome extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser!= null){
             startActivity(new Intent(Welcome.this, Newsfeed.class));
+            finish();
         }
     }
 }

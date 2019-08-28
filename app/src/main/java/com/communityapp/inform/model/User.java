@@ -1,4 +1,6 @@
-package com.communityapp.inform.Model;
+package com.communityapp.inform.model;
+
+import java.util.ArrayList;
 
 /**
  * User profile account details containing username and
@@ -7,7 +9,7 @@ public class User {
     private String Username;
     private String Email;
     private String Type;
-    private String[] Communities;
+    private ArrayList<String> Communities;
 
     /**
      * Constructor method to set username and email
@@ -22,7 +24,7 @@ public class User {
      * Sets the users list of communities they wish to follow
      * @param communities list of selected communities
      */
-    public void setCommunities(String[] communities){
+    public void setCommunities(ArrayList<String> communities){
         this.Communities = communities;
     }
 
@@ -54,6 +56,6 @@ public class User {
      * Returns user's communities they follow
      * @return list of communities
      */
-    public String[] getCommunities() { return Communities; }
+    public ArrayList<String> getCommunities() { return Communities; }
 
 }

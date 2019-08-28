@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    tools:context="com.communityapp.inform.View.Welcome">
+    tools:context="com.communityapp.inform.view.Welcome">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,7 +57,6 @@
             android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
             android:layout_margin="30dp"
-            android:background="@drawable/rounded_btn"
             android:padding="10dp"
             android:layout_height="wrap_content" />
 

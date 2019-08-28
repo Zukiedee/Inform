@@ -1,4 +1,4 @@
-package com.communityapp.inform.Presenter;
+package com.communityapp.inform.presenter;
 
 import android.app.Dialog;
 import android.content.Context;

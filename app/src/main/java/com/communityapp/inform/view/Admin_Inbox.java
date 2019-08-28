@@ -1,4 +1,4 @@
-package com.communityapp.inform.View;
+package com.communityapp.inform.view;
 
 import android.os.Bundle;
 
@@ -10,8 +10,8 @@ import com.example.inform.R;
 
 import java.util.ArrayList;
 
-import com.communityapp.inform.Model.Notice;
-import com.communityapp.inform.Presenter.Admin_RequestAdapter;
+import com.communityapp.inform.model.Notice;
+import com.communityapp.inform.presenter.Admin_RequestAdapter;
 
 /**
  * Inbox from admin regarding post status will be posted here
