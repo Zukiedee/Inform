@@ -1,5 +1,6 @@
 package com.communityapp.inform.view;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,11 +31,12 @@ import com.google.firebase.auth.GoogleAuthProvider;
  * Default screen for first timw users of the application or logged out users.
  * Redirects users to Google sign in
  */
-public class Welcome extends AppCompatActivity {
+public class signIn extends AppCompatActivity {
 
     private final static int GOOGLE_SIGN_IN = 234;
     private GoogleSignInClient client;
     private FirebaseAuth mAuth;
+    private ProgressDialog signInProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class Welcome extends AppCompatActivity {
 
         SignInButton signInButton = findViewById(R.id.sign_in_button);
 
-        mAuth = FirebaseAuth.getInstance();
+        signInProgressBar = new ProgressDialog(this);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -54,6 +56,8 @@ public class Welcome extends AppCompatActivity {
 
         // Build a GoogleSignInClient with the options specified by gso.
         client = GoogleSignIn.getClient(this, googleSignInOptions);
+
+        mAuth = FirebaseAuth.getInstance();
 
         signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -70,17 +74,12 @@ public class Welcome extends AppCompatActivity {
      * Dispays google accounts
      */
     private void SignInGoogle(){
+        signInProgressBar.setMessage("Signing in...");
+        signInProgressBar.show();
         Intent signIntent = client.getSignInIntent();
         startActivityForResult(signIntent, GOOGLE_SIGN_IN);
-
     }
 
-    /**
-     * The GoogleSignInAccount object contains information about the signed-in user, such as the user's name
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -96,8 +95,7 @@ public class Welcome extends AppCompatActivity {
 
             } catch (ApiException e){
                 // Google Sign In failed, update UI appropriately
-                Log.w("TAG", "Google sign in failed", e);
-                Toast.makeText(this, "Auth went wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
 
@@ -105,29 +103,21 @@ public class Welcome extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        Log.d("TAG", "firebaseAutWithGoogle: " + account.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("TAG", "signInWithCredential:success");
-                            //FirebaseUser user = mAuth.getCurrentUser();
-                            Snackbar.make(findViewById(R.id.main_layout),  "Successfully signed in!", Snackbar.LENGTH_SHORT).show();
+                            // Sign in success
+                            Toast.makeText(signIn.this,  "Successfully signed in!", Toast.LENGTH_SHORT).show();
 
-                            Intent intentProfile = new Intent(Welcome.this, Profile.class);
+                            Intent intentProfile = new Intent(signIn.this, editProfile.class);
                             startActivity(intentProfile);
-
-                            //updateUI(user);
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w("TAG", "signin failure", task.getException());
-                            Snackbar.make(findViewById(R.id.main_layout),  "Authentification Failed!", Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            Toast.makeText(signIn.this,  "Authentification Failed!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -138,7 +128,7 @@ public class Welcome extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser!= null){
-            startActivity(new Intent(Welcome.this, Newsfeed.class));
+            startActivity(new Intent(signIn.this, Newsfeed.class));
             finish();
         }
     }

@@ -13,17 +13,17 @@ import com.example.inform.R;
 import java.util.ArrayList;
 import com.communityapp.inform.model.Notice;
 
-public class Admin_RequestAdapter extends RecyclerView.Adapter<User_NoticeHolder> {
+public class Admin_RequestAdapter extends RecyclerView.Adapter<NoticeHolder> {
     private ArrayList<Notice> NoticeList;
     private Context context;
-    private User_NoticeHolder.User_NoticeAdapter.OnItemClickListener mListener;
+    private NoticeHolder.User_NoticeAdapter.OnItemClickListener mListener;
 
     public interface OnItemClickListener {
         //void onReminderClick(int position);
         void onDeleteClick(int position);
     }
 
-    public void setOnItemClickListener(User_NoticeHolder.User_NoticeAdapter.OnItemClickListener listener){
+    public void setOnItemClickListener(NoticeHolder.User_NoticeAdapter.OnItemClickListener listener){
         mListener = listener;
 
     }
@@ -35,13 +35,13 @@ public class Admin_RequestAdapter extends RecyclerView.Adapter<User_NoticeHolder
 
     @NonNull
     @Override
-    public User_NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_request_item, null);
-        return new User_NoticeHolder(v, mListener); //returns view to holder class
+        return new NoticeHolder(v, mListener); //returns view to holder class
     }
 
     @Override
-    public void onBindViewHolder(@NonNull User_NoticeHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NoticeHolder holder, int position) {
         Notice currentItem = NoticeList.get(position);
 
         holder.Title.setText(currentItem.getTitle());

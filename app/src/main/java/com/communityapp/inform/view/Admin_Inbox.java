@@ -40,8 +40,8 @@ public class Admin_Inbox extends AppCompatActivity {
     private ArrayList<Notice> getNoticeList() {
         ArrayList<Notice> noticeList = new ArrayList<>();
 
-        noticeList.add(new Notice("Latest News", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
-        noticeList.add(new Notice("Missing Pet", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
+        //noticeList.add(new Notice("Latest News", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
+        //noticeList.add(new Notice("Missing Pet", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
 
         return noticeList;
 

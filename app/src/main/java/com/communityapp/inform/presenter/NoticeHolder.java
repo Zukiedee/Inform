@@ -15,7 +15,7 @@ import com.example.inform.R;
 
 import java.util.ArrayList;
 
-public class User_NoticeHolder extends RecyclerView.ViewHolder {
+public class NoticeHolder extends RecyclerView.ViewHolder {
     TextView Title;
     TextView Category;
     TextView Description;
@@ -23,7 +23,7 @@ public class User_NoticeHolder extends RecyclerView.ViewHolder {
     TextView Username;
     ImageView imgResource;
 
-    User_NoticeHolder(View view, final User_NoticeAdapter.OnItemClickListener listener){
+    public NoticeHolder(View view, final User_NoticeAdapter.OnItemClickListener listener){
         super(view);
         Title = itemView.findViewById(R.id.title);
         Category = itemView.findViewById(R.id.category);
@@ -46,7 +46,7 @@ public class User_NoticeHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public static class User_NoticeAdapter extends RecyclerView.Adapter<User_NoticeHolder> {
+    public static class User_NoticeAdapter extends RecyclerView.Adapter<NoticeHolder> {
         private ArrayList<Notice> NoticeList;
         private Context context;
         private OnItemClickListener mListener;
@@ -67,13 +67,13 @@ public class User_NoticeHolder extends RecyclerView.ViewHolder {
 
         @NonNull
         @Override
-        public User_NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public NoticeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.notice_item, null);
-            return new User_NoticeHolder(v, mListener); //returns view to holder class
+            return new NoticeHolder(v, mListener); //returns view to holder class
         }
 
         @Override
-        public void onBindViewHolder(@NonNull User_NoticeHolder holder, int position) {
+        public void onBindViewHolder(@NonNull NoticeHolder holder, int position) {
             Notice currentItem = NoticeList.get(position);
 
             holder.Title.setText(currentItem.getTitle());

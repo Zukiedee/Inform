@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.communityapp.inform.presenter.ReminderDialog;
-import com.communityapp.inform.presenter.User_NoticeHolder;
+import com.communityapp.inform.presenter.NoticeHolder;
 import com.example.inform.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -36,6 +37,11 @@ import java.util.ArrayList;
 import com.communityapp.inform.model.Notice;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * The main screen.
@@ -44,7 +50,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
 
     private RecyclerView noticeRecyclerView;
-    private User_NoticeHolder.User_NoticeAdapter noticeAdapter;
+    private NoticeHolder.User_NoticeAdapter noticeAdapter;
     private TextView username, email;
     private FirebaseAuth mAuth;
 
@@ -54,7 +60,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //If user is not logged in, redirect to sign in screen
         if (currentUser== null){
-            Intent loginIntent = new Intent(Newsfeed.this, Welcome.class);
+            Intent loginIntent = new Intent(Newsfeed.this, signIn.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
             finish();
@@ -84,7 +90,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         fab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentCreateNotice = new Intent(Newsfeed.this, Create_Notice.class);
+                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
                 startActivity(intentCreateNotice);
             }
         });
@@ -112,10 +118,10 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        noticeAdapter = new User_NoticeHolder.User_NoticeAdapter(this, getNoticeList());
+        noticeAdapter = new NoticeHolder.User_NoticeAdapter(this, getNoticeList());
         noticeRecyclerView.setAdapter(noticeAdapter);
 
-        noticeAdapter.setOnItemClickListener(new User_NoticeHolder.User_NoticeAdapter.OnItemClickListener() {
+        noticeAdapter.setOnItemClickListener(new NoticeHolder.User_NoticeAdapter.OnItemClickListener() {
             @Override
             public void onReminderClick(int position) {
                 DialogFragment reminder = new ReminderDialog();
@@ -176,7 +182,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         if (id == R.id.logout) {
             mAuth.signOut();
 
-            Intent intentWelcome = new Intent(Newsfeed.this, Welcome.class);
+            Intent intentWelcome = new Intent(Newsfeed.this, signIn.class);
             startActivity(intentWelcome);
         }
 
@@ -190,7 +196,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         if (id == R.id.nav_profile) {
             //Navigate to user profile screen
-            Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
+            Intent intentProfile = new Intent(Newsfeed.this, editProfile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
             //Navigate to user inbox

@@ -9,7 +9,7 @@ public class User {
     private String Username;
     private String Email;
     private String Type;
-    private ArrayList<String> Communities;
+    private String Communities;
 
     /**
      * Constructor method to set username and email
@@ -24,7 +24,7 @@ public class User {
      * Sets the users list of communities they wish to follow
      * @param communities list of selected communities
      */
-    public void setCommunities(ArrayList<String> communities){
+    public void setCommunities(String communities){
         this.Communities = communities;
     }
 
@@ -54,8 +54,8 @@ public class User {
 
     /**
      * Returns user's communities they follow
-     * @return list of communities
+     * @return array of communities
      */
-    public ArrayList<String> getCommunities() { return Communities; }
+    public String[] getCommunities() { return Communities.split(","); }
 
 }

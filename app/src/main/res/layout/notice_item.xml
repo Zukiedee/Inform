@@ -76,40 +76,6 @@
                 android:layout_marginBottom="10dp"
                 android:background="?android:attr/listDivider" />
 
-            <TextView
-                android:id="@+id/add_reminder"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_margin="5dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@color/white"
-                android:drawableTop="@drawable/ic_add_reminder"
-                android:text="@string/add_reminder"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDate"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/removeNotice"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:drawableTop="@drawable/ic_delete"
-                android:text="@string/remove"
-                android:layout_margin="5dp"
-                android:textSize="12sp"
-                android:clickable="true"
-                android:focusable="true"
-                android:textAllCaps="false"
-                android:visibility="visible"
-                android:textColor="@color/colorDate"
-                android:background="@color/white"
-                android:layout_toLeftOf="@+id/add_reminder"
-                android:layout_toStartOf="@+id/add_reminder" />
-
 
             <ImageView
                 android:id="@+id/user"
@@ -170,6 +136,88 @@
 
 
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/user_info"
+            android:layout_marginBottom="10dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/user_info"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:id="@+id/like"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_recommendations"
+                android:textAlignment="center"
+                android:text="Like"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/comment"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_comment"
+                android:textAlignment="center"
+                android:text="Comment"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
+                android:textSize="12sp" />
+
+
+            <TextView
+                android:id="@+id/add_reminder"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_add_reminder"
+                android:textAlignment="center"
+                android:text="@string/add_reminder"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/removeNotice"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:drawableTop="@drawable/ic_delete"
+                android:text="@string/remove"
+                android:layout_margin="5dp"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAllCaps="false"
+                android:visibility="visible"
+                android:textColor="@color/colorDate"
+                android:background="@color/white" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

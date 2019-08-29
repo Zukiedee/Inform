@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.communityapp.inform.view.Welcome">
+            android:name="com.communityapp.inform.view.signIn">
 
         </activity>
         <activity
@@ -25,10 +25,10 @@
             android:label="@string/title_activity_notifications"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
         <activity
-            android:name="com.communityapp.inform.view.Profile"
+            android:name="com.communityapp.inform.view.editProfile"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed" />
         <activity
-            android:name="com.communityapp.inform.view.Create_Notice"
+            android:name="com.communityapp.inform.view.createNotice"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
