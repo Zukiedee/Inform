@@ -1,39 +1,41 @@
 package com.communityapp.inform.model;
 
 public class Notice {
-    private int imgResource;
-    private String Title, Category, Description, Username, Date;
+    private String Title, Category, Description, Username, Date, Id, Image;
 
-    public Notice(String title, String cat, String body, String username, String date, int img) {
+    public Notice(String cat, String date, String body, String id, String img, String title, String username) {
         Title = title;
         Category = cat;
         Description = body;
         Username = username;
         Date = date;
-        imgResource = img;
+        Image = img;
+        Id = id;
     }
 
-    public String getTitle(){
-        return Title;
-    }
-
-    public String getDescription(){
-        return Description;
+    public String getCategory() {
+        return Category;
     }
 
     public String getDate() {
         return Date;
     }
 
+    public String getDescription(){
+        return Description;
+    }
+
+    public String getId() { return  Id; }
+
+    public String getImage() {
+        return Image;
+    }
+
+    public String getTitle(){
+        return Title;
+    }
+
     public String getUsername(){
         return Username;
-    }
-
-    public int getImgResource() {
-        return imgResource;
-    }
-
-    public String getCategory() {
-        return Category;
     }
 }

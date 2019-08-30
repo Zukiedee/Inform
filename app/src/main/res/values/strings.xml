@@ -76,10 +76,8 @@
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
-        <item>Select type of user</item>
         <item>General user</item>
         <item>Organization</item>
-        <item>Admin</item>
     </string-array>
 
     <string-array name="communities_options">

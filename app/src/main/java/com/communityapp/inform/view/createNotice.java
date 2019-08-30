@@ -338,15 +338,14 @@ public class createNotice extends AppCompatActivity {
 
                             if (uriTask.isSuccessful()){
                                 // url is received upload post to firebase
-
                                 HashMap<Object, String> hashMap = new HashMap<>();
-                                hashMap.put("uName", name);
-                                hashMap.put("pTitle", title);
-                                hashMap.put("pCategory", category);
-                                hashMap.put("pDescription", body);
-                                hashMap.put("pDate", DatetoString);
-                                hashMap.put("pId", timeStamp);
-                                hashMap.put("pImage", downloadURI);
+                                hashMap.put("Category", category);
+                                hashMap.put("Date", DatetoString);
+                                hashMap.put("Description", body);
+                                hashMap.put("Id", timeStamp);
+                                hashMap.put("Image", downloadURI);
+                                hashMap.put("Title", title);
+                                hashMap.put("Username", name);
 
                                 //path to store post data
                                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
@@ -388,13 +387,13 @@ public class createNotice extends AppCompatActivity {
         }
         else {
             HashMap<Object, String> hashMap = new HashMap<>();
-            hashMap.put("Username", name);
-            hashMap.put("Title", title);
             hashMap.put("Category", category);
-            hashMap.put("Description", body);
             hashMap.put("Date", DatetoString);
+            hashMap.put("Description", body);
+            hashMap.put("Id", timeStamp);
             hashMap.put("Image", "noImage");
-            hashMap.put("PostId", timeStamp);
+            hashMap.put("Title", title);
+            hashMap.put("Username", name);
 
             //path to store post data
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");

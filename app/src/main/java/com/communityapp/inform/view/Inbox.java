@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-import com.communityapp.inform.presenter.User_NotificationHolder;
+import com.communityapp.inform.presenter.MessageHolder;
 import com.example.inform.R;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class Inbox extends AppCompatActivity {
         RecyclerView msgRecyclerView = findViewById(R.id.inbox_recyclerView);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerView.Adapter msgAdapter = new User_NotificationHolder.User_NotificationAdapter(this, getMessageList());
+        RecyclerView.Adapter msgAdapter = new MessageHolder.User_NotificationAdapter(this, getMessageList());
         msgRecyclerView.setAdapter(msgAdapter);
     }
 

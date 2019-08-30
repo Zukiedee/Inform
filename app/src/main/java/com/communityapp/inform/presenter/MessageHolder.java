@@ -14,10 +14,10 @@ import com.example.inform.R;
 
 import java.util.ArrayList;
 
-public class User_NotificationHolder extends RecyclerView.ViewHolder {
+public class MessageHolder extends RecyclerView.ViewHolder {
     private TextView Subject, Status, Message, Date;
 
-    private User_NotificationHolder(View view){
+    private MessageHolder(View view){
             super(view);
             Subject = itemView.findViewById(R.id.subject);
             Status = itemView.findViewById(R.id.status);
@@ -26,7 +26,7 @@ public class User_NotificationHolder extends RecyclerView.ViewHolder {
         }
 
     //myHolder
-    public static class User_NotificationAdapter extends RecyclerView.Adapter<User_NotificationHolder> {
+    public static class User_NotificationAdapter extends RecyclerView.Adapter<MessageHolder> {
         private ArrayList<Notification> MessageList;
         private Context context;
 
@@ -37,13 +37,13 @@ public class User_NotificationHolder extends RecyclerView.ViewHolder {
 
         @NonNull
         @Override
-        public User_NotificationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public MessageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, null);
-            return new User_NotificationHolder(v); //returns view to holder class
+            return new MessageHolder(v); //returns view to holder class
         }
 
         @Override
-        public void onBindViewHolder(@NonNull User_NotificationHolder holder, int position) {
+        public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
             holder.Subject.setText(MessageList.get(position).getTitle());
             holder.Status.setText(MessageList.get(position).getStatus());
             holder.Message.setText(MessageList.get(position).getMessage());

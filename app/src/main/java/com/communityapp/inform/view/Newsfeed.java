@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.communityapp.inform.model.User;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.communityapp.inform.presenter.NoticeHolder;
 import com.example.inform.R;
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -50,9 +52,9 @@ import com.google.firebase.database.ValueEventListener;
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
 
     private RecyclerView noticeRecyclerView;
-    private NoticeHolder.User_NoticeAdapter noticeAdapter;
-    private TextView username, email;
-    private FirebaseAuth mAuth;
+    private NoticeHolder.NoticeAdapter noticeAdapter;
+    private FirebaseAuth mAuth; //Firebase authentication
+    ArrayList<Notice> noticeList;
 
     @Override
     protected void onStart() {
@@ -67,61 +69,24 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         }
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
 
-        /*
-         * Set user's username and email on navbar
-         */
-        username = findViewById(R.id.main_username);
-        email = findViewById(R.id.main_email);
-
+        //initialize firebase
         mAuth = FirebaseAuth.getInstance();
 
-        showMenu();
-
-        buildRecyclerView();
-
-        //Create a notice button
-        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
-                startActivity(intentCreateNotice);
-            }
-        });
-    }
-
-    /**
-     * List of notices to be posted
-     * Needs to be extracted from the database
-     * @return notice lists to be displayed in cardview on Newsfeed
-     */
-    private ArrayList<Notice> getNoticeList() {
-        ArrayList<Notice> noticeList = new ArrayList<>();
-
-        noticeList.add(new Notice("Man shot twice in Area 1", "Crime report", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "Bob Stuart", "8 Aug 2019", R.drawable.crime));
-        noticeList.add(new Notice("Interest rates are expected to increase", "Local news", "The news notices will contain a headline, body, author and a poster attached to the story", "The Daily Mail", "20 July 2019", R.drawable.news));
-        noticeList.add(new Notice("Our dog, Sally, is Missing", "Missing pet", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "Joe Spark", "5 May 2019", R.drawable.pets));
-
-        return noticeList;
-    }
-
-    /**
-     * Constructs recyclerView which stores the notices
-     */
-    public void buildRecyclerView(){
         noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        noticeAdapter = new NoticeHolder.User_NoticeAdapter(this, getNoticeList());
-        noticeRecyclerView.setAdapter(noticeAdapter);
+        noticeList = new ArrayList<>();
 
-        noticeAdapter.setOnItemClickListener(new NoticeHolder.User_NoticeAdapter.OnItemClickListener() {
+        showMenu();
+
+        loadNotices();
+
+        noticeAdapter.setOnItemClickListener(new NoticeHolder.NoticeAdapter.OnItemClickListener() {
             @Override
             public void onReminderClick(int position) {
                 DialogFragment reminder = new ReminderDialog();
@@ -130,6 +95,16 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 //TextView r = findViewById(R.id.add_reminder);
                 //r.setTextColor(getResources().getColor(R.color.colorReminder));
                 //r.setText("Reminder Set");
+            }
+        });
+
+        //Create a notice button
+        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
+        fab.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
+                startActivity(intentCreateNotice);
             }
         });
     }
@@ -149,6 +124,45 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+    }
+
+    /**
+     * List of notices to be posted
+     * Needs to be extracted from the database
+     * @return notice lists to be displayed in cardview on Newsfeed
+     */
+    private void loadNotices() {
+
+
+        //path of all posts
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+        //get all data from this ref
+        /*reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //noticeList.clear();
+                /*for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    Notice notice = ds.getValue(Notice.class);
+                    noticeList.add(notice);
+
+
+                //}
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //in case of error
+                Toast.makeText(Newsfeed.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
+        noticeList.add(new Notice("Crime report", "8 Aug 2019", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "1234",String.valueOf(R.drawable.crime),"Man shot twice in Area 1", "Bob Stuart"));
+        noticeList.add(new Notice("Local news","20 July 2019",  "The news notices will contain a headline, body, author and a poster attached to the story" , "5678",  String.valueOf(R.drawable.news),"Interest rates are expected to increase", "The Daily Mail"));
+        noticeList.add(new Notice("Missing pet",  "5 May 2019", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "9012", String.valueOf(R.drawable.pets), "Our dog, Sally, is Missing","Joe Spark"));
+
+        noticeAdapter = new NoticeHolder.NoticeAdapter(Newsfeed.this, noticeList);
+        noticeRecyclerView.setAdapter(noticeAdapter);
+        //return noticeList;
     }
 
     @Override

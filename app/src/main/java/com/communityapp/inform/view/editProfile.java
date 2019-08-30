@@ -31,6 +31,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -42,6 +43,8 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
     private TextView email;
     private Spinner user_type_spinner;                                                              //spinner with types of user
     private Button add_communities;                                                                 //button to select communities
+
+    ArrayAdapter<String> dataAdapter;
 
     //list view
     public ListView selectedCommunities;
@@ -69,8 +72,6 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
         user = mAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users");
-
-        //storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         add_communities = findViewById(R.id.add_community_btn);
         username = findViewById(R.id.username_hint);
@@ -100,11 +101,25 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
                     //get data
                     String uname = ""+ ds.child("username").getValue();
                     String uemail = ""+ ds.child("email").getValue();
-                    //String type = ""+ ds.child("type").getValue();
+                    String type = ""+ ds.child("type").getValue();
                     String communities = ""+ ds.child("communities").getValue();
 
                     username.setText(uname);
                     email.setText(uemail);
+
+                    int type_position = dataAdapter.getPosition(type);
+                    if (type_position == -1)
+                        user_type_spinner.setSelection(0);
+                    else
+                        user_type_spinner.setSelection(type_position);
+
+                    if (!communities.isEmpty()){
+                        ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
+                        shownList = communityList;
+                        selectedCommunities.setVisibility(View.VISIBLE);
+                        community_list_Adapter = new ArrayAdapter<String>(editProfile.this, android.R.layout.simple_list_item_1, shownList);
+                        selectedCommunities.setAdapter(community_list_Adapter);
+                    }
 
                 }
             }
@@ -125,8 +140,7 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // automatically handle clicks on the Home/Up button.
         int id = menuItem.getItemId();
 
         //Saving profile information
@@ -145,19 +159,14 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
      */
     private void saveUserInfo() {
         String uname = username.getText().toString();
-        String type = user_type_spinner.getSelectedItem().toString().trim();
+        String type = user_type;
         String uemail = user.getEmail();
         ArrayList<String> communities = shownList;
         String uid = user.getUid();
 
-        final String[] categories = getResources().getStringArray(R.array.user_type);
-
         //missing fields
         if (TextUtils.isEmpty(uname)){
             Toast.makeText(this, "Please fill in username", Toast.LENGTH_SHORT).show();
-        }
-        if (type.equalsIgnoreCase(categories[0].trim())){
-            Toast.makeText(this, "Please select in user type", Toast.LENGTH_SHORT).show();
         }
         if (communities.isEmpty()){
             Toast.makeText(this, "Please select at least one community to follow", Toast.LENGTH_SHORT).show();
@@ -215,7 +224,7 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
         final String[] categories = getResources().getStringArray(R.array.user_type);
 
         //Style and populate the category user_type_spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(editProfile.this, android.R.layout.simple_spinner_item, categories);
+        dataAdapter = new ArrayAdapter<>(editProfile.this, android.R.layout.simple_spinner_item, categories);
 
         //Dropdown layout style
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -227,20 +236,13 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
         user_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (adapterView.getItemAtPosition(i).toString().equals(categories[0])){
-                    //do nothing
-                    user_type = "";
-                }
-                else {
                     //on selecting a user_type_spinner
                     user_type = adapterView.getItemAtPosition(i).toString();
-                    //Store user type in database
-                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                user_type = "";
+                user_type = adapterView.getItemAtPosition(0).toString();
             }
         });
     }

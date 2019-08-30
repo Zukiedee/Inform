@@ -11,7 +11,7 @@ import com.example.inform.R;
 import java.util.ArrayList;
 
 import com.communityapp.inform.model.Notice;
-import com.communityapp.inform.presenter.Admin_RequestAdapter;
+import com.communityapp.inform.presenter.Admin_RequestToUploadAdapter;
 
 /**
  * Inbox from admin regarding post status will be posted here
@@ -31,7 +31,7 @@ public class Admin_Inbox extends AppCompatActivity {
         RecyclerView requestRecyclerView = findViewById(R.id.inbox_recyclerView);
         requestRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerView.Adapter noticeAdapter = new Admin_RequestAdapter(this, getNoticeList());
+        RecyclerView.Adapter noticeAdapter = new Admin_RequestToUploadAdapter(this, getNoticeList());
         requestRecyclerView.setAdapter(noticeAdapter);
 
 
