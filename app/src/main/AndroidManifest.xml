@@ -2,41 +2,46 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.inform">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/logo"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/logo"
+        android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name="com.communityapp.inform.View.Welcome"
-            android:label="@string/app_name">
+            android:name="com.communityapp.inform.view.signIn">
+
+        </activity>
+        <activity
+            android:name="com.communityapp.inform.view.Inbox"
+            android:label="@string/title_activity_notifications"
+            android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
+        <activity
+            android:name="com.communityapp.inform.view.Admin_Inbox"
+            android:label="@string/title_activity_notifications"
+            android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
+        <activity
+            android:name="com.communityapp.inform.view.editProfile"
+            android:parentActivityName="com.communityapp.inform.view.Newsfeed" />
+        <activity
+            android:name="com.communityapp.inform.view.createNotice"
+            android:parentActivityName="com.communityapp.inform.view.Newsfeed">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW"/>
             </intent-filter>
         </activity>
         <activity
-            android:name="com.communityapp.inform.View.Inbox"
-            android:label="@string/title_activity_notifications"
-            android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
-        <activity
-            android:name="com.communityapp.inform.View.Admin_Inbox"
-            android:label="@string/title_activity_notifications"
-            android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
-        <activity
-            android:name="com.communityapp.inform.View.Profile"
-            android:parentActivityName="com.communityapp.inform.View.Newsfeed"
-            />
-        <activity
-            android:name="com.communityapp.inform.View.createNotice"
-            android:parentActivityName="com.communityapp.inform.View.Newsfeed"/>
-        <activity
-            android:name="com.communityapp.inform.View.Newsfeed"
-            android:label="@string/title_activity_newsfeed"
+            android:name="com.communityapp.inform.view.Newsfeed"
             android:theme="@style/AppTheme.NoActionBar">
-
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

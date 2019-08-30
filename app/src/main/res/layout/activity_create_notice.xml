@@ -7,7 +7,7 @@
     android:fadeScrollbars="true"
     android:isScrollContainer="true"
     android:scrollbarAlwaysDrawVerticalTrack="true"
-    tools:context="com.communityapp.inform.View.createNotice">
+    tools:context="com.communityapp.inform.view.createNotice">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -56,34 +56,17 @@
                 android:ems="10"
                 android:hint="@string/headline"
                 android:inputType="textPersonName"
-                android:visibility="visible" />
-
-            <EditText
-                android:id="@+id/notice_subheadline"
-                android:layout_width="300dp"
-                android:layout_height="49dp"
-                android:layout_margin="8dp"
-                android:ems="10"
-                android:hint="@string/subheadline"
-                android:inputType="textPersonName" />
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/notice_body"
                 android:layout_width="300dp"
-                android:layout_height="wrap_content"
+                android:layout_height="172dp"
                 android:ems="10"
                 android:gravity="start|top"
                 android:hint="@string/body"
+                android:visibility="gone"
                 android:inputType="textMultiLine" />
-
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:ems="10"
-                android:hint="@string/author"
-                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/editText6"
@@ -91,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:ems="10"
-                android:hint="@string/more_information"
+                android:hint="@string/area"
+                android:visibility="gone"
                 android:inputType="textPersonName"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -107,28 +91,27 @@
                 android:layout_margin="10dp"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/imageButton"
+                <TextView
+                    android:id="@+id/add_image"
                     android:contentDescription="@string/attach_a_file"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="#00FFFFFF"
-                    app:srcCompat="@drawable/ic_attach_file" />
-
-                <TextView
-                    android:id="@+id/imageLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:text="@string/attach_a_file"
-                    android:textSize="18sp" />
+                    android:drawableTop="@drawable/ic_attach_file" />
+
             </LinearLayout>
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:contentDescription="@string/file_attachment"
+                android:id="@+id/upload_image"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/submit"
@@ -136,6 +119,8 @@
                 android:layout_height="49dp"
                 android:layout_margin="30dp"
                 android:background="@drawable/rounded_btn"
+                android:visibility="gone"
+                android:enabled="false"
                 android:text="@string/submit" />
 
         </LinearLayout>

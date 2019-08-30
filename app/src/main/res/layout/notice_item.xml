@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
@@ -29,7 +28,8 @@
                 android:textStyle="bold"
                 android:text="@string/Title"
                 android:textColor="@color/colorHeadline"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:autoLink="all"/>
 
             <TextView
                 android:id="@+id/category"
@@ -39,7 +39,8 @@
                 android:gravity="center"
                 android:text="@string/category"
                 android:textSize="12sp"
-                android:textStyle="italic" />
+                android:textStyle="italic"
+                android:autoLink="all"/>
 
             <ImageView
                 android:layout_width="match_parent"
@@ -63,11 +64,9 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="50dp"
             android:layout_below="@+id/news"
             android:id="@+id/user_info"
             android:layout_marginTop="10dp">
@@ -79,76 +78,179 @@
                 android:layout_marginBottom="10dp"
                 android:background="?android:attr/listDivider" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:id="@+id/add_reminder"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="2dp"
-                android:layout_marginEnd="2dp"
-                android:paddingLeft="5dp"
-                android:paddingStart="5dp"
-                android:paddingRight="5dp"
-                android:paddingEnd="5dp"
-                android:background="@drawable/reminder_btn"
-                android:drawableStart="@drawable/ic_add_reminder"
-                android:drawableLeft="@drawable/ic_add_reminder"
-                android:focusable="auto"
-                android:text="@string/add_reminder"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
 
             <ImageView
+                android:id="@+id/user"
+                android:layout_width="35dp"
+                android:layout_height="34dp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_user_profile" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toRightOf="@+id/user"
+                android:layout_toEndOf="@+id/user"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_centerVertical="true"
-                android:padding="1dp"
-                app:srcCompat="@drawable/ic_user_profile"
-                android:id="@+id/user"/>
+                android:id="@+id/userDetails">
 
-            <TextView
-                android:id="@+id/userPosted"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_toEndOf="@id/user"
-                android:layout_toRightOf="@id/user"
-                android:text="@string/username"
-                android:textColor="@color/colorPosted"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/userPosted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/username"
+                    android:textColor="@color/colorPosted"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/datePosted"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/datePosted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:text="@string/date"
+                    android:textSize="12sp" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <View
+                android:id="@+id/seperator"
+                android:layout_width="1dp"
                 android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/userDetails"
+                android:layout_toEndOf="@+id/userDetails"
+                android:background="?android:attr/listDivider"
+                android:layout_margin="10dp" />
+            <TextView
+                android:id="@+id/area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_toEndOf="@id/userPosted"
-                android:layout_toRightOf="@id/userPosted"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/seperator"
                 android:gravity="center"
-                android:text="@string/date"
+                android:text="@string/area"
+                android:textSize="12sp"
+                android:layout_toEndOf="@+id/seperator" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/user_info"
+            android:layout_marginBottom="10dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/user_engagement"
+            android:layout_below="@id/user_info"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:id="@+id/like"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_recommendations"
+                android:textAlignment="center"
+                android:text="Like"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/comment"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_comment"
+                android:textAlignment="center"
+                android:text="Comment"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
                 android:textSize="12sp" />
 
 
+            <TextView
+                android:id="@+id/add_reminder"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_add_reminder"
+                android:textAlignment="center"
+                android:text="@string/add_reminder"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
+                android:textSize="12sp" />
 
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/removeNotice"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:drawableTop="@drawable/ic_delete"
+                android:text="@string/remove"
+                android:layout_margin="5dp"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                android:textColor="@color/colorDate"
+                android:background="@color/white" />
 
-        <RelativeLayout
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/user_info">
+            android:layout_height="40dp"
+            android:layout_below="@+id/user_engagement"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/color_reject"
-                android:text="Remove Notice"
+                android:id="@+id/accept_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:textColor="@color/white"
+                android:background="@color/color_accept"
+                android:text="@string/accept" />
+
+            <Button
+                android:id="@+id/reject_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content"
+                android:background="@color/color_reject"
+                android:textColor="@color/white"
+                android:text="@string/reject"
+                app:layout_constraintBottom_toBottomOf="parent"
                 />
-        </RelativeLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -41,7 +41,6 @@
     <string name="message">Message</string>
     <string name="subject">Subject</string>
     <string name="date">Date</string>
-    <string name="events">Events</string>
     <string name="add_reminder">Remind me</string>
     <string name="lost_pet">Lost Pet</string>
     <string name="description">Description</string>
@@ -62,11 +61,51 @@
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
     <string name="status">Status</string>
+    <string name="filterby">Filter by</string>
+    <string name="crime_report">Crime Report</string>
+    <string name="local_news">Local News</string>
+    <string name="missing_pet">Missing Pet</string>
+    <string name="events">Events</string>
+    <string name="tradesmen_refferals">Tradesmen Refferals</string>
+    <string name="fundraiser">Fundraiser</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="area">Area</string>
+    <string name="remove">Remove</string>
+    <string name="file_attachment">file attachment</string>
+    <string name="enter_email">Enter email address</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
         <item>General user</item>
         <item>Organization</item>
+    </string-array>
+
+    <string-array name="communities_options">
+        <item>Area 1</item>
+        <item>Area 2</item>
+        <item>Area 3</item>
+        <item>Area 4</item>
+        <item>Area 5</item>
+        <item>Area 6</item>
+        <item>Area 7</item>
+    </string-array>
+
+    <string-array name="reminder_options">
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>1 day</item>
+        <item>1 week</item>
+    </string-array>
+
+    <string-array name="notice_categories">
+        <item>Select a Category</item>
+        <item>Local News</item>
+        <item>Crime Report</item>
+        <item>Events/Entertainment</item>
+        <item>Fundraiser</item>
+        <item>Missing Pet</item>
+        <item>Tradesmen Referrals</item>
+        <item>Recommendations</item>
     </string-array>
 
 </resources>

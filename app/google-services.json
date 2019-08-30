@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "1033849554820",
+    "firebase_url": "https://inform-9da84.firebaseio.com",
+    "project_id": "inform-9da84",
+    "storage_bucket": "inform-9da84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033849554820:android:456ee923a5115395",
+        "android_client_info": {
+          "package_name": "com.example.inform"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033849554820-d9rsj74bj4rbae56adukad0trm0e4qo6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.inform",
+            "certificate_hash": "b19bd1fa9b6d3e5a1046edc053bcd34eb9e22567"
+          }
+        },
+        {
+          "client_id": "1033849554820-03l4baos4dg5qbbmhh75l50n5cfmr112.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.inform",
+            "certificate_hash": "8bfdd6293cf0fa8c97b6bea6742b29df42d2a04b"
+          }
+        },
+        {
+          "client_id": "1033849554820-ujq73ff7a5cj47osvkm9pg8ee0abcf1m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGy9Tr3XMpR2GlbMJ6kb6Zl9wZL1goRLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033849554820-ujq73ff7a5cj47osvkm9pg8ee0abcf1m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

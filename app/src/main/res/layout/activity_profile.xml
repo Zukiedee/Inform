@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="com.communityapp.inform.View.Profile">
+    tools:context="com.communityapp.inform.view.editProfile">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,14 +17,13 @@
         tools:layout_editor_absoluteY="8dp">
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/profile_pic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             app:srcCompat="@drawable/ic_edit_profile_screen" />
 
         <View
-            android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
@@ -40,7 +39,7 @@
             android:paddingRight="4dp"
             android:paddingEnd="4dp"
             android:text="@string/preferred_username"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="15sp" />
 
         <EditText
@@ -52,6 +51,41 @@
             android:textSize="16sp"
             android:inputType="textPersonName" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:padding = "4dp"
+            android:text="@string/prompt_email"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/email_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:padding="4dp"
+            android:hint="@string/enter_email"
+            android:textSize="16sp"
+            android:inputType="textPersonName" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="2dp"
+            android:background="?android:attr/listDivider" />
+
         <TextView
             android:id="@+id/user_type"
             android:layout_width="match_parent"
@@ -62,7 +96,7 @@
             android:paddingEnd="4dp"
             android:layout_marginTop="5dp"
             android:text="@string/user_type"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="15sp" />
 
         <Spinner
@@ -86,20 +120,22 @@
             android:elevation="3dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
+            android:paddingLeft="18dp"
+            android:paddingStart="18dp"
             android:paddingRight="8dp"
             android:paddingEnd="8dp"
             android:background="@drawable/rounded_btn"
             android:drawableLeft="@drawable/ic_add_location"
             android:drawableStart="@drawable/ic_add_location"
             android:text="@string/select_communities_to_follow"
-            android:textColor="#312D2D"
+            android:textColor="@color/white"
             android:textSize="14sp" />
 
         <ListView
             android:id="@+id/selectedCommunities"
             android:layout_width="match_parent"
-            android:layout_height="313dp" />
+            android:layout_height="500dp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 </ScrollView>
