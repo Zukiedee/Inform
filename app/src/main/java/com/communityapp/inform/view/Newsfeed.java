@@ -1,13 +1,16 @@
 package com.communityapp.inform.view;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.communityapp.inform.model.User;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.communityapp.inform.presenter.NoticeHolder;
 import com.example.inform.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
@@ -31,7 +34,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.View.OnClickListener;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -44,6 +48,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 /**
  * The main screen.
@@ -54,6 +61,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private RecyclerView noticeRecyclerView;
     private NoticeHolder.NoticeAdapter noticeAdapter;
     private FirebaseAuth mAuth; //Firebase authentication
+    ProgressDialog pd;
+
+    private FirebaseFirestore db;
     ArrayList<Notice> noticeList;
 
     @Override
@@ -62,11 +72,14 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //If user is not logged in, redirect to sign in screen
         if (currentUser== null){
-            Intent loginIntent = new Intent(Newsfeed.this, signIn.class);
+            Intent loginIntent = new Intent(Newsfeed.this, SignIn.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
             finish();
         }
+        //loadNotices();
+
+
     }
 
     @Override
@@ -77,13 +90,22 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         //initialize firebase
         mAuth = FirebaseAuth.getInstance();
 
-        noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
-        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        pd = new ProgressDialog(this);
 
+        db = FirebaseFirestore.getInstance();
+
+        noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        noticeRecyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
+        layoutManager.setReverseLayout(true);
+        noticeRecyclerView.setLayoutManager(layoutManager);
+
+        //initialise notice list
         noticeList = new ArrayList<>();
 
         showMenu();
-
         loadNotices();
 
         noticeAdapter.setOnItemClickListener(new NoticeHolder.NoticeAdapter.OnItemClickListener() {
@@ -129,40 +151,47 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     /**
      * List of notices to be posted
      * Needs to be extracted from the database
-     * @return notice lists to be displayed in cardview on Newsfeed
      */
     private void loadNotices() {
+        pd.setTitle("Loading data..");
+        pd.show();
+        db.collection("Documents")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //called when data is retieved
 
+                        for (DocumentSnapshot doc: task.getResult()){
+                            noticeList.add(new Notice(
+                            doc.getString("Category"),
+                            doc.getString("Date"),
+                            doc.getString("Description"),
+                            doc.getString("Id"),
+                            doc.getString("Image"),
+                            doc.getString("Title"),
+                            doc.getString("Username")));
+                        }
+                        pd.dismiss();
 
-        //path of all posts
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
-        //get all data from this ref
-        /*reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //noticeList.clear();
-                /*for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    Notice notice = ds.getValue(Notice.class);
-                    noticeList.add(notice);
+                    }
 
-
-                //}
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //in case of error
-                Toast.makeText(Newsfeed.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
-
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                       // Toast.makeText(this, ""+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        noticeAdapter = new NoticeHolder.NoticeAdapter(Newsfeed.this, noticeList);
+        noticeRecyclerView.setAdapter(noticeAdapter);
         noticeList.add(new Notice("Crime report", "8 Aug 2019", "This is a report about crime. Crime is bad. Don't steal - you will go to jail.", "1234",String.valueOf(R.drawable.crime),"Man shot twice in Area 1", "Bob Stuart"));
         noticeList.add(new Notice("Local news","20 July 2019",  "The news notices will contain a headline, body, author and a poster attached to the story" , "5678",  String.valueOf(R.drawable.news),"Interest rates are expected to increase", "The Daily Mail"));
         noticeList.add(new Notice("Missing pet",  "5 May 2019", "The pet notices will contain a poster of the missing pet, the date last seen, contact details and anything else you want to add?", "9012", String.valueOf(R.drawable.pets), "Our dog, Sally, is Missing","Joe Spark"));
+    }
 
-        noticeAdapter = new NoticeHolder.NoticeAdapter(Newsfeed.this, noticeList);
-        noticeRecyclerView.setAdapter(noticeAdapter);
-        //return noticeList;
+    private void searchPosts(String searchQuery){
+
     }
 
     @Override
@@ -196,7 +225,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         if (id == R.id.logout) {
             mAuth.signOut();
 
-            Intent intentWelcome = new Intent(Newsfeed.this, signIn.class);
+            Intent intentWelcome = new Intent(Newsfeed.this, SignIn.class);
             startActivity(intentWelcome);
         }
 
@@ -210,7 +239,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         if (id == R.id.nav_profile) {
             //Navigate to user profile screen
-            Intent intentProfile = new Intent(Newsfeed.this, editProfile.class);
+            Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_inbox) {
             //Navigate to user inbox

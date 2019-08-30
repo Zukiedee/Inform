@@ -18,11 +18,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class NoticeHolder extends RecyclerView.ViewHolder {
-    TextView Title;
-    TextView Category;
-    TextView Description;
-    TextView Date;
-    TextView Username;
+    TextView Title, Category, Description, Date, Username;
     ImageView imgResource;
 
     TextView deleteBtn, likeBtn, commentBtn;
@@ -43,8 +39,6 @@ public class NoticeHolder extends RecyclerView.ViewHolder {
         commentBtn = itemView.findViewById(R.id.comment);
 
         TextView reminder = itemView.findViewById(R.id.add_reminder);
-
-
         reminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +63,6 @@ public class NoticeHolder extends RecyclerView.ViewHolder {
 
         public void setOnItemClickListener(OnItemClickListener listener){
             mListener = listener;
-
         }
 
         public NoticeAdapter(Context context, ArrayList<Notice> noticeList){
@@ -87,31 +80,36 @@ public class NoticeHolder extends RecyclerView.ViewHolder {
 
         @Override
         public void onBindViewHolder(@NonNull NoticeHolder holder, int position) {
-
-            String title = NoticeList.get(position).getTitle();
-            String cat = NoticeList.get(position).getCategory();
-            String descrip = NoticeList.get(position).getDescription();
-            String date = NoticeList.get(position).getDate();
-            String id = NoticeList.get(position).getId();
-            String uname = NoticeList.get(position).getUsername();
-
-            //getData
+            //get data
             Notice currentItem = NoticeList.get(position);
+            String title = currentItem.getTitle();
+            String cat = currentItem.getCategory();
+            String descrip = currentItem.getDescription();
+            String date = currentItem.getDate();
+            String id = currentItem.getId();
+            String uname = currentItem.getUsername();
+            String img = currentItem.getImage();
 
+            //set data
             holder.Title.setText(title);
             holder.Category.setText(cat);
             holder.Description.setText(descrip);
             holder.Username.setText(uname);
             holder.Date.setText(date);
-            holder.imgResource.setVisibility(View.GONE);
             //holder.imgResource.setImageResource(currentItem.getImgResource());
 
-            /*String img = currentItem.getImgResource();
-            try {
-                Picasso.get().load(img).into(holder.imgResource);
-            } catch (Exception e){
+            if (img.equals("noImage")){
+                holder.imgResource.setVisibility(View.GONE);
 
-            }*/
+            }
+            else {
+                try {
+                    Picasso.get().load(img).into(holder.imgResource);
+                } catch (Exception e){
+
+                }
+            }
+
 
             //handle button clicks
             holder.likeBtn.setOnClickListener(new View.OnClickListener() {

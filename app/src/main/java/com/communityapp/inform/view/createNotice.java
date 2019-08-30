@@ -2,6 +2,7 @@ package com.communityapp.inform.view;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.inform.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -41,14 +44,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User creates a notice by selecting a notice category, relevant notices are then shown and user submits notice.
  */
 public class createNotice extends AppCompatActivity {
-
-    private Spinner spinner;
-
     private static final int PICK_IMAGE_REQUEST = 100;
     private Uri image_uri = null;
 
@@ -63,27 +64,34 @@ public class createNotice extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference userDB;
+    private FirebaseFirestore db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_notice);
 
-        getSupportActionBar().setTitle("Create Notice");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Create Notice");
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         firebaseAuth = FirebaseAuth.getInstance();
         checkUserStatus();
 
+        db = FirebaseFirestore.getInstance();
+
         progressDialog = new ProgressDialog(this);
 
+        //retrieve username to display on post once published
         userDB = FirebaseDatabase.getInstance().getReference("User");
         Query query = userDB.orderByChild("email").equalTo(email);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()){
-                    name = ""+ds.child("username").getValue();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        name = "" + ds.child("username").getValue();
+                    }
                 }
             }
 
@@ -93,6 +101,7 @@ public class createNotice extends AppCompatActivity {
             }
         });
 
+        //user selects notice category to reveal relevant fields
         selectNoticeCategory();
 
         Title = findViewById(R.id.notice_headline);
@@ -104,6 +113,7 @@ public class createNotice extends AppCompatActivity {
         Title.addTextChangedListener(createNotice);
         Body.addTextChangedListener(createNotice);
 
+        //uploading an image from user gallery
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,18 +121,6 @@ public class createNotice extends AppCompatActivity {
             }
         });
         submitNotice();
-    }
-
-    private void checkUserStatus(){
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null){
-            email = user.getEmail();
-            name = user.getDisplayName();
-        }
-        else {
-            startActivity(new Intent(this, Newsfeed.class));
-        }
-
     }
 
     @Override
@@ -138,23 +136,32 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
+     * Verifies if user is signed in
+     */
+    private void checkUserStatus(){
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null){
+            email = user.getEmail();
+            name = user.getDisplayName();
+        }
+        else {
+            startActivity(new Intent(this, Newsfeed.class));
+        }
+    }
+
+    /**
      * User selects category of notice and relevant fields of that notice
      */
     private void selectNoticeCategory(){
         //Notice category selections
-        spinner = findViewById(R.id.noticeCategory);
-
+        Spinner spinner = findViewById(R.id.noticeCategory);
         final String[] categories = getResources().getStringArray(R.array.notice_categories);
-
         //Style and populate the category spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(com.communityapp.inform.view.createNotice.this, android.R.layout.simple_spinner_item, categories);
-
         //Dropdown layout style
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         //Attaching adapter to spinner
         spinner.setAdapter(dataAdapter);
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -198,7 +205,7 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
-     * Displays relevant local news categories to user
+     * Removes all fields from the user interface
      */
     private void nothingSelected(){
         Toast.makeText(com.communityapp.inform.view.createNotice.this, "Please select a category", Toast.LENGTH_LONG).show();
@@ -231,7 +238,7 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
-     * Displays relevant crime categories to user
+     * Displays relevant Crime Report categories to user
      */
     private void showCrime(){
         category = "Crime Report";
@@ -247,7 +254,7 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
-     * Displays relevant fundraiser categories to user
+     * Displays relevant Fundraiser categories to user
      */
     private void showFundraiser(){
         category = "Fundraiser";
@@ -255,7 +262,7 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
-     * Displays relevant missing pet categories to user
+     * Displays relevant Missing pet categories to user
      */
     private void showPet(){
         category = "Missing Pet";
@@ -279,11 +286,46 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
-     * User clicks submit button and the notice is submitted
+     * Ensures all fields are filled in
+     */
+    private TextWatcher createNotice = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            String TitleInput = Title.getText().toString().trim();
+            String BodyInput = Body.getText().toString().trim();
+
+            submit.setEnabled(!TitleInput.isEmpty() && !BodyInput.isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {}
+    };
+
+    private void pickFromGallery(){
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK){
+            image_uri = data.getData();
+            imageView.setVisibility(View.VISIBLE);
+            imageView.setImageURI(image_uri);
+
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * User clicks submit button and the notice is published to the databsase
      */
     private void submitNotice(){
-        //submit notice button
-
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -304,7 +346,7 @@ public class createNotice extends AppCompatActivity {
     }
 
     /**
-     * Uploads post related data to the database
+     * Uploads post related data to the Firebase database and storage
      * @param title Post Title
      * @param body Post Description
      * @param uri Post Image uri
@@ -314,13 +356,12 @@ public class createNotice extends AppCompatActivity {
         progressDialog.show();
 
         String timeStamp = String.valueOf(System.currentTimeMillis());
-
         String filePathAndName = "Posts/" + "post_" +timeStamp;
 
+        //formatting date of notice
         Date currentDate = new Date();
         SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d ''yy");
         String DatetoString = format.format(currentDate);
-
 
         if (!uri.equals("noImage")){
             //post with image
@@ -338,7 +379,7 @@ public class createNotice extends AppCompatActivity {
 
                             if (uriTask.isSuccessful()){
                                 // url is received upload post to firebase
-                                HashMap<Object, String> hashMap = new HashMap<>();
+                                HashMap<String, String> hashMap = new HashMap<>();
                                 hashMap.put("Category", category);
                                 hashMap.put("Date", DatetoString);
                                 hashMap.put("Description", body);
@@ -348,25 +389,22 @@ public class createNotice extends AppCompatActivity {
                                 hashMap.put("Username", name);
 
                                 //path to store post data
-                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
+                               // DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
                                 //put data in this ref
-                                ref.child(timeStamp).setValue(hashMap)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            //added in database
 
-                                            Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
-                                            progressDialog.dismiss();
-
-                                            Intent intentMain = new Intent(createNotice.this, Newsfeed.class);
-                                            startActivity(intentMain);
-                                        }
-                                    })
+                                db.collection("Documents").document(timeStamp).set(hashMap)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
+                                                Intent done = new Intent(createNotice.this, Newsfeed.class);
+                                                startActivity(done);
+                                            }
+                                        })
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                //Failed adding to database
                                                 progressDialog.dismiss();
                                                 Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
 
@@ -386,7 +424,7 @@ public class createNotice extends AppCompatActivity {
                     });
         }
         else {
-            HashMap<Object, String> hashMap = new HashMap<>();
+            HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("Category", category);
             hashMap.put("Date", DatetoString);
             hashMap.put("Description", body);
@@ -395,72 +433,23 @@ public class createNotice extends AppCompatActivity {
             hashMap.put("Title", title);
             hashMap.put("Username", name);
 
-            //path to store post data
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
-            //put data in this ref
-            ref.child(timeStamp).setValue(hashMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+            //put data in this database
+            db.collection("Documents").document(timeStamp).set(hashMap)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            //added in database
-                            progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_SHORT).show();
-
-                            Intent intentMain = new Intent(createNotice.this, Newsfeed.class);
-                            startActivity(intentMain);
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Intent done = new Intent(createNotice.this, Newsfeed.class);
+                            startActivity(done);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            //Failed adding to database
                             progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "Error occured" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
 
                         }
                     });
-
         }
-    }
-
-    /**
-     * Ensures all fields are filled in
-     */
-    private TextWatcher createNotice = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            String TitleInput = Title.getText().toString().trim();
-            String BodyInput = Body.getText().toString().trim();
-
-            submit.setEnabled(!TitleInput.isEmpty() && !BodyInput.isEmpty());
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-
-        }
-    };
-
-    private void pickFromGallery(){
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK){
-            image_uri = data.getData();
-            imageView.setVisibility(View.VISIBLE);
-            imageView.setImageURI(image_uri);
-
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }

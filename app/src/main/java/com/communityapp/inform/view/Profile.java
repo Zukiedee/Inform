@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ import java.util.HashMap;
  * User profile interface
  * User edits name, account type and communities to follow
  */
-public class editProfile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
+public class Profile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
     private EditText username;
     private TextView email;
     private Spinner user_type_spinner;                                                              //spinner with types of user
@@ -56,8 +57,8 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
     private FirebaseUser user;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseFirestore db;
 
-    private static final int STORAGE_REQUEST_CODE = 200;
     String currentUserID, user_type;
 
     @Override
@@ -65,11 +66,12 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        getSupportActionBar().setTitle("Edit editProfile");
+        getSupportActionBar().setTitle("Edit Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users");
 
@@ -117,7 +119,7 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
                         ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
                         shownList = communityList;
                         selectedCommunities.setVisibility(View.VISIBLE);
-                        community_list_Adapter = new ArrayAdapter<String>(editProfile.this, android.R.layout.simple_list_item_1, shownList);
+                        community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
                         selectedCommunities.setAdapter(community_list_Adapter);
                     }
 
@@ -148,7 +150,7 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
             try {
                 saveUserInfo();
             }catch (Error e){
-                Toast.makeText(editProfile.this, "Error Occured updating profile!", Toast.LENGTH_LONG).show();
+                Toast.makeText(Profile.this, "Error Occured updating profile!", Toast.LENGTH_LONG).show();
             }
         }
         return super.onOptionsItemSelected(menuItem);
@@ -186,9 +188,9 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
             //put data within hashmap in database
             reference.child(uid).setValue(userMap);
 
-            Toast.makeText(editProfile.this, "editProfile Updated!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
 
-            Intent intentMain = new Intent(editProfile.this, Newsfeed.class);
+            Intent intentMain = new Intent(Profile.this, Newsfeed.class);
             startActivity(intentMain);
         }
     }
@@ -224,7 +226,7 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
         final String[] categories = getResources().getStringArray(R.array.user_type);
 
         //Style and populate the category user_type_spinner
-        dataAdapter = new ArrayAdapter<>(editProfile.this, android.R.layout.simple_spinner_item, categories);
+        dataAdapter = new ArrayAdapter<>(Profile.this, android.R.layout.simple_spinner_item, categories);
 
         //Dropdown layout style
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -251,7 +253,7 @@ public class editProfile extends AppCompatActivity implements Add_Communities_Di
         //shows selected communities to user
         selectedCommunities = (ListView) findViewById(R.id.selectedCommunities);
         shownList = new ArrayList<>();
-        community_list_Adapter = new ArrayAdapter<String>(editProfile.this, android.R.layout.simple_list_item_1, shownList);
+        community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
         selectedCommunities.setAdapter(community_list_Adapter);
 
         add_communities.setOnClickListener(new View.OnClickListener() {
