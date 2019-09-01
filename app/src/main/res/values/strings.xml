@@ -69,7 +69,7 @@
     <string name="tradesmen_refferals">Tradesmen Refferals</string>
     <string name="fundraiser">Fundraiser</string>
     <string name="recommendations">Recommendations</string>
-    <string name="area">Area</string>
+    <string name="community">Area</string>
     <string name="remove">Remove</string>
     <string name="file_attachment">file attachment</string>
     <string name="enter_email">Enter email address</string>
@@ -81,13 +81,13 @@
     </string-array>
 
     <string-array name="communities_options">
-        <item>Area 1</item>
-        <item>Area 2</item>
-        <item>Area 3</item>
-        <item>Area 4</item>
-        <item>Area 5</item>
-        <item>Area 6</item>
-        <item>Area 7</item>
+        <item>UCT</item>
+        <item>Rondebosch</item>
+        <item>Claremont</item>
+        <item>Goodwood</item>
+        <item>Panorama</item>
+        <item>Plattekloof</item>
+        <item>Monte Vista</item>
     </string-array>
 
     <string-array name="reminder_options">

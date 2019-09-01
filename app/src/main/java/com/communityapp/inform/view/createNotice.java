@@ -35,6 +35,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -53,18 +55,30 @@ public class createNotice extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 100;
     private Uri image_uri = null;
 
-    private EditText Title;
-    private EditText Body;
+    private EditText Title, Body;
     private ImageView imageView;
+    private Spinner communities_categories;
     private TextView upload;
     private Button submit;
     private String category;
-    private String name, email;
+    private String name, email, communities;
     private ProgressDialog progressDialog;
+    public ArrayAdapter<String> dataAdapter;                                             //display of user selected communities
 
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference userDB;
+    private FirebaseUser user;
     private FirebaseFirestore db;
+    private DocumentReference userRef;
+
+    private static final String TITLE_KEY = "Title";
+    private static final String CATEGORY_KEY = "Category";
+    private static final String DESCRIPTION_KEY = "Description";
+    private static final String DATE_KEY = "Date";
+    private static final String ID_KEY = "Id";
+    private static final String IMAGE_KEY = "Image";
+    private static final String COMMUNITY_KEY = "Community";
+    private static final String USERNAME_KEY = "Username";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,42 +90,47 @@ public class createNotice extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         firebaseAuth = FirebaseAuth.getInstance();
+
         checkUserStatus();
+        user = firebaseAuth.getCurrentUser();
 
         db = FirebaseFirestore.getInstance();
+        userRef = db.collection("Users").document(user.getEmail());
 
         progressDialog = new ProgressDialog(this);
 
-        //retrieve username to display on post once published
-        userDB = FirebaseDatabase.getInstance().getReference("User");
-        Query query = userDB.orderByChild("email").equalTo(email);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        name = "" + ds.child("username").getValue();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        loadUserInfo();
 
         //user selects notice category to reveal relevant fields
         selectNoticeCategory();
+
+
 
         Title = findViewById(R.id.notice_headline);
         Body = findViewById(R.id.notice_body);
         imageView = findViewById(R.id.upload_image);
         upload = findViewById(R.id.add_image);
         submit = findViewById(R.id.submit);
+        communities_categories = findViewById(R.id.community);
 
         Title.addTextChangedListener(createNotice);
         Body.addTextChangedListener(createNotice);
+
+        final String[] comm_categories = getResources().getStringArray(R.array.communities_options);
+        dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, comm_categories);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        communities_categories.setAdapter(dataAdapter);
+        communities_categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //on selecting a user_type_spinner
+                communities = adapterView.getItemAtPosition(i).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                communities = adapterView.getItemAtPosition(0).toString();
+            }
+        });
 
         //uploading an image from user gallery
         upload.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +140,23 @@ public class createNotice extends AppCompatActivity {
             }
         });
         submitNotice();
+    }
+
+    private void loadUserInfo() {
+        userRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) name = documentSnapshot.getString(USERNAME_KEY);
+                        else Toast.makeText(createNotice.this, "Please load your profile details", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 
     @Override
@@ -142,10 +178,9 @@ public class createNotice extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null){
             email = user.getEmail();
-            name = user.getDisplayName();
         }
         else {
-            startActivity(new Intent(this, Newsfeed.class));
+            startActivity(new Intent(this, Profile.class));
         }
     }
 
@@ -153,14 +188,10 @@ public class createNotice extends AppCompatActivity {
      * User selects category of notice and relevant fields of that notice
      */
     private void selectNoticeCategory(){
-        //Notice category selections
         Spinner spinner = findViewById(R.id.noticeCategory);
         final String[] categories = getResources().getStringArray(R.array.notice_categories);
-        //Style and populate the category spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(com.communityapp.inform.view.createNotice.this, android.R.layout.simple_spinner_item, categories);
-        //Dropdown layout style
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //Attaching adapter to spinner
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -296,7 +327,6 @@ public class createNotice extends AppCompatActivity {
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String TitleInput = Title.getText().toString().trim();
             String BodyInput = Body.getText().toString().trim();
-
             submit.setEnabled(!TitleInput.isEmpty() && !BodyInput.isEmpty());
         }
 
@@ -316,33 +346,8 @@ public class createNotice extends AppCompatActivity {
             image_uri = data.getData();
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageURI(image_uri);
-
         }
-
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    /**
-     * User clicks submit button and the notice is published to the databsase
-     */
-    private void submitNotice(){
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String title = Title.getText().toString().trim();
-                String body = Body.getText().toString().trim();
-
-                if (image_uri == null){
-                    //post without image
-                    uploadData(title, body, "noImage");
-
-                } else {
-                    //post with image
-                    uploadData(title, body, String.valueOf(image_uri));
-                }
-
-            }
-        });
     }
 
     /**
@@ -380,19 +385,16 @@ public class createNotice extends AppCompatActivity {
                             if (uriTask.isSuccessful()){
                                 // url is received upload post to firebase
                                 HashMap<String, String> hashMap = new HashMap<>();
-                                hashMap.put("Category", category);
-                                hashMap.put("Date", DatetoString);
-                                hashMap.put("Description", body);
-                                hashMap.put("Id", timeStamp);
-                                hashMap.put("Image", downloadURI);
-                                hashMap.put("Title", title);
-                                hashMap.put("Username", name);
+                                hashMap.put(CATEGORY_KEY, category);
+                                hashMap.put(DATE_KEY, DatetoString);
+                                hashMap.put(DESCRIPTION_KEY, body);
+                                hashMap.put(ID_KEY, timeStamp);
+                                hashMap.put(IMAGE_KEY, downloadURI);
+                                hashMap.put(TITLE_KEY, title);
+                                hashMap.put(USERNAME_KEY, name);
+                                hashMap.put(COMMUNITY_KEY, communities);
 
-                                //path to store post data
-                               // DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
-                                //put data in this ref
-
-                                db.collection("Documents").document(timeStamp).set(hashMap)
+                                db.collection("Notices").document(communities).collection(category).document(timeStamp).set(hashMap)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -407,11 +409,9 @@ public class createNotice extends AppCompatActivity {
                                             public void onFailure(@NonNull Exception e) {
                                                 progressDialog.dismiss();
                                                 Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
-
                                             }
                                         });
                             }
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -425,16 +425,17 @@ public class createNotice extends AppCompatActivity {
         }
         else {
             HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put("Category", category);
-            hashMap.put("Date", DatetoString);
-            hashMap.put("Description", body);
-            hashMap.put("Id", timeStamp);
-            hashMap.put("Image", "noImage");
-            hashMap.put("Title", title);
-            hashMap.put("Username", name);
+            hashMap.put(CATEGORY_KEY, category);
+            hashMap.put(DATE_KEY, DatetoString);
+            hashMap.put(DESCRIPTION_KEY, body);
+            hashMap.put(ID_KEY, timeStamp);
+            hashMap.put(IMAGE_KEY, "noImage");
+            hashMap.put(TITLE_KEY, title);
+            hashMap.put(USERNAME_KEY, name);
+            hashMap.put(COMMUNITY_KEY, communities);
 
             //put data in this database
-            db.collection("Documents").document(timeStamp).set(hashMap)
+            db.collection("Notices").document(communities).collection(category).document(timeStamp).set(hashMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -451,5 +452,27 @@ public class createNotice extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    /**
+     * User clicks submit button and the notice is published to the databsase
+     */
+    private void submitNotice(){
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String title = Title.getText().toString().trim();
+                String body = Body.getText().toString().trim();
+
+                if (image_uri == null){
+                    //post without image
+                    uploadData(title, body, "noImage");
+
+                } else {
+                    //post with image
+                    uploadData(title, body, String.valueOf(image_uri));
+                }
+            }
+        });
     }
 }

@@ -1,9 +1,11 @@
 package com.communityapp.inform.model;
 
 public class Notice {
-    private String Title, Category, Description, Username, Date, Id, Image;
+    private String Title, Category, Description, Username, Date, Id, Image, Community;
 
-    public Notice(String cat, String date, String body, String id, String img, String title, String username) {
+    public Notice(){}
+
+    public Notice(String cat, String date, String body, String id, String img, String title, String username, String community) {
         Title = title;
         Category = cat;
         Description = body;
@@ -11,6 +13,7 @@ public class Notice {
         Date = date;
         Image = img;
         Id = id;
+        Community = community;
     }
 
     public String getCategory() {
@@ -37,5 +40,9 @@ public class Notice {
 
     public String getUsername(){
         return Username;
+    }
+
+    public String getCommunity() {
+        return Community;
     }
 }
