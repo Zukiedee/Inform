@@ -127,10 +127,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                                 community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
                                 selectedCommunities.setAdapter(community_list_Adapter);
                             }
-                            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
                             progressDialog.dismiss();
-
                         }
                         else {
                             email.setText(user.getEmail());

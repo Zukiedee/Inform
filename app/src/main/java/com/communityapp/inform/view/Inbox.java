@@ -45,7 +45,7 @@ public class Inbox extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
 
-        //loaadMessages();
+        loadMessages();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Inbox extends AppCompatActivity {
         }
     }
 
-    private void loaadMessages() {
+    private void loadMessages() {
         Query query = msgsRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notification> options = new FirestoreRecyclerOptions.Builder<Notification>()
                 .setQuery(query, Notification.class)

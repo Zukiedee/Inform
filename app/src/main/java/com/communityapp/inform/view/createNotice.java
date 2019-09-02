@@ -79,7 +79,6 @@ public class createNotice extends AppCompatActivity {
     private static final String COMMUNITY_KEY = "Community";
     private static final String USERNAME_KEY = "Username";
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,8 +102,6 @@ public class createNotice extends AppCompatActivity {
 
         //user selects notice category to reveal relevant fields
         selectNoticeCategory();
-
-
 
         Title = findViewById(R.id.notice_headline);
         Body = findViewById(R.id.notice_body);
@@ -394,7 +391,7 @@ public class createNotice extends AppCompatActivity {
                                 hashMap.put(USERNAME_KEY, name);
                                 hashMap.put(COMMUNITY_KEY, communities);
 
-                                db.collection("Notices").document(communities).collection(category).document(timeStamp).set(hashMap)
+                                db.collection("Notices").document(timeStamp).set(hashMap)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -435,7 +432,7 @@ public class createNotice extends AppCompatActivity {
             hashMap.put(COMMUNITY_KEY, communities);
 
             //put data in this database
-            db.collection("Notices").document(communities).collection(category).document(timeStamp).set(hashMap)
+            db.collection("Notices").document(timeStamp).set(hashMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

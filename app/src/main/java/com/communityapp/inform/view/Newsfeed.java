@@ -9,8 +9,10 @@ import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
@@ -40,7 +42,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The main screen.
@@ -54,7 +60,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private CollectionReference userRef = db.collection("Users");
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
+    private ArrayList<String> communityList;
 
+    private static final String COMMUNITY_KEY = "Community";
     private static final String CATEGORY_KEY = "Category";
     private static final String ID_KEY = "Id";
 
@@ -81,7 +89,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             finish();
         }
     }
-
+    String communities_followed = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +100,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         checkUserStatus();
 
         progressDialog = new ProgressDialog(this);
+
+        //retrieve communities user is following
 
         loadNotices();
 
@@ -114,31 +124,35 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private void loadNotices() {
         progressDialog.setTitle("Loading data..");
         progressDialog.show();
-        Query query = noticesRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
+        Query query = noticesRef.orderBy(ID_KEY);
+
+        //Query query = noticesRef.orderBy("Id");
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
 
         adapter = new NoticeAdapter(options);
         progressDialog.dismiss();
-
         noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
+        adapter.startListening();
     }
 
     public void categoryNotice(String category){
         progressDialog.setTitle("Loading "+ category+"..");
         progressDialog.show();
-        Query query = noticesRef.whereEqualTo(CATEGORY_KEY, category);
+        Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, "UCT").whereEqualTo(CATEGORY_KEY, category).orderBy(ID_KEY);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
-
         adapter = new NoticeAdapter(options);
         progressDialog.dismiss();
+        noticeRecyclerView.setHasFixedSize(true);
+        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
+        adapter.startListening();
     }
 
     /**
@@ -206,7 +220,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         switch (id){
             case R.id.nav_home:
                 //Navigate to user profile screen
-                loadNotices();
+                //loadNotices(communityList);
                 break;
             case R.id.nav_profile:
                 //Navigate to user profile screen

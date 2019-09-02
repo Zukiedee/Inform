@@ -181,6 +181,7 @@
                 android:background="@color/white"
                 android:drawableTop="@drawable/ic_comment"
                 android:textAlignment="center"
+                android:visibility="gone"
                 android:text="Comment"
                 android:textAllCaps="false"
                 android:textColor="@color/colorDate"
@@ -216,7 +217,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:textAllCaps="false"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:textColor="@color/colorDate"
                 android:background="@color/white" />
 

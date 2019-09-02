@@ -65,11 +65,10 @@
     <string name="crime_report">Crime Report</string>
     <string name="local_news">Local News</string>
     <string name="missing_pet">Missing Pet</string>
-    <string name="events">Events</string>
-    <string name="tradesmen_refferals">Tradesmen Refferals</string>
+    <string name="events">Events/Entertainment</string>
+    <string name="tradesmen_refferals">Tradesmen Referrals</string>
     <string name="fundraiser">Fundraiser</string>
     <string name="recommendations">Recommendations</string>
-    <string name="community">Area</string>
     <string name="remove">Remove</string>
     <string name="file_attachment">file attachment</string>
     <string name="enter_email">Enter email address</string>

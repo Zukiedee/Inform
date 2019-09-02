@@ -68,6 +68,14 @@
                 android:visibility="visible"
                 android:inputType="textMultiLine" />
 
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="25dp"
+                android:text="Community"
+                android:textSize="14dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:id="@+id/community_label"
+                />
             <Spinner
                 android:id="@+id/community"
                 android:layout_width="300dp"
@@ -90,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="#00FFFFFF"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:clickable="true"
                     android:focusable="true"
                     android:text="@string/attach_a_file"
@@ -103,7 +111,7 @@
                 android:layout_height="200dp"
                 android:contentDescription="@string/file_attachment"
                 android:id="@+id/upload_image"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/submit"
@@ -111,7 +119,7 @@
                 android:layout_height="49dp"
                 android:layout_margin="30dp"
                 android:background="@drawable/rounded_btn"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:enabled="false"
                 android:text="@string/submit" />
 
