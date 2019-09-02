@@ -67,8 +67,7 @@ public class createNotice extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private FirebaseFirestore db;
-    private DocumentReference userRef;
+    private FirebaseFirestore db, userRef;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -78,6 +77,7 @@ public class createNotice extends AppCompatActivity {
     private static final String IMAGE_KEY = "Image";
     private static final String COMMUNITY_KEY = "Community";
     private static final String USERNAME_KEY = "Username";
+    private static final String UID_KEY = "User ID";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,7 +94,7 @@ public class createNotice extends AppCompatActivity {
         user = firebaseAuth.getCurrentUser();
 
         db = FirebaseFirestore.getInstance();
-        userRef = db.collection("Users").document(user.getEmail());
+        userRef = FirebaseFirestore.getInstance();
 
         progressDialog = new ProgressDialog(this);
 
@@ -140,14 +140,8 @@ public class createNotice extends AppCompatActivity {
     }
 
     private void loadUserInfo() {
-        userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) name = documentSnapshot.getString(USERNAME_KEY);
-                        else Toast.makeText(createNotice.this, "Please load your profile details", Toast.LENGTH_SHORT).show();
-                    }
-                })
+        userRef.collection("Users").whereEqualTo("Email", email).get()
+
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -390,6 +384,7 @@ public class createNotice extends AppCompatActivity {
                                 hashMap.put(TITLE_KEY, title);
                                 hashMap.put(USERNAME_KEY, name);
                                 hashMap.put(COMMUNITY_KEY, communities);
+                                hashMap.put(UID_KEY, email);
 
                                 db.collection("Notices").document(timeStamp).set(hashMap)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -430,6 +425,7 @@ public class createNotice extends AppCompatActivity {
             hashMap.put(TITLE_KEY, title);
             hashMap.put(USERNAME_KEY, name);
             hashMap.put(COMMUNITY_KEY, communities);
+            hashMap.put(UID_KEY, email);
 
             //put data in this database
             db.collection("Notices").document(timeStamp).set(hashMap)
