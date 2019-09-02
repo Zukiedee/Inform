@@ -152,6 +152,7 @@
             android:id="@+id/user_engagement"
             android:layout_below="@id/user_info"
             android:orientation="horizontal"
+            android:visibility="visible"
             android:layout_centerHorizontal="true">
 
             <TextView
@@ -227,6 +228,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_below="@+id/user_engagement"
+            android:id="@+id/requests"
             android:orientation="horizontal"
             android:visibility="gone">
 

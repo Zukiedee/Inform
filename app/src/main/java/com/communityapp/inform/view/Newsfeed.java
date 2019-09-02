@@ -57,7 +57,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = db.collection("Notices");
-    private CollectionReference userRef = db.collection("Users");
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
     private ArrayList<String> communityList;
@@ -89,7 +88,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             finish();
         }
     }
-    String communities_followed = "";
+    String communities_followed = "UCT, Rondebosch";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +102,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         //retrieve communities user is following
 
+        communityList.add("UCT");
+        communityList.add("Rondebosch");
         loadNotices();
 
         showMenu();
@@ -124,9 +125,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private void loadNotices() {
         progressDialog.setTitle("Loading data..");
         progressDialog.show();
+
         Query query = noticesRef.orderBy(ID_KEY);
 
-        //Query query = noticesRef.orderBy("Id");
+        for (int i = 0; i<communityList.size(); i++){
+            query = query.whereEqualTo(COMMUNITY_KEY, communityList.get(i));
+        }
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();

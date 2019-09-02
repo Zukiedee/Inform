@@ -28,7 +28,6 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,6 +46,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/nav_header_vertical_spacing"
+                android:paddingRight="8dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
                 android:text="@string/nav_header_subtitle"
                 android:textSize="16sp"
                 app:fontFamily="serif" />

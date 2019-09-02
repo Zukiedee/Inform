@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -60,14 +61,12 @@ public class createNotice extends AppCompatActivity {
     private Spinner communities_categories;
     private TextView upload;
     private Button submit;
-    private String category;
-    private String name, email, communities;
+    private String category, name, email, communities;
     private ProgressDialog progressDialog;
     public ArrayAdapter<String> dataAdapter;                                             //display of user selected communities
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser user;
-    private FirebaseFirestore db, userRef;
+    private FirebaseFirestore db;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -91,10 +90,9 @@ public class createNotice extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         checkUserStatus();
-        user = firebaseAuth.getCurrentUser();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
 
         db = FirebaseFirestore.getInstance();
-        userRef = FirebaseFirestore.getInstance();
 
         progressDialog = new ProgressDialog(this);
 
@@ -139,13 +137,26 @@ public class createNotice extends AppCompatActivity {
         submitNotice();
     }
 
+    /**
+     * Retrieves user's username to display on notice.
+     */
     private void loadUserInfo() {
-        userRef.collection("Users").whereEqualTo("Email", email).get()
-
+        DocumentReference userRef = db.document("Users/"+email);
+        userRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            name = documentSnapshot.getString(USERNAME_KEY);
+                        }else {
+                            Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -236,6 +247,7 @@ public class createNotice extends AppCompatActivity {
         Body.setVisibility(View.GONE);
         upload.setVisibility(View.GONE);
         submit.setVisibility(View.GONE);
+        communities_categories.setVisibility(View.GONE);
     }
 
     /**
@@ -247,6 +259,7 @@ public class createNotice extends AppCompatActivity {
         Body.setVisibility(View.VISIBLE);
         upload.setVisibility(View.VISIBLE);
         submit.setVisibility(View.VISIBLE);
+        communities_categories.setVisibility(View.VISIBLE);
     }
 
     /**

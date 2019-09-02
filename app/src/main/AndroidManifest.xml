@@ -19,6 +19,11 @@
             android:name="com.communityapp.inform.view.Inbox"
             android:label="@string/title_activity_notifications"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
+
+        <activity
+            android:name="com.communityapp.inform.view.RequestsAdmin"
+            android:label="@string/title_activity_notifications"
+            android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
         <activity
             android:name="com.communityapp.inform.view.Profile"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed" />

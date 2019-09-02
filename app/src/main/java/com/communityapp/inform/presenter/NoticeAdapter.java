@@ -3,6 +3,7 @@ package com.communityapp.inform.presenter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,10 +61,33 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
                 deleteItem(i);
             }
         });
+
+
+        noticeHolder.Accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Post to notices
+
+                //remove request
+                deleteItem(i);
+            }
+        });
+
+        noticeHolder.Reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //delete request
+                deleteItem(i);
+            }
+        });
     }
 
     public void deleteItem(int position){
         getSnapshots().getSnapshot(position).getReference().delete();
+    }
+
+    public void setReminder(){
+
     }
 
     @NonNull
@@ -75,9 +99,9 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
 
     class NoticeHolder extends RecyclerView.ViewHolder{
         //initialise views
-        TextView Title, Category, Description, Date, Username, Community;
+        TextView Title, Category, Description, Date, Username, Community, deleteBtn, likeBtn, commentBtn;
+        Button Accept, Reject;
         ImageView imgResource;
-        TextView deleteBtn, likeBtn, commentBtn;
 
         public NoticeHolder(@NonNull View itemView) {
             super(itemView);
@@ -88,6 +112,9 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             Username = itemView.findViewById(R.id.userPosted);
             imgResource = itemView.findViewById(R.id.file);
             Community = itemView.findViewById(R.id.community);
+
+            Accept = itemView.findViewById(R.id.accept_btn);
+            Reject = itemView.findViewById(R.id.reject_btn);
 
             deleteBtn = itemView.findViewById(R.id.removeNotice);
             likeBtn = itemView.findViewById(R.id.like);

@@ -7,13 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.communityapp.inform.model.Notice;
-import com.communityapp.inform.presenter.MessageHolder;
-import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.NotificationAdapter;
 import com.example.inform.R;
-
-import java.util.ArrayList;
 
 import com.communityapp.inform.model.Notification;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -30,8 +25,8 @@ public class Inbox extends AppCompatActivity {
     RecyclerView msgRecyclerView;
     NotificationAdapter adapter;
     private FirebaseAuth mAuth; //Firebase authentication
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference msgsRef = db.collection("Messages");
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference msgsRef;
     private static final String ID_KEY = "Id";
 
 
@@ -45,6 +40,8 @@ public class Inbox extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
 
+        checkUserStatus();
+        msgsRef = database.collection("Users").document(mAuth.getCurrentUser().getEmail()).collection("Messages");
         loadMessages();
     }
 
