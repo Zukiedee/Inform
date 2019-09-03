@@ -66,7 +66,7 @@ public class createNotice extends AppCompatActivity {
     public ArrayAdapter<String> dataAdapter;                                             //display of user selected communities
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseFirestore db;
+    private FirebaseFirestore database;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -90,9 +90,8 @@ public class createNotice extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         checkUserStatus();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
 
-        db = FirebaseFirestore.getInstance();
+        database = FirebaseFirestore.getInstance();
 
         progressDialog = new ProgressDialog(this);
 
@@ -111,8 +110,8 @@ public class createNotice extends AppCompatActivity {
         Title.addTextChangedListener(createNotice);
         Body.addTextChangedListener(createNotice);
 
-        final String[] comm_categories = getResources().getStringArray(R.array.communities_options);
-        dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, comm_categories);
+        final String[] community_categories = getResources().getStringArray(R.array.communities_options);
+        dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, community_categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         communities_categories.setAdapter(dataAdapter);
         communities_categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -137,30 +136,6 @@ public class createNotice extends AppCompatActivity {
         submitNotice();
     }
 
-    /**
-     * Retrieves user's username to display on notice.
-     */
-    private void loadUserInfo() {
-        DocumentReference userRef = db.document("Users/"+email);
-        userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            name = documentSnapshot.getString(USERNAME_KEY);
-                        }else {
-                            Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -178,12 +153,32 @@ public class createNotice extends AppCompatActivity {
      */
     private void checkUserStatus(){
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null){
-            email = user.getEmail();
-        }
-        else {
-            startActivity(new Intent(this, Profile.class));
-        }
+        if (user != null){ email = user.getEmail(); }
+        else { startActivity(new Intent(this, Profile.class)); }
+    }
+
+    /**
+     * Retrieves user's username to display on notice.
+     */
+    private void loadUserInfo() {
+        DocumentReference userRef = database.document("Users/"+email);
+        userRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            name = documentSnapshot.getString(USERNAME_KEY);
+                        }else {
+                            Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     /**
@@ -229,7 +224,6 @@ public class createNotice extends AppCompatActivity {
                         break;
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 nothingSelected();
@@ -278,6 +272,8 @@ public class createNotice extends AppCompatActivity {
     private void showCrime(){
         category = "Crime Report";
         setBaseCategoryVisible();
+        Title.setHint("Report Title");
+        Body.setHint("Description");
     }
 
     /**
@@ -286,6 +282,8 @@ public class createNotice extends AppCompatActivity {
     private void showEvents(){
         category = "Events/Entertainment";
         setBaseCategoryVisible();
+        Title.setHint("Event Name");
+        Body.setHint("Description");
     }
 
     /**
@@ -294,6 +292,8 @@ public class createNotice extends AppCompatActivity {
     private void showFundraiser(){
         category = "Fundraiser";
         setBaseCategoryVisible();
+        Title.setHint("Fundraiser Name");
+        Body.setHint("Description");
     }
 
     /**
@@ -302,6 +302,8 @@ public class createNotice extends AppCompatActivity {
     private void showPet(){
         category = "Missing Pet";
         setBaseCategoryVisible();
+        Title.setHint("Title");
+        Body.setHint("Description of pet, date last seen");
     }
 
     /**
@@ -318,6 +320,8 @@ public class createNotice extends AppCompatActivity {
     private void showRecommendations(){
         category = "Recommendations";
         setBaseCategoryVisible();
+        Title.setHint("Recommendation title");
+        Body.setHint("Description");
     }
 
     /**
@@ -326,14 +330,12 @@ public class createNotice extends AppCompatActivity {
     private TextWatcher createNotice = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String TitleInput = Title.getText().toString().trim();
             String BodyInput = Body.getText().toString().trim();
             submit.setEnabled(!TitleInput.isEmpty() && !BodyInput.isEmpty());
         }
-
         @Override
         public void afterTextChanged(Editable editable) {}
     };
@@ -399,7 +401,7 @@ public class createNotice extends AppCompatActivity {
                                 hashMap.put(COMMUNITY_KEY, communities);
                                 hashMap.put(UID_KEY, email);
 
-                                db.collection("Notices").document(timeStamp).set(hashMap)
+                                database.collection("Notices").document(timeStamp).set(hashMap)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -441,7 +443,7 @@ public class createNotice extends AppCompatActivity {
             hashMap.put(UID_KEY, email);
 
             //put data in this database
-            db.collection("Notices").document(timeStamp).set(hashMap)
+            database.collection("Notices").document(timeStamp).set(hashMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

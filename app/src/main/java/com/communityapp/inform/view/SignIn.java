@@ -100,6 +100,10 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles firebase authentification with Google sign in
+     * @param account User's google account
+     */
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)

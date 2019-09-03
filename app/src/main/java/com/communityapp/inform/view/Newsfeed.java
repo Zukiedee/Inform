@@ -9,15 +9,10 @@ import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -42,11 +37,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The main screen.
@@ -55,40 +47,18 @@ import java.util.Arrays;
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
     private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference noticesRef = db.collection("Notices");
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference noticesRef = database.collection("Notices");
+    Query query = noticesRef;
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
     private ArrayList<String> communityList;
 
+    //database reference keys
     private static final String COMMUNITY_KEY = "Community";
     private static final String CATEGORY_KEY = "Category";
     private static final String ID_KEY = "Id";
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkUserStatus();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
-
-    private void checkUserStatus(){
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        //If user is not logged in, redirect to sign in screen
-        if (currentUser== null){
-            Intent loginIntent = new Intent(Newsfeed.this, SignIn.class);
-            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(loginIntent);
-            finish();
-        }
-    }
-    String communities_followed = "UCT, Rondebosch";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +71,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog = new ProgressDialog(this);
 
         //retrieve communities user is following
+        communityList = new ArrayList<>();
 
         communityList.add("UCT");
         communityList.add("Rondebosch");
@@ -119,6 +90,33 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkUserStatus();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    /**
+     * Verifies that user is signed in
+     */
+    private void checkUserStatus(){
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //If user is not logged in, redirect to sign in screen
+        if (currentUser== null){
+            Intent loginIntent = new Intent(Newsfeed.this, SignIn.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(loginIntent);
+            finish();
+        }
+    }
+
     /**
      * Loads notices to be displayed in the general newsfeed
      */
@@ -126,11 +124,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.setTitle("Loading data..");
         progressDialog.show();
 
-        Query query = noticesRef.orderBy(ID_KEY);
+        query = noticesRef.orderBy(ID_KEY);
 
-        for (int i = 0; i<communityList.size(); i++){
+        /*for (int i = 0; i<communityList.size(); i++){
             query = query.whereEqualTo(COMMUNITY_KEY, communityList.get(i));
-        }
+        }*/
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
@@ -144,6 +142,10 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         adapter.startListening();
     }
 
+    /**
+     * Displays notices from input category
+     * @param category Category to filter notices by
+     */
     public void categoryNotice(String category){
         progressDialog.setTitle("Loading "+ category+"..");
         progressDialog.show();
@@ -203,17 +205,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        /*
-         * Logs user out of application
-         * Directs user back to Welcome screen
-         */
+        //Logs user out of application. Directs user back to SignIn screen
         if (id == R.id.logout) {
             mAuth.signOut();
-
             Intent intentWelcome = new Intent(Newsfeed.this, SignIn.class);
             startActivity(intentWelcome);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -224,7 +221,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         switch (id){
             case R.id.nav_home:
                 //Navigate to user profile screen
-                //loadNotices(communityList);
+                loadNotices();
                 break;
             case R.id.nav_profile:
                 //Navigate to user profile screen

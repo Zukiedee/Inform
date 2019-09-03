@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,16 +22,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-public class RequestsAdmin  extends AppCompatActivity {
+public class                                                                                                                                                                                      RequestsAdmin  extends AppCompatActivity {
 
     private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference requests = db.collection("Requests");
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference requests = database.collection("Requests");
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
     private static final String ID_KEY = "Id";
     private Button Accept, Reject;
+    private LinearLayout user_engagements;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,9 +44,13 @@ public class RequestsAdmin  extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
 
+        progressDialog =  new ProgressDialog(this);
+
         checkUserStatus();
 
         visbility();
+
+        loadRequests();
     }
 
     @Override
@@ -61,15 +67,23 @@ public class RequestsAdmin  extends AppCompatActivity {
         adapter.stopListening();
     }
 
+    /**
+     * Makes accept and reject button visible to admin & user engagements i.e. like, comment, delete and set reminder invisible
+     */
     private void visbility(){
         Accept = findViewById(R.id.accept_btn);
         Reject = findViewById(R.id.reject_btn);
-
         Accept.setVisibility(View.VISIBLE);
         Reject.setVisibility(View.VISIBLE);
 
+        user_engagements = findViewById(R.id.user_engagement);
+        user_engagements.setVisibility(View.GONE);
+
     }
 
+    /**
+     * Verifies that user is signed in
+     */
     private void checkUserStatus(){
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //If user is not logged in, redirect to sign in screen
@@ -90,7 +104,6 @@ public class RequestsAdmin  extends AppCompatActivity {
         progressDialog.show();
         Query query = requests.orderBy(ID_KEY);
 
-        //Query query = noticesRef.orderBy("Id");
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();

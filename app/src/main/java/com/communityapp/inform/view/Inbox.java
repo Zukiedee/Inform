@@ -58,6 +58,9 @@ public class Inbox extends AppCompatActivity {
         adapter.stopListening();
     }
 
+    /**
+     * Verifies if user is signed in
+     */
     private void checkUserStatus(){
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //If user is not logged in, redirect to sign in screen
@@ -69,6 +72,9 @@ public class Inbox extends AppCompatActivity {
         }
     }
 
+    /**
+     * Loads all messages sent to user in their account
+     */
     private void loadMessages() {
         Query query = msgsRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notification> options = new FirestoreRecyclerOptions.Builder<Notification>()
