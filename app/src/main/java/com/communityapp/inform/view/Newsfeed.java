@@ -150,7 +150,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
      * Displays notices from input category
      * @param category Category to filter notices by
      */
-    public void categoryNotice(String category){
+    private void categoryNotice(String category){
         progressDialog.setTitle("Loading "+ category+"..");
         progressDialog.show();
         Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, currentcommunity).whereEqualTo(CATEGORY_KEY, category).orderBy(ID_KEY, Query.Direction.DESCENDING);
@@ -168,7 +168,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     /**
      * Handles drawer navigation menu.
      */
-    public void showMenu(){
+    private void showMenu(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

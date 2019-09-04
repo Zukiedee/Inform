@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-public class                                                                                                                                                                                      RequestsAdmin  extends AppCompatActivity {
+public class RequestsAdmin extends AppCompatActivity {
 
     private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
@@ -31,6 +32,7 @@ public class                                                                    
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
     private static final String ID_KEY = "Id";
+    private static final String COMMUNITY_KEY = "Community";
     private Button Accept, Reject;
     private LinearLayout user_engagements;
 
@@ -51,21 +53,39 @@ public class                                                                    
 
         visbility();
 
-        loadRequests();
+        String community ="UCT";
+        loadRequests(community);
+
+        Accept = findViewById(R.id.accept_btn);
+        Reject = findViewById(R.id.reject_btn);
+
+        Accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(RequestsAdmin.this, "Accept button clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(RequestsAdmin.this, "Accept button clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         checkUserStatus();
-        adapter.startListening();
+        //adapter.startListening();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         checkUserStatus();
-        adapter.stopListening();
+        //adapter.stopListening();
     }
 
     /**
@@ -98,10 +118,10 @@ public class                                                                    
     /**
      * Loads notices to be displayed in the general newsfeed
      */
-    private void loadRequests() {
+    private void loadRequests(String community) {
         progressDialog.setTitle("Loading requests...");
         progressDialog.show();
-        Query query = requests.orderBy(ID_KEY, Query.Direction.DESCENDING);
+        Query query = requests.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
@@ -114,5 +134,13 @@ public class                                                                    
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
         adapter.startListening();
+    }
+
+    private void Accept(int position){
+
+    }
+
+    private void Reject(int position){
+
     }
 }

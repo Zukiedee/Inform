@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.communityapp.inform.model.Notification;
 import com.example.inform.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -36,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -66,6 +68,8 @@ public class createNotice extends AppCompatActivity {
     private String category, name, email, communities;
     private ProgressDialog progressDialog;
     private ArrayAdapter<String> dataAdapter;   //display of user selected communities
+
+    String collectionPath = "";
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore database;
@@ -411,7 +415,7 @@ public class createNotice extends AppCompatActivity {
 
                             String downloadURI = uriTask.getResult().toString();
 
-                            String collectionPath = "";
+
                             if (admin_requests.contains(category)) { collectionPath = "Requests"; }
                             else { collectionPath = "Notices"; }
 
@@ -432,6 +436,17 @@ public class createNotice extends AppCompatActivity {
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
+                                                if (collectionPath.equals("Requests")){
+                                                    CollectionReference notifications = database.collection("Users/"+email+"/Messages");
+                                                    HashMap<String, Object> msg = new HashMap<>();
+                                                    Notification notification = new Notification(title, DatetoString);
+
+                                                    msg.put("Title", title);
+                                                    msg.put("Date", DatetoString);
+                                                    msg.put("Status", notification.getStatus());
+                                                    msg.put("Message", notification.getMessage());
+                                                    notifications.document(timeStamp).set(msg);
+                                                }
                                                 progressDialog.dismiss();
                                                 Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
                                                 Intent done = new Intent(createNotice.this, Newsfeed.class);
