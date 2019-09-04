@@ -53,7 +53,7 @@ import java.util.Arrays;
  * The main screen.
  * Community posts will be displayed here.
  */
-public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
+public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener  {
     private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -204,6 +204,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                             }
                             navigationView.invalidate();
                             currentcommunity = communityList.get(0);
+                            getSupportActionBar().setTitle(currentcommunity);
                             loadNotices(currentcommunity);
 
                         }
@@ -307,6 +308,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 unCheckAllMenuItems(menu);
                 loadNotices(title);
                 currentcommunity = title;
+                getSupportActionBar().setTitle(currentcommunity);
                 item.setChecked(true);
                 break;
         }
@@ -344,4 +346,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         super.attachBaseContext(newBase);
         MultiDex.install(this);
     }
+
+
 }
