@@ -42,6 +42,7 @@ public class                                                                    
         //Back button on toolbar
         getSupportActionBar().setTitle("Inbox");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mAuth = FirebaseAuth.getInstance();
 
         progressDialog =  new ProgressDialog(this);
@@ -78,7 +79,6 @@ public class                                                                    
 
         user_engagements = findViewById(R.id.user_engagement);
         user_engagements.setVisibility(View.GONE);
-
     }
 
     /**
@@ -95,14 +95,13 @@ public class                                                                    
         }
     }
 
-
     /**
      * Loads notices to be displayed in the general newsfeed
      */
     private void loadRequests() {
         progressDialog.setTitle("Loading requests...");
         progressDialog.show();
-        Query query = requests.orderBy(ID_KEY);
+        Query query = requests.orderBy(ID_KEY, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)

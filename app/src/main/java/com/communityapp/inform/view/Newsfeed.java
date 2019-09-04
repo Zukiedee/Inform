@@ -137,12 +137,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 .build();
 
         adapter = new NoticeAdapter(options);
-        progressDialog.dismiss();
         noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
         adapter.startListening();
+        progressDialog.dismiss();
     }
 
     /**
@@ -157,11 +157,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 .setQuery(query, Notice.class)
                 .build();
         adapter = new NoticeAdapter(options);
-        progressDialog.dismiss();
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
         adapter.startListening();
+        progressDialog.dismiss();
     }
 
     /**
@@ -186,7 +186,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
-                            Toast.makeText(Newsfeed.this, "It exists", Toast.LENGTH_SHORT).show();
                             nav_username = findViewById(R.id.main_username);
 
                             username = documentSnapshot.getString(USERNAME_KEY);
@@ -206,14 +205,14 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                             currentcommunity = communityList.get(0);
                             getSupportActionBar().setTitle(currentcommunity);
                             loadNotices(currentcommunity);
-
                         }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(Newsfeed.this, "Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Newsfeed.this, "Error: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Newsfeed.this, Profile.class));
                     }
                 });
 
