@@ -13,19 +13,19 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.communityapp.inform.view.signIn">
-
+            android:name="com.communityapp.inform.view.SignIn">
         </activity>
         <activity
             android:name="com.communityapp.inform.view.Inbox"
             android:label="@string/title_activity_notifications"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
+
         <activity
-            android:name="com.communityapp.inform.view.Admin_Inbox"
+            android:name="com.communityapp.inform.view.RequestsAdmin"
             android:label="@string/title_activity_notifications"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed"/>
         <activity
-            android:name="com.communityapp.inform.view.editProfile"
+            android:name="com.communityapp.inform.view.Profile"
             android:parentActivityName="com.communityapp.inform.view.Newsfeed" />
         <activity
             android:name="com.communityapp.inform.view.createNotice"
