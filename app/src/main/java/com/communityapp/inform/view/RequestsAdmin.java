@@ -40,7 +40,7 @@ public class                                                                    
         setContentView(R.layout.activity_inbox);
 
         //Back button on toolbar
-        getSupportActionBar().setTitle("Inbox");
+        getSupportActionBar().setTitle("Requests");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAuth = FirebaseAuth.getInstance();

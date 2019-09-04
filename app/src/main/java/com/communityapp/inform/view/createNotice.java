@@ -45,6 +45,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,11 +61,11 @@ public class createNotice extends AppCompatActivity {
     private EditText Title, Body;
     private ImageView imageView;
     private Spinner communities_categories;
-    private TextView upload;
+    private TextView upload, community_label, disclaimer;
     private Button submit;
     private String category, name, email, communities;
     private ProgressDialog progressDialog;
-    public ArrayAdapter<String> dataAdapter;                                             //display of user selected communities
+    private ArrayAdapter<String> dataAdapter;   //display of user selected communities
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore database;
@@ -78,6 +80,8 @@ public class createNotice extends AppCompatActivity {
     private static final String USERNAME_KEY = "Username";
     private static final String UID_KEY = "User ID";
 
+    private ArrayList<String> admin_requests = new ArrayList<String>(Arrays.asList("Events", "Tradesman referrals", "Fundraiser"));
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,23 +92,23 @@ public class createNotice extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        database = FirebaseFirestore.getInstance();
 
         checkUserStatus();
-
-        database = FirebaseFirestore.getInstance();
 
         progressDialog = new ProgressDialog(this);
 
         loadUserInfo();
 
-        //user selects notice category to reveal relevant fields
         selectNoticeCategory();
 
+        disclaimer = findViewById(R.id.disclaimer);
         Title = findViewById(R.id.notice_headline);
         Body = findViewById(R.id.notice_body);
         imageView = findViewById(R.id.upload_image);
         upload = findViewById(R.id.add_image);
         submit = findViewById(R.id.submit);
+        community_label = findViewById(R.id.community_label);
         communities_categories = findViewById(R.id.community);
 
         Title.addTextChangedListener(createNotice);
@@ -193,9 +197,7 @@ public class createNotice extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //on selecting a spinner
                 String item = adapterView.getItemAtPosition(i).toString();
-
                 //show relevant text fields to user
                 switch(item){
                     case "Local News":
@@ -236,11 +238,13 @@ public class createNotice extends AppCompatActivity {
      */
     private void nothingSelected(){
         Toast.makeText(com.communityapp.inform.view.createNotice.this, "Please select a category", Toast.LENGTH_LONG).show();
+        disclaimer.setVisibility(View.GONE);
         Title.setVisibility(View.GONE);
         Body.setVisibility(View.GONE);
         Body.setVisibility(View.GONE);
         upload.setVisibility(View.GONE);
         submit.setVisibility(View.GONE);
+        community_label.setVisibility(View.GONE);
         communities_categories.setVisibility(View.GONE);
     }
 
@@ -248,20 +252,33 @@ public class createNotice extends AppCompatActivity {
      * Makes the title, body fields, upload a file and submit button visible to user.
      */
     private void setBaseCategoryVisible(){
+        disclaimer.setVisibility(View.VISIBLE);
         Title.setVisibility(View.VISIBLE);
         Body.setVisibility(View.VISIBLE);
         Body.setVisibility(View.VISIBLE);
         upload.setVisibility(View.VISIBLE);
         submit.setVisibility(View.VISIBLE);
+        community_label.setVisibility(View.VISIBLE);
         communities_categories.setVisibility(View.VISIBLE);
     }
 
+    private void setDisclaimer(Boolean request){
+        if (request){
+            disclaimer.setText("This notice will be sent to Admin for approval before it is posted.");
+            disclaimer.setTextColor(getResources().getColor(R.color.color_reject));
+        }
+        else {
+            disclaimer.setText("This notice will be posted to the community's newsfeed.");
+            disclaimer.setTextColor(getResources().getColor(R.color.color_accept));
+        }
+    }
     /**
      * Displays relevant local news categories to user
      */
     private void showNews(){
         category = "Local News";
         setBaseCategoryVisible();
+        setDisclaimer(false);
         Title.setHint("Headline");
         Body.setHint("Description");
     }
@@ -272,6 +289,7 @@ public class createNotice extends AppCompatActivity {
     private void showCrime(){
         category = "Crime Report";
         setBaseCategoryVisible();
+        setDisclaimer(false);
         Title.setHint("Report Title");
         Body.setHint("Description");
     }
@@ -282,6 +300,7 @@ public class createNotice extends AppCompatActivity {
     private void showEvents(){
         category = "Events/Entertainment";
         setBaseCategoryVisible();
+        setDisclaimer(true);
         Title.setHint("Event Name");
         Body.setHint("Description");
     }
@@ -292,6 +311,7 @@ public class createNotice extends AppCompatActivity {
     private void showFundraiser(){
         category = "Fundraiser";
         setBaseCategoryVisible();
+        setDisclaimer(true);
         Title.setHint("Fundraiser Name");
         Body.setHint("Description");
     }
@@ -302,6 +322,7 @@ public class createNotice extends AppCompatActivity {
     private void showPet(){
         category = "Missing Pet";
         setBaseCategoryVisible();
+        setDisclaimer(false);
         Title.setHint("Title");
         Body.setHint("Description of pet, date last seen");
     }
@@ -312,6 +333,7 @@ public class createNotice extends AppCompatActivity {
     private void showTradesmen(){
         category = "Tradesmen Referrals";
         setBaseCategoryVisible();
+        setDisclaimer(true);
     }
 
     /**
@@ -320,6 +342,7 @@ public class createNotice extends AppCompatActivity {
     private void showRecommendations(){
         category = "Recommendations";
         setBaseCategoryVisible();
+        setDisclaimer(false);
         Title.setHint("Recommendation title");
         Body.setHint("Description");
     }
@@ -374,8 +397,8 @@ public class createNotice extends AppCompatActivity {
         SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d ''yy");
         String DatetoString = format.format(currentDate);
 
+        //post with image
         if (!uri.equals("noImage")){
-            //post with image
             StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
             ref.putFile(Uri.parse(uri))
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -387,6 +410,10 @@ public class createNotice extends AppCompatActivity {
                             while (!uriTask.isSuccessful());
 
                             String downloadURI = uriTask.getResult().toString();
+
+                            String collectionPath = "";
+                            if (admin_requests.contains(category)) { collectionPath = "Requests"; }
+                            else { collectionPath = "Notices"; }
 
                             if (uriTask.isSuccessful()){
                                 // url is received upload post to firebase
@@ -401,7 +428,7 @@ public class createNotice extends AppCompatActivity {
                                 hashMap.put(COMMUNITY_KEY, communities);
                                 hashMap.put(UID_KEY, email);
 
-                                database.collection("Notices").document(timeStamp).set(hashMap)
+                                database.collection(collectionPath).document(timeStamp).set(hashMap)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -442,8 +469,12 @@ public class createNotice extends AppCompatActivity {
             hashMap.put(COMMUNITY_KEY, communities);
             hashMap.put(UID_KEY, email);
 
+            String collectionPath = "";
+            if (admin_requests.contains(category)) { collectionPath = "Requests"; }
+            else { collectionPath = "Notices"; }
+
             //put data in this database
-            database.collection("Notices").document(timeStamp).set(hashMap)
+            database.collection(collectionPath).document(timeStamp).set(hashMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -456,7 +487,6 @@ public class createNotice extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
                             Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
-
                         }
                     });
         }
@@ -471,15 +501,10 @@ public class createNotice extends AppCompatActivity {
             public void onClick(View view) {
                 String title = Title.getText().toString().trim();
                 String body = Body.getText().toString().trim();
-
-                if (image_uri == null){
-                    //post without image
-                    uploadData(title, body, "noImage");
-
-                } else {
-                    //post with image
-                    uploadData(title, body, String.valueOf(image_uri));
-                }
+                //post without image
+                if (image_uri == null){ uploadData(title, body, "noImage"); }
+                //post with image
+                else { uploadData(title, body, String.valueOf(image_uri)); }
             }
         });
     }

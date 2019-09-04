@@ -22,12 +22,13 @@ import com.google.firebase.firestore.Query;
  * Inbox from admin regarding post notification statuses will be posted here
  */
 public class Inbox extends AppCompatActivity {
-    RecyclerView msgRecyclerView;
-    NotificationAdapter adapter;
+    private RecyclerView msgRecyclerView;
+    private NotificationAdapter adapter;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference msgsRef;
     private static final String ID_KEY = "Id";
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +39,9 @@ public class Inbox extends AppCompatActivity {
         getSupportActionBar().setTitle("Inbox");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
-
         checkUserStatus();
-        msgsRef = database.collection("Users").document(mAuth.getCurrentUser().getEmail()).collection("Messages");
+        email = mAuth.getCurrentUser().getEmail();
+        msgsRef = database.collection("Users/"+email+"/Messages");
         loadMessages();
     }
 

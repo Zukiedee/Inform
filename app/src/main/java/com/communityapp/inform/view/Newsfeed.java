@@ -50,10 +50,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * The main screen.
- * Community posts will be displayed here.
+ * The main newsfeed screen.
+ * Community posts will be displayed here depending on the communities selected by users in their profile.
  */
-public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener  {
+public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        ReminderDialog.SingleChoiceListener  {
     private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -62,8 +63,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
     private String username;
-    TextView nav_username;
-    String currentcommunity ="";
+    private TextView nav_username;
+    private String currentcommunity ="";
 
     //database reference keys
     private static final String COMMUNITY_KEY = "Community";
@@ -82,7 +83,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         progressDialog = new ProgressDialog(this);
 
-        //retrieve communities user is following
         loadNotices(currentcommunity);
         showMenu();
 
@@ -125,7 +125,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     /**
-     * Loads notices to be displayed in the general newsfeed
+     * Loads notices to be displayed filtered by community in the general newsfeed
+     * @param community Community to filter notices by.
      */
     private void loadNotices(String community) {
         progressDialog.setTitle("Loading data..");
@@ -187,24 +188,21 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
                             nav_username = findViewById(R.id.main_username);
-
                             username = documentSnapshot.getString(USERNAME_KEY);
-
                             nav_username.setText(username);
 
+                            //retrieve communities from user's profile and display it in the navigation drawer menu
                             String communities = documentSnapshot.getString("Communities");
                             ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
 
                             Menu menu = navigationView.getMenu();
                             SubMenu communitiesMenu = menu.addSubMenu("Communities");
-
                             for (int i=0; i< communityList.size(); i++){
                                 communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
                             }
                             navigationView.invalidate();
                             currentcommunity = communityList.get(0);
                             getSupportActionBar().setTitle(currentcommunity);
-                            loadNotices(currentcommunity);
                         }
                     }
                 })
@@ -226,11 +224,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        if (drawer.isDrawerOpen(GravityCompat.START)) { drawer.closeDrawer(GravityCompat.START); }
+        else { super.onBackPressed(); }
     }
 
     @Override
@@ -242,11 +237,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //Logs user out of application. Directs user back to SignIn screen
         if (id == R.id.logout) {
             mAuth.signOut();
@@ -268,11 +259,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(intentProfile);
                 break;
             case R.id.nav_inbox:
+
                 //Navigate to user inbox
                 Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
                 startActivity(intentInbox);
                 break;
-
             case R.id.nav_news:
                 //Display Local News posts notices
                 categoryNotice("Local News");
@@ -294,8 +285,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 categoryNotice("Fundraiser");
                 break;
             case R.id.nav_tradesmen:
-                //Display Tradesmen refferals notices
-                categoryNotice("Tradesmen Refferals");
+                //Display Tradesmen referrals notices
+                categoryNotice("Tradesmen Referrals");
                 break;
             case R.id.nav_recommendations:
                 //Display Recommendations notices
@@ -311,7 +302,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 item.setChecked(true);
                 break;
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -325,12 +315,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         int size = menu.size();
         for (int i = 0; i < size; i++) {
             final MenuItem item = menu.getItem(i);
-            if(item.hasSubMenu()) {
-                // Un check sub menu items
-                unCheckAllMenuItems(item.getSubMenu());
-            } else {
-                item.setChecked(false);
-            }
+            // Un check sub menu items
+            if(item.hasSubMenu()) { unCheckAllMenuItems(item.getSubMenu()); }
+            else { item.setChecked(false); }
         }
     }
 
@@ -345,6 +332,4 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         super.attachBaseContext(newBase);
         MultiDex.install(this);
     }
-
-
 }

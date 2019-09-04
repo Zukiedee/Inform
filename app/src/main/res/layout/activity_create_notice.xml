@@ -48,6 +48,18 @@
                 android:layout_marginBottom="5dp"
                 android:background="?android:attr/listDivider" />
 
+            <TextView
+                android:id="@+id/disclaimer"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:padding="10dp"
+                android:textStyle="italic"
+                android:textColor="@color/colorPrimary"
+                android:gravity="center_horizontal|center_vertical"
+                android:hint="This notice will/will not be posted straight to the newsfeed"
+                android:visibility="visible" />
+
             <EditText
                 android:id="@+id/notice_headline"
                 android:layout_width="300dp"
@@ -72,10 +84,11 @@
                 android:layout_width="300dp"
                 android:layout_height="25dp"
                 android:text="Community"
-                android:textSize="14dp"
+                android:textSize="14sp"
+                android:gravity="bottom"
                 android:textColor="@color/colorPrimaryDark"
-                android:id="@+id/community_label"
-                />
+                android:id="@+id/community_label" />
+
             <Spinner
                 android:id="@+id/community"
                 android:layout_width="300dp"

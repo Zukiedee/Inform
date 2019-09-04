@@ -30,7 +30,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
  * Redirects users to Google sign in
  */
 public class SignIn extends AppCompatActivity {
-
     private final static int GOOGLE_SIGN_IN = 234;
     private GoogleSignInClient client;
     private FirebaseAuth mAuth;
@@ -54,7 +53,6 @@ public class SignIn extends AppCompatActivity {
 
         // Build a GoogleSignInClient with the options specified by gso.
         client = GoogleSignIn.getClient(this, googleSignInOptions);
-
         mAuth = FirebaseAuth.getInstance();
 
         signInButton.setSize(SignInButton.SIZE_WIDE);
@@ -65,7 +63,6 @@ public class SignIn extends AppCompatActivity {
             }
         });
     }
-
 
     /**
      * Prompts the user to select a Google account to sign in with.
@@ -81,11 +78,9 @@ public class SignIn extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == GOOGLE_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
@@ -94,9 +89,7 @@ public class SignIn extends AppCompatActivity {
             } catch (ApiException e){
                 // Google Sign In failed, update UI appropriately
                 Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-
             }
-
         }
     }
 
@@ -119,7 +112,7 @@ public class SignIn extends AppCompatActivity {
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(SignIn.this,  "Authentification Failed!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignIn.this,  "Authentication Failed!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
