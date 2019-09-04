@@ -68,6 +68,8 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             public void onClick(View view) {
                 //Post to notices
 
+                //send a message to user
+
                 //remove request
                 deleteItem(i);
             }
@@ -82,11 +84,15 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
         });
     }
 
-    public void deleteItem(int position){
+    /**
+     * Deletes notice item from firestore database
+     * @param position position of notice in database
+     */
+    private void deleteItem(int position){
         getSnapshots().getSnapshot(position).getReference().delete();
     }
 
-    public void setReminder(){
+    private void setReminder(){
 
     }
 
@@ -103,7 +109,7 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
         Button Accept, Reject;
         ImageView imgResource;
 
-        public NoticeHolder(@NonNull View itemView) {
+        private NoticeHolder(@NonNull View itemView) {
             super(itemView);
             Title = itemView.findViewById(R.id.title);
             Category = itemView.findViewById(R.id.category);

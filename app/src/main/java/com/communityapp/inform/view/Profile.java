@@ -26,12 +26,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -46,7 +40,6 @@ import java.util.HashMap;
  */
 public class Profile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
     private EditText username;
-    private TextView email;
     private Spinner user_type_spinner;                                                              //spinner with types of user
     private Button add_communities;                                                                 //button to select communities
 
@@ -60,17 +53,17 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     public ArrayAdapter<String> community_list_Adapter;                                             //display of user selected communities
 
     //firebase
-    private FirebaseAuth mAuth;
     private FirebaseUser user;
-    private FirebaseFirestore db;
+    private FirebaseFirestore database;
     private DocumentReference userRef;
 
+    //User database fields
     private static final String USERNAME_KEY = "Username";
     private static final String EMAIL_KEY = "Email";
     private static final String TYPE_KEY = "Type";
     private static final String COMMUNITIES_KEY = "Communities";
 
-    String user_type;
+    String user_email, user_type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,17 +72,19 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         getSupportActionBar().setTitle("Edit Profile");
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        db = FirebaseFirestore.getInstance();
+
+        database = FirebaseFirestore.getInstance();
         progressDialog = new ProgressDialog(this);
         add_communities = findViewById(R.id.add_community_btn);
         username = findViewById(R.id.username_hint);
-        email = findViewById(R.id.email_hint);
+        TextView email = findViewById(R.id.email_hint);
 
-        if (user!=null) {
-            DisplayInfo();
-        }
+        user_email = user.getEmail();
+        email.setText(user_email);
+
+        if (user!=null) { DisplayInfo(); }
         setType();
         setCommunities();
     }
@@ -100,37 +95,30 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     private void DisplayInfo() {
         progressDialog.setTitle("Loading profile..");
         progressDialog.show();
-        userRef = db.collection("Users").document(user.getEmail());
+        userRef = database.collection("Users").document(user.getEmail());
         userRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()){
                             String uname = documentSnapshot.getString(USERNAME_KEY);
-                            String uemail = documentSnapshot.getString(EMAIL_KEY);
                             String type = documentSnapshot.getString(TYPE_KEY);
                             String communities = documentSnapshot.getString(COMMUNITIES_KEY).trim();
 
                             username.setText(uname);
-                            email.setText(uemail);
 
                             int type_position = dataAdapter.getPosition(type);
-                            if (type_position == -1)
-                                user_type_spinner.setSelection(0);
-                            else
-                                user_type_spinner.setSelection(type_position);
+                            if (type_position == -1) user_type_spinner.setSelection(0);
+                            else user_type_spinner.setSelection(type_position);
 
-                            if (communities !=null) {
-                                ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
-                                shownList = communityList;
-                                selectedCommunities.setVisibility(View.VISIBLE);
-                                community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
-                                selectedCommunities.setAdapter(community_list_Adapter);
-                            }
+                            shownList = new ArrayList<String>(Arrays.asList(communities.split(",")));
+                            selectedCommunities.setVisibility(View.VISIBLE);
+                            community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
+                            selectedCommunities.setAdapter(community_list_Adapter);
+
                             progressDialog.dismiss();
                         }
                         else {
-                            email.setText(user.getEmail());
                             if (user.getDisplayName()!=null){
                                 username.setText(user.getDisplayName());
                             }
@@ -177,7 +165,6 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     private void saveUserInfo() {
         String uname = username.getText().toString();
         String type = user_type;
-        String uemail = user.getEmail();
         ArrayList<String> communities = shownList;
 
         //Checks for missing fields
@@ -191,18 +178,19 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
             //save info
             HashMap<String, Object> userMap = new HashMap<>();
             userMap.put(USERNAME_KEY, uname);
-            userMap.put(EMAIL_KEY, uemail);
+            userMap.put(EMAIL_KEY, user_email);
             userMap.put(TYPE_KEY, type);
             String comm = communities.toString();
             userMap.put(COMMUNITIES_KEY, comm.substring(1,(comm.length()-1)).trim());
 
-            db.collection("Users").document(uemail).set(userMap)
+            database.document("Users/" + user_email).set(userMap)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             //user profile successfully updated to database
                             Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
                             Intent intentMain = new Intent(Profile.this, Newsfeed.class);
+                            intentMain.putExtra("Communities", communities);
                             startActivity(intentMain);
                         }
                     })
@@ -213,29 +201,6 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                         }
                     });
         }
-    }
-
-    @Override
-    public void onPositiveButtonClicked(String[] list, ArrayList<String> selectedList) {
-        shownList.clear();
-        String item = "";
-        for(int j = 0; j <selectedList.size(); j++){
-            item = selectedList.get(j);
-            if(!shownList.contains(item)){
-                shownList.add(item);
-            }
-        }
-        selectedCommunities.setVisibility(View.VISIBLE);
-        community_list_Adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onNegativeButtonClicked() {    }
-
-    @Override
-    public void onNeutralButtonClicked() {
-        shownList.clear();
-        community_list_Adapter.notifyDataSetChanged();
     }
 
     /**
@@ -261,7 +226,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     }
 
     /**
-     * Users selects communities to follow
+     * Set up communities dialog
      */
     public void setCommunities(){
         selectedCommunities = (ListView) findViewById(R.id.selectedCommunities);
@@ -276,5 +241,26 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                 communities_dialog.show(getSupportFragmentManager(), "Select communities");
             }
         });
+    }
+
+    @Override
+    public void onPositiveButtonClicked(String[] list, ArrayList<String> selectedList) {
+        shownList.clear();
+        String item = "";
+        for(int j = 0; j <selectedList.size(); j++){
+            item = selectedList.get(j);
+            if(!shownList.contains(item)){ shownList.add(item.trim()); }
+        }
+        selectedCommunities.setVisibility(View.VISIBLE);
+        community_list_Adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {    }
+
+    @Override
+    public void onNeutralButtonClicked() {
+        shownList.clear();
+        community_list_Adapter.notifyDataSetChanged();
     }
 }

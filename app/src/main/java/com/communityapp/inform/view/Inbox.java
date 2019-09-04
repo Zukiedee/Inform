@@ -29,7 +29,6 @@ public class Inbox extends AppCompatActivity {
     private CollectionReference msgsRef;
     private static final String ID_KEY = "Id";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

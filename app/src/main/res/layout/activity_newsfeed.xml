@@ -22,10 +22,6 @@
         app:headerLayout="@layout/nav_header_newsfeed"
         app:menu="@menu/activity_newsfeed_drawer" >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
     </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

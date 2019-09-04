@@ -9,10 +9,14 @@ import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.view.SubMenu;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -30,15 +34,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.communityapp.inform.model.Notice;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The main screen.
@@ -49,15 +58,18 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = database.collection("Notices");
-    Query query = noticesRef;
+    private Query query = noticesRef;
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
-    private ArrayList<String> communityList;
+    private String username;
+    TextView nav_username;
+    String currentcommunity ="";
 
     //database reference keys
     private static final String COMMUNITY_KEY = "Community";
     private static final String CATEGORY_KEY = "Category";
     private static final String ID_KEY = "Id";
+    private static final String USERNAME_KEY = "Username";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,12 +83,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog = new ProgressDialog(this);
 
         //retrieve communities user is following
-        communityList = new ArrayList<>();
-
-        communityList.add("UCT");
-        communityList.add("Rondebosch");
-        loadNotices();
-
+        loadNotices(currentcommunity);
         showMenu();
 
         //Create a notice button
@@ -120,15 +127,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     /**
      * Loads notices to be displayed in the general newsfeed
      */
-    private void loadNotices() {
+    private void loadNotices(String community) {
         progressDialog.setTitle("Loading data..");
         progressDialog.show();
 
-        query = noticesRef.orderBy(ID_KEY);
-
-        /*for (int i = 0; i<communityList.size(); i++){
-            query = query.whereEqualTo(COMMUNITY_KEY, communityList.get(i));
-        }*/
+        query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
@@ -149,7 +152,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     public void categoryNotice(String category){
         progressDialog.setTitle("Loading "+ category+"..");
         progressDialog.show();
-        Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, "UCT").whereEqualTo(CATEGORY_KEY, category).orderBy(ID_KEY);
+        Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, currentcommunity).whereEqualTo(CATEGORY_KEY, category).orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
@@ -170,15 +173,54 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        View view = navigationView.getHeaderView(0);
+        TextView nav_email = view.findViewById(R.id.main_email);
+
+        String email = mAuth.getCurrentUser().getEmail();
+        nav_email.setText(email);
+
+        DocumentReference userRef = database.document("Users/"+email);
+        userRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Toast.makeText(Newsfeed.this, "It exists", Toast.LENGTH_SHORT).show();
+                            nav_username = findViewById(R.id.main_username);
+
+                            username = documentSnapshot.getString(USERNAME_KEY);
+
+                            nav_username.setText(username);
+
+                            String communities = documentSnapshot.getString("Communities");
+                            ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
+
+                            Menu menu = navigationView.getMenu();
+                            SubMenu communitiesMenu = menu.addSubMenu("Communities");
+
+                            for (int i=0; i< communityList.size(); i++){
+                                communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
+                            }
+                            navigationView.invalidate();
+                            currentcommunity = communityList.get(0);
+                            loadNotices(currentcommunity);
+
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Newsfeed.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private void searchPosts(String searchQuery){
-
     }
 
     @Override
@@ -218,11 +260,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handles navigation view item clicks.
         int id = item.getItemId();
-        switch (id){
-            case R.id.nav_home:
-                //Navigate to user profile screen
-                loadNotices();
-                break;
+        String title = ""+item.getTitle();
+        switch (id) {
             case R.id.nav_profile:
                 //Navigate to user profile screen
                 Intent intentProfile = new Intent(Newsfeed.this, Profile.class);
@@ -233,49 +272,72 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
                 startActivity(intentInbox);
                 break;
-            case R.id.filter_news:
+
+            case R.id.nav_news:
                 //Display Local News posts notices
                 categoryNotice("Local News");
                 break;
-            case R.id.filter_crime:
+            case R.id.nav_crime:
                 //Display Crime Report notices
                 categoryNotice("Crime Report");
                 break;
-            case R.id.filter_pet:
+            case R.id.nav_pets:
                 //Display Missing Pet notices
                 categoryNotice("Missing Pet");
                 break;
-            case R.id.filter_events:
+            case R.id.nav_events:
                 //Display Entertainment & Events notices
                 categoryNotice("Events");
                 break;
-            case R.id.filter_fundraiser:
+            case R.id.nav_fundraiser:
                 //Display Fundraiser notices
                 categoryNotice("Fundraiser");
                 break;
-            case R.id.filter_tradesmen:
+            case R.id.nav_tradesmen:
                 //Display Tradesmen refferals notices
                 categoryNotice("Tradesmen Refferals");
                 break;
-            case R.id.filter_recommendations:
+            case R.id.nav_recommendations:
                 //Display Recommendations notices
                 categoryNotice("Recommendations");
                 break;
+            default:
+                NavigationView navigationView = findViewById(R.id.nav_view);
+                Menu menu =  navigationView.getMenu();
+                unCheckAllMenuItems(menu);
+                loadNotices(title);
+                currentcommunity = title;
+                item.setChecked(true);
+                break;
         }
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    @Override
-    public void onPositiveButtonClicked(String[] list, int pos) {
-        //
+    /**
+     * Unchecks all menu items when new menu item is clicked
+     * @param menu Navigation drawer menu
+     */
+    private void unCheckAllMenuItems(@NonNull final Menu menu) {
+        int size = menu.size();
+        for (int i = 0; i < size; i++) {
+            final MenuItem item = menu.getItem(i);
+            if(item.hasSubMenu()) {
+                // Un check sub menu items
+                unCheckAllMenuItems(item.getSubMenu());
+            } else {
+                item.setChecked(false);
+            }
+        }
     }
 
     @Override
-    public void onNegativeButtonClicked() {
-        //
-    }
+    public void onPositiveButtonClicked(String[] list, int pos) {    }
+
+    @Override
+    public void onNegativeButtonClicked() {    }
 
     @Override
     protected void attachBaseContext(Context newBase) {

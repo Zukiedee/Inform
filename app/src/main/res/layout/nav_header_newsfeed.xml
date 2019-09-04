@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorAccent"
     android:gravity="bottom"
     android:orientation="horizontal"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -15,18 +15,19 @@
         android:orientation="horizontal"
         android:padding="10dp">
 
-        <ImageView
-            android:id="@+id/main_profile_pic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/nav_header_desc"
-            app:srcCompat="@drawable/ic_profile" />
-
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/main_profile_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/nav_header_desc"
+                app:srcCompat="@drawable/ic_profile"
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,7 +40,8 @@
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:fontFamily="serif" />
+                app:fontFamily="serif"
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 android:id="@+id/main_email"
@@ -51,9 +53,9 @@
                 android:paddingStart="8dp"
                 android:text="@string/nav_header_subtitle"
                 android:textSize="16sp"
-                app:fontFamily="serif" />
+                app:fontFamily="serif"
+                android:layout_gravity="center_horizontal"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>
-
 </LinearLayout>
