@@ -3,9 +3,6 @@ package com.communityapp.inform.view;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.communityapp.inform.model.Notice;
-import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.RequestAdapter;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -83,19 +79,6 @@ public class RequestsAdmin extends AppCompatActivity {
         super.onStop();
         checkUserStatus();
         adapter.stopListening();
-    }
-
-    /**
-     * Makes accept and reject button visible to admin & user engagements i.e. like, comment, delete and set reminder invisible
-     */
-    private void visbility(){
-        Button accept = findViewById(R.id.accept_btn);
-        Button reject = findViewById(R.id.reject_btn);
-        accept.setVisibility(View.VISIBLE);
-        reject.setVisibility(View.VISIBLE);
-
-        LinearLayout user_engagements = findViewById(R.id.user_engagement);
-        user_engagements.setVisibility(View.GONE);
     }
 
     /**

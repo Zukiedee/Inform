@@ -1,5 +1,6 @@
 package com.communityapp.inform.view;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.multidex.MultiDex;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -76,7 +78,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         checkUserStatus();
 
         progressDialog = new ProgressDialog(this);
-
 
         loadNotices(currentcommunity);
         showMenu();
@@ -136,6 +137,19 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         noticeRecyclerView.setAdapter(adapter);
         progressDialog.dismiss();
         adapter.startListening();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(noticeRecyclerView);
     }
 
     /**
@@ -156,6 +170,19 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         noticeRecyclerView.setAdapter(adapter);
         progressDialog.dismiss();
         adapter.startListening();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(noticeRecyclerView);
     }
 
     /**
@@ -229,9 +256,20 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         int id = item.getItemId();
         //Logs user out of application. Directs user back to SignIn screen
         if (id == R.id.logout) {
-            mAuth.signOut();
-            Intent intentWelcome = new Intent(Newsfeed.this, SignIn.class);
-            startActivity(intentWelcome);
+            new AlertDialog.Builder(Newsfeed.this)
+                    .setTitle("Log out")
+                    .setMessage("Are you sure want to log out?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        mAuth.signOut();
+                        Intent intentWelcome = new Intent(Newsfeed.this, SignIn.class);
+                        startActivity(intentWelcome);
+                    })
+                    .setNegativeButton("No", (dialogInterface, i) -> {
+
+                    })
+                    .show();
+
+
         }
         return super.onOptionsItemSelected(item);
     }

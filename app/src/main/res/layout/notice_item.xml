@@ -210,24 +210,6 @@
                 android:textAllCaps="false"
                 android:textColor="@color/colorDate"
                 android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/removeNotice"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:drawableTop="@drawable/ic_delete"
-                android:text="@string/remove"
-                android:layout_margin="5dp"
-                android:textAlignment="center"
-                android:textSize="12sp"
-                android:clickable="true"
-                android:focusable="true"
-                android:textAllCaps="false"
-                android:visibility="visible"
-                android:textColor="@color/colorDate"
-                android:background="@color/white" />
-
         </LinearLayout>
 
         <LinearLayout

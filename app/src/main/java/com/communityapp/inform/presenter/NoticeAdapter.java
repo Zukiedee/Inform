@@ -3,7 +3,6 @@ package com.communityapp.inform.presenter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -48,20 +47,15 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
         noticeHolder.commentBtn.setOnClickListener(view -> {
             //Toast.makeText(context, "Commented", Toast.LENGTH_SHORT).show();
         });
-        noticeHolder.deleteBtn.setOnClickListener(view -> {
-            //Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
-            deleteItem(position);
-        });
     }
 
     /**
-     * Deletes notice item from firestore database
+     * Deletes notice document item from FireStore database
      * @param position position of notice in database
      */
-    private void deleteItem(int position){
+    public void deleteItem(int position){
         getSnapshots().getSnapshot(position).getReference().delete();
     }
-
 
     @NonNull
     @Override
@@ -85,7 +79,6 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             imgResource = itemView.findViewById(R.id.file);
             Community = itemView.findViewById(R.id.community);
 
-            deleteBtn = itemView.findViewById(R.id.removeNotice);
             likeBtn = itemView.findViewById(R.id.like);
             commentBtn = itemView.findViewById(R.id.comment);
         }
