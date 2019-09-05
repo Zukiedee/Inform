@@ -228,7 +228,8 @@
                 android:layout_margin="5dp"
                 android:textColor="@color/white"
                 android:background="@color/color_accept"
-                android:text="@string/accept" />
+                android:text="@string/accept"
+                tools:ignore="ButtonStyle" />
 
             <Button
                 android:id="@+id/reject_btn"
@@ -239,7 +240,8 @@
                 android:background="@color/color_reject"
                 android:textColor="@color/white"
                 android:text="@string/reject"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:ignore="ButtonStyle" />
         </LinearLayout>
 
     </RelativeLayout>

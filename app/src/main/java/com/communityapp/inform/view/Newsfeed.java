@@ -33,10 +33,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.communityapp.inform.model.Notice;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -57,6 +59,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = database.collection("Notices");
     private NoticeAdapter adapter;
+    private RelativeLayout relativeLayout;
     private ProgressDialog progressDialog;
     private String username;
     private TextView nav_username;
@@ -138,6 +141,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.dismiss();
         adapter.startListening();
 
+        RelativeLayout relativeLayout = findViewById(R.id.newsfeed);
+        //deleting notice items
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -148,6 +153,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         }).attachToRecyclerView(noticeRecyclerView);
     }
@@ -171,6 +177,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.dismiss();
         adapter.startListening();
 
+        RelativeLayout relativeLayout = findViewById(R.id.newsfeed);
+        //deleting notice items
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -181,6 +189,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         }).attachToRecyclerView(noticeRecyclerView);
     }
