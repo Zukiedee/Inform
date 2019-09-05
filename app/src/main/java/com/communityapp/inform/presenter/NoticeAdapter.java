@@ -42,45 +42,30 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             }
         }
 
-        noticeHolder.likeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, "Like", Toast.LENGTH_SHORT).show();
-            }
+        noticeHolder.likeBtn.setOnClickListener(view -> {
+            //Toast.makeText(context, "Like", Toast.LENGTH_SHORT).show();
         });
-        noticeHolder.commentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, "Commented", Toast.LENGTH_SHORT).show();
-            }
+        noticeHolder.commentBtn.setOnClickListener(view -> {
+            //Toast.makeText(context, "Commented", Toast.LENGTH_SHORT).show();
         });
-        noticeHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
-                deleteItem(i);
-            }
+        noticeHolder.deleteBtn.setOnClickListener(view -> {
+            //Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
+            deleteItem(i);
         });
 
 
-        noticeHolder.Accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Post to notices
+        noticeHolder.Accept.setOnClickListener(view -> {
+            //Post to notices
 
-                //send a message to user
+            //send a message to user
 
-                //remove request
-                deleteItem(i);
-            }
+            //remove request
+            deleteItem(i);
         });
 
-        noticeHolder.Reject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //delete request
-                deleteItem(i);
-            }
+        noticeHolder.Reject.setOnClickListener(view -> {
+            //delete request
+            deleteItem(i);
         });
     }
 
@@ -92,9 +77,6 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
         getSnapshots().getSnapshot(position).getReference().delete();
     }
 
-    private void setReminder(){
-
-    }
 
     @NonNull
     @Override
@@ -125,7 +107,6 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             deleteBtn = itemView.findViewById(R.id.removeNotice);
             likeBtn = itemView.findViewById(R.id.like);
             commentBtn = itemView.findViewById(R.id.comment);
-            TextView reminder = itemView.findViewById(R.id.add_reminder);
         }
     }
 }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,18 +22,18 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.Objects;
+
 public class RequestsAdmin extends AppCompatActivity {
 
-    private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference requests = database.collection("Requests");
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
-    private static final String ID_KEY = "Id";
+    //private static final String ID_KEY = "Id";
     private static final String COMMUNITY_KEY = "Community";
-    private Button Accept, Reject;
-    private LinearLayout user_engagements;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,7 +41,7 @@ public class RequestsAdmin extends AppCompatActivity {
         setContentView(R.layout.activity_inbox);
 
         //Back button on toolbar
-        getSupportActionBar().setTitle("Requests");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Requests");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAuth = FirebaseAuth.getInstance();
@@ -56,10 +55,7 @@ public class RequestsAdmin extends AppCompatActivity {
         String community ="UCT";
         loadRequests(community);
 
-        Accept = findViewById(R.id.accept_btn);
-        Reject = findViewById(R.id.reject_btn);
-
-        Accept.setOnClickListener(new View.OnClickListener() {
+        /*Accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(RequestsAdmin.this, "Accept button clicked", Toast.LENGTH_SHORT).show();
@@ -71,33 +67,33 @@ public class RequestsAdmin extends AppCompatActivity {
             public void onClick(View view) {
                 Toast.makeText(RequestsAdmin.this, "Accept button clicked", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         checkUserStatus();
-        //adapter.startListening();
+        adapter.startListening();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         checkUserStatus();
-        //adapter.stopListening();
+        adapter.stopListening();
     }
 
     /**
      * Makes accept and reject button visible to admin & user engagements i.e. like, comment, delete and set reminder invisible
      */
     private void visbility(){
-        Accept = findViewById(R.id.accept_btn);
-        Reject = findViewById(R.id.reject_btn);
-        Accept.setVisibility(View.VISIBLE);
-        Reject.setVisibility(View.VISIBLE);
+        Button accept = findViewById(R.id.accept_btn);
+        Button reject = findViewById(R.id.reject_btn);
+        accept.setVisibility(View.VISIBLE);
+        reject.setVisibility(View.VISIBLE);
 
-        user_engagements = findViewById(R.id.user_engagement);
+        LinearLayout user_engagements = findViewById(R.id.user_engagement);
         user_engagements.setVisibility(View.GONE);
     }
 
@@ -121,7 +117,7 @@ public class RequestsAdmin extends AppCompatActivity {
     private void loadRequests(String community) {
         progressDialog.setTitle("Loading requests...");
         progressDialog.show();
-        Query query = requests.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
+        Query query = requests.whereEqualTo(COMMUNITY_KEY, community);
 
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
@@ -129,18 +125,18 @@ public class RequestsAdmin extends AppCompatActivity {
 
         adapter = new NoticeAdapter(options);
         progressDialog.dismiss();
-        noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        RecyclerView noticeRecyclerView = findViewById(R.id.inbox_recyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
         adapter.startListening();
     }
 
-    private void Accept(int position){
+    /*private void Accept(int position){
 
     }
 
     private void Reject(int position){
 
-    }
+    }*/
 }

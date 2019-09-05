@@ -1,15 +1,10 @@
 package com.communityapp.inform.view;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -22,39 +17,31 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.communityapp.inform.model.Notification;
 import com.example.inform.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * User creates a notice by selecting a notice category, relevant notices are then shown and user submits notice.
+ * Certain notice categories require admin approval.
  */
 public class createNotice extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 100;
@@ -67,7 +54,6 @@ public class createNotice extends AppCompatActivity {
     private Button submit;
     private String category, name, email, communities;
     private ProgressDialog progressDialog;
-    private ArrayAdapter<String> dataAdapter;   //display of user selected communities
 
     String collectionPath;
     boolean postDisclaimer;
@@ -85,7 +71,7 @@ public class createNotice extends AppCompatActivity {
     private static final String USERNAME_KEY = "Username";
     private static final String UID_KEY = "User ID";
 
-    private ArrayList<String> admin_requests = new ArrayList<String>(Arrays.asList("Events/Entertainment", "Tradesmen Referrals", "Fundraiser"));
+    private ArrayList<String> admin_requests = new ArrayList<>(Arrays.asList("Events/Entertainment", "Tradesmen Referrals", "Fundraiser"));
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +79,7 @@ public class createNotice extends AppCompatActivity {
         setContentView(R.layout.activity_create_notice);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Create Notice");
+        Objects.requireNonNull(actionBar).setTitle("Create Notice");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -120,7 +106,8 @@ public class createNotice extends AppCompatActivity {
         Body.addTextChangedListener(createNotice);
 
         final String[] community_categories = getResources().getStringArray(R.array.communities_options);
-        dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, community_categories);
+        //display of user selected communities
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, community_categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         communities_categories.setAdapter(dataAdapter);
         communities_categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -136,12 +123,7 @@ public class createNotice extends AppCompatActivity {
         });
 
         //uploading an image from user gallery
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pickFromGallery();
-            }
-        });
+        upload.setOnClickListener(view -> pickFromGallery());
         submitNotice();
     }
 
@@ -172,22 +154,14 @@ public class createNotice extends AppCompatActivity {
     private void loadUserInfo() {
         DocumentReference userRef = database.document("Users/"+email);
         userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            name = documentSnapshot.getString(USERNAME_KEY);
-                        }else {
-                            Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
-                        }
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        name = documentSnapshot.getString(USERNAME_KEY);
+                    }else {
+                        Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnFailureListener(e -> Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
     /**
@@ -267,21 +241,23 @@ public class createNotice extends AppCompatActivity {
         communities_categories.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Sets disclaimer message for users depending on the notice category selected.
+     * If notice needs admin approval, sets red disclaimer message to alert user that it will not be posted in the communities newsfeed.
+     * If notice does not need admin approval, sets green disclaimer message let the user know it will posted straight to the newsfeed.
+     * @param request True if notice needs approval. False if notice does not require approval.
+     */
     private void setDisclaimer(boolean request){
         if (request){
-            disclaimer.setText("This notice will be sent to Admin for approval before it is posted.");
+            disclaimer.setText(R.string.disclaimermsg);
             disclaimer.setTextColor(getResources().getColor(R.color.color_reject));
         }
         else {
-            disclaimer.setText("This notice will be posted to the community's newsfeed.");
+            disclaimer.setText(R.string.no_disclaimer);
             disclaimer.setTextColor(getResources().getColor(R.color.color_accept));
         }
         postDisclaimer = request;
 
-    }
-
-    private boolean getDisclaimer(){
-        return postDisclaimer;
     }
     /**
      * Displays relevant local news categories to user
@@ -374,6 +350,9 @@ public class createNotice extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {}
     };
 
+    /**
+     * Selects image from users phone gallery to be attached to their notice
+     */
     private void pickFromGallery(){
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
@@ -383,6 +362,7 @@ public class createNotice extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
+            assert data != null;
             image_uri = data.getData();
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageURI(image_uri);
@@ -405,81 +385,69 @@ public class createNotice extends AppCompatActivity {
 
         //formatting date of notice
         Date currentDate = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d ''yy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d ''yy");
         String DatetoString = format.format(currentDate);
 
         //post with image
         if (!uri.equals("noImage")){
             StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
             ref.putFile(Uri.parse(uri))
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //image is uploaded to firebase storage, now get its url
-                            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                    .addOnSuccessListener(taskSnapshot -> {
+                        //image is uploaded to firebase storage, now get its url
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
 
-                            while (!uriTask.isSuccessful());
+                        while (!uriTask.isSuccessful());
 
-                            String downloadURI = uriTask.getResult().toString();
+                        String downloadURI = Objects.requireNonNull(uriTask.getResult()).toString();
 
 
-                            if (postDisclaimer) { collectionPath = "Requests"; }
-                            else { collectionPath = "Notices"; }
+                        if (postDisclaimer) { collectionPath = "Requests"; }
+                        else { collectionPath = "Notices"; }
 
-                            if (uriTask.isSuccessful()){
-                                // url is received upload post to firebase
-                                HashMap<String, String> hashMap = new HashMap<>();
-                                hashMap.put(CATEGORY_KEY, category);
-                                hashMap.put(DATE_KEY, DatetoString);
-                                hashMap.put(DESCRIPTION_KEY, body);
-                                hashMap.put(ID_KEY, timeStamp);
-                                hashMap.put(IMAGE_KEY, downloadURI);
-                                hashMap.put(TITLE_KEY, title);
-                                hashMap.put(USERNAME_KEY, name);
-                                hashMap.put(COMMUNITY_KEY, communities);
-                                hashMap.put(UID_KEY, email);
+                        if (uriTask.isSuccessful()){
+                            // url is received upload post to firebase
+                            HashMap<String, String> hashMap = new HashMap<>();
+                            hashMap.put(CATEGORY_KEY, category);
+                            hashMap.put(DATE_KEY, DatetoString);
+                            hashMap.put(DESCRIPTION_KEY, body);
+                            hashMap.put(ID_KEY, timeStamp);
+                            hashMap.put(IMAGE_KEY, downloadURI);
+                            hashMap.put(TITLE_KEY, title);
+                            hashMap.put(USERNAME_KEY, name);
+                            hashMap.put(COMMUNITY_KEY, communities);
+                            hashMap.put(UID_KEY, email);
 
-                                database.collection(collectionPath).document(timeStamp).set(hashMap)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (postDisclaimer){
-                                                    CollectionReference notifications = database.collection("Users/"+email+"/Messages");
-                                                    HashMap<String, Object> msg = new HashMap<>();
-                                                    Notification notification = new Notification(title, DatetoString);
-                                                    msg.put("Title", title);
-                                                    msg.put("Date", DatetoString);
-                                                    msg.put("Status", notification.getStatus());
-                                                    msg.put("Message", notification.getMessage());
-                                                    msg.put("Id", timeStamp);
-                                                    notifications.document(timeStamp).set(msg);
-                                                    Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
-                                                }
-                                                else {
-                                                    Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
-                                                }
-                                                progressDialog.dismiss();
-                                                Intent done = new Intent(createNotice.this, Newsfeed.class);
-                                                startActivity(done);
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(createNotice.this, "Error occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-                            }
+                            database.collection(collectionPath).document(timeStamp).set(hashMap)
+                                    .addOnCompleteListener(task -> {
+                                        if (postDisclaimer){
+                                            CollectionReference notifications = database.collection("Users/"+email+"/Messages");
+                                            HashMap<String, Object> msg = new HashMap<>();
+                                            Notification notification = new Notification(title, DatetoString);
+                                            msg.put("Title", title);
+                                            msg.put("Date", DatetoString);
+                                            msg.put("Status", notification.getStatus());
+                                            msg.put("Message", notification.getMessage());
+                                            msg.put("Id", timeStamp);
+                                            notifications.document(timeStamp).set(msg);
+                                            Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
+                                        }
+                                        else {
+                                            Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
+                                        }
+                                        progressDialog.dismiss();
+                                        Intent done = new Intent(createNotice.this, Newsfeed.class);
+                                        startActivity(done);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(createNotice.this, "Error occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    });
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            //failed uploading image
-                            progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "Error occurred" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                    .addOnFailureListener(e -> {
+                        //failed uploading image
+                        progressDialog.dismiss();
+                        Toast.makeText(createNotice.this, "Error occurred" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
         else {
@@ -499,35 +467,30 @@ public class createNotice extends AppCompatActivity {
 
             //put data in this database
             database.collection(collectionPath).document(timeStamp).set(hashMap)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (postDisclaimer){
-                                CollectionReference notifications = database.collection("Users/"+email+"/Messages");
-                                HashMap<String, Object> msg = new HashMap<>();
-                                Notification notification = new Notification(title, DatetoString);
-                                msg.put("Title", title);
-                                msg.put("Date", DatetoString);
-                                msg.put("Status", notification.getStatus());
-                                msg.put("Message", notification.getMessage());
-                                notifications.document(timeStamp).set(msg);
-                                Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
+                    .addOnCompleteListener(task -> {
+                        if (postDisclaimer){
+                            CollectionReference notifications = database.collection("Users/"+email+"/Messages");
+                            HashMap<String, Object> msg = new HashMap<>();
+                            Notification notification = new Notification(title, DatetoString);
+                            msg.put("Title", title);
+                            msg.put("Date", DatetoString);
+                            msg.put("Status", notification.getStatus());
+                            msg.put("Message", notification.getMessage());
+                            msg.put("Id", timeStamp);
+                            notifications.document(timeStamp).set(msg);
+                            Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
 
-                            }
-                            else {
-                                Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
-                            }
-                            progressDialog.dismiss();
-                            Intent done = new Intent(createNotice.this, Newsfeed.class);
-                            startActivity(done);
                         }
+                        else {
+                            Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
+                        }
+                        progressDialog.dismiss();
+                        Intent done = new Intent(createNotice.this, Newsfeed.class);
+                        startActivity(done);
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "Error Occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(createNotice.this, "Error Occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
                     });
         }
     }
@@ -536,16 +499,13 @@ public class createNotice extends AppCompatActivity {
      * User clicks submit button and the notice is published to the databsase
      */
     private void submitNotice(){
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String title = Title.getText().toString().trim();
-                String body = Body.getText().toString().trim();
-                //post without image
-                if (image_uri == null){ uploadData(title, body, "noImage"); }
-                //post with image
-                else { uploadData(title, body, String.valueOf(image_uri)); }
-            }
+        submit.setOnClickListener(view -> {
+            String title = Title.getText().toString().trim();
+            String body = Body.getText().toString().trim();
+            //post without image
+            if (image_uri == null){ uploadData(title, body, "noImage"); }
+            //post with image
+            else { uploadData(title, body, String.valueOf(image_uri)); }
         });
     }
 }

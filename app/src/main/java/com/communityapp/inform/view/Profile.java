@@ -1,9 +1,5 @@
 package com.communityapp.inform.view;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,19 +16,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+
 import com.communityapp.inform.presenter.Add_Communities_Dialog;
 import com.example.inform.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * User profile interface
@@ -55,7 +52,6 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     //firebase
     private FirebaseUser user;
     private FirebaseFirestore database;
-    private DocumentReference userRef;
 
     //User database fields
     private static final String USERNAME_KEY = "Username";
@@ -70,7 +66,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        getSupportActionBar().setTitle("Edit Profile");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Edit Profile");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -95,44 +91,36 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     private void DisplayInfo() {
         progressDialog.setTitle("Loading profile..");
         progressDialog.show();
-        userRef = database.collection("Users").document(user.getEmail());
+        DocumentReference userRef = database.collection("Users").document(Objects.requireNonNull(user.getEmail()));
         userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()){
-                            String uname = documentSnapshot.getString(USERNAME_KEY);
-                            String type = documentSnapshot.getString(TYPE_KEY);
-                            String communities = documentSnapshot.getString(COMMUNITIES_KEY).trim();
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()){
+                        String uname = documentSnapshot.getString(USERNAME_KEY);
+                        String type = documentSnapshot.getString(TYPE_KEY);
+                        String communities = Objects.requireNonNull(documentSnapshot.getString(COMMUNITIES_KEY)).trim();
 
-                            username.setText(uname);
+                        username.setText(uname);
 
-                            int type_position = dataAdapter.getPosition(type);
-                            if (type_position == -1) user_type_spinner.setSelection(0);
-                            else user_type_spinner.setSelection(type_position);
+                        int type_position = dataAdapter.getPosition(type);
+                        if (type_position == -1) user_type_spinner.setSelection(0);
+                        else user_type_spinner.setSelection(type_position);
 
-                            shownList = new ArrayList<String>(Arrays.asList(communities.split(",")));
-                            selectedCommunities.setVisibility(View.VISIBLE);
-                            community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
-                            selectedCommunities.setAdapter(community_list_Adapter);
+                        shownList = new ArrayList<>(Arrays.asList(communities.split(",")));
+                        selectedCommunities.setVisibility(View.VISIBLE);
+                        community_list_Adapter = new ArrayAdapter<>(Profile.this, android.R.layout.simple_list_item_1, shownList);
+                        selectedCommunities.setAdapter(community_list_Adapter);
 
-                            progressDialog.dismiss();
+                        progressDialog.dismiss();
+                    }
+                    else {
+                        if (user.getDisplayName()!=null){
+                            username.setText(user.getDisplayName());
                         }
-                        else {
-                            if (user.getDisplayName()!=null){
-                                username.setText(user.getDisplayName());
-                            }
-                            progressDialog.dismiss();
-                            Toast.makeText(Profile.this, "Welcome! Please complete your profile", Toast.LENGTH_SHORT).show();
-                        }
+                        progressDialog.dismiss();
+                        Toast.makeText(Profile.this, "Welcome! Please complete your profile", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(Profile.this, "Error Occured!" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnFailureListener(e -> Toast.makeText(Profile.this, "Error Occured!" + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -184,22 +172,14 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
             userMap.put(COMMUNITIES_KEY, comm.substring(1,(comm.length()-1)).trim());
 
             database.document("Users/" + user_email).set(userMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            //user profile successfully updated to database
-                            Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
-                            Intent intentMain = new Intent(Profile.this, Newsfeed.class);
-                            intentMain.putExtra("Communities", communities);
-                            startActivity(intentMain);
-                        }
+                    .addOnSuccessListener(aVoid -> {
+                        //user profile successfully updated to database
+                        Toast.makeText(Profile.this, "Profile Updated!", Toast.LENGTH_SHORT).show();
+                        Intent intentMain = new Intent(Profile.this, Newsfeed.class);
+                        intentMain.putExtra("Communities", communities);
+                        startActivity(intentMain);
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(Profile.this, "Failed to updated profile: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    .addOnFailureListener(e -> Toast.makeText(Profile.this, "Failed to updated profile: "+ e.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -229,24 +209,21 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
      * Set up communities dialog
      */
     public void setCommunities(){
-        selectedCommunities = (ListView) findViewById(R.id.selectedCommunities);
+        selectedCommunities = findViewById(R.id.selectedCommunities);
         shownList = new ArrayList<>();
-        community_list_Adapter = new ArrayAdapter<String>(Profile.this, android.R.layout.simple_list_item_1, shownList);
+        community_list_Adapter = new ArrayAdapter<>(Profile.this, android.R.layout.simple_list_item_1, shownList);
         selectedCommunities.setAdapter(community_list_Adapter);
-        add_communities.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogFragment communities_dialog = new Add_Communities_Dialog();
-                communities_dialog.setCancelable(false);
-                communities_dialog.show(getSupportFragmentManager(), "Select communities");
-            }
+        add_communities.setOnClickListener(view -> {
+            DialogFragment communities_dialog = new Add_Communities_Dialog();
+            communities_dialog.setCancelable(false);
+            communities_dialog.show(getSupportFragmentManager(), "Select communities");
         });
     }
 
     @Override
     public void onPositiveButtonClicked(String[] list, ArrayList<String> selectedList) {
         shownList.clear();
-        String item = "";
+        String item;
         for(int j = 0; j <selectedList.size(); j++){
             item = selectedList.get(j);
             if(!shownList.contains(item)){ shownList.add(item.trim()); }

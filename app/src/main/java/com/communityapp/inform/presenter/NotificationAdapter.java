@@ -35,7 +35,7 @@ public class NotificationAdapter extends FirestoreRecyclerAdapter<Notification, 
     class NotificationHolder extends RecyclerView.ViewHolder{
         TextView Subject, Status, Message, Date;
 
-        public NotificationHolder(@NonNull View itemView) {
+        NotificationHolder(@NonNull View itemView) {
             super(itemView);
             Subject = itemView.findViewById(R.id.subject);
             Status = itemView.findViewById(R.id.status);

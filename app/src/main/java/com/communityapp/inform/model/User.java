@@ -1,7 +1,5 @@
 package com.communityapp.inform.model;
 
-import java.util.ArrayList;
-
 /**
  * User profile account details containing username and
  */

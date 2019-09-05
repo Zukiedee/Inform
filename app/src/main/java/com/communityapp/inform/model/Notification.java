@@ -8,11 +8,12 @@ public class Notification {
     private String Title, Status, Message, Date;
 
     /**
-     * Empty constructor - needed
+     * Empty default constructor method
      */
     public Notification(){}
 
     /**
+     * Constructor method
      * Default system notification sent to user, when request is made
      * @param header Title of the notification i.e. requested post name.
      * @param date Date the notification is sent

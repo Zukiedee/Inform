@@ -9,8 +9,6 @@ import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.SubMenu;
@@ -33,7 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,12 +39,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * The main newsfeed screen.
@@ -59,7 +56,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = database.collection("Notices");
-    private Query query = noticesRef;
     private NoticeAdapter adapter;
     private ProgressDialog progressDialog;
     private String username;
@@ -88,12 +84,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         //Create a notice button
         FloatingActionButton fab = findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
-                startActivity(intentCreateNotice);
-            }
+        fab.setOnClickListener(view -> {
+            Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
+            startActivity(intentCreateNotice);
         });
     }
 
@@ -132,7 +125,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.setTitle("Loading notices..");
         progressDialog.show();
 
-        query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
+        Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
@@ -178,40 +171,35 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         View view = navigationView.getHeaderView(0);
         TextView nav_email = view.findViewById(R.id.main_email);
 
-        String email = mAuth.getCurrentUser().getEmail();
+        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
         nav_email.setText(email);
 
         DocumentReference userRef = database.document("Users/"+email);
         userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            nav_username = findViewById(R.id.main_username);
-                            username = documentSnapshot.getString(USERNAME_KEY);
-                            nav_username.setText(username);
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        nav_username = findViewById(R.id.main_username);
+                        username = documentSnapshot.getString(USERNAME_KEY);
+                        nav_username.setText(username);
 
-                            //retrieve communities from user's profile and display it in the navigation drawer menu
-                            String communities = documentSnapshot.getString("Communities");
-                            ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
+                        //retrieve communities from user's profile and display it in the navigation drawer menu
+                        String communities = documentSnapshot.getString("Communities");
+                        assert communities != null;
+                        ArrayList<String> communityList = new ArrayList<>(Arrays.asList(communities.split(",")));
 
-                            Menu menu = navigationView.getMenu();
-                            SubMenu communitiesMenu = menu.addSubMenu("Communities");
-                            for (int i=0; i< communityList.size(); i++){
-                                communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
-                            }
-                            navigationView.invalidate();
-                            currentcommunity = communityList.get(0);
-                            getSupportActionBar().setTitle(currentcommunity);
+                        Menu menu = navigationView.getMenu();
+                        SubMenu communitiesMenu = menu.addSubMenu("Communities");
+                        for (int i=0; i< communityList.size(); i++){
+                            communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
                         }
+                        navigationView.invalidate();
+                        currentcommunity = communityList.get(0);
+                        Objects.requireNonNull(getSupportActionBar()).setTitle(currentcommunity);
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(Newsfeed.this, "Error: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(Newsfeed.this, Profile.class));
-                    }
+                .addOnFailureListener(e -> {
+                    Toast.makeText(Newsfeed.this, "Error: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Newsfeed.this, Profile.class));
                 });
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -236,7 +224,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         //Logs user out of application. Directs user back to SignIn screen
         if (id == R.id.logout) {
@@ -248,7 +236,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handles navigation view item clicks.
         int id = item.getItemId();
         String title = ""+item.getTitle();
@@ -298,7 +286,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 unCheckAllMenuItems(menu);
                 loadNotices(title);
                 currentcommunity = title;
-                getSupportActionBar().setTitle(currentcommunity);
+                Objects.requireNonNull(getSupportActionBar()).setTitle(currentcommunity);
                 item.setChecked(true);
                 break;
         }

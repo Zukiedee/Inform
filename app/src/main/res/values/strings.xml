@@ -72,6 +72,8 @@
     <string name="remove">Remove</string>
     <string name="file_attachment">file attachment</string>
     <string name="enter_email">Enter email address</string>
+    <string name="no_disclaimer">This notice will be posted to the selected community\'s newsfeed.</string>
+    <string name="disclaimermsg">This notice will be sent to Admin for approval before it is posted.</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

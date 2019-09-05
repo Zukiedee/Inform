@@ -19,17 +19,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.Objects;
+
 /**
  * Inbox from admin regarding post notification statuses will be posted here
  */
 public class Inbox extends AppCompatActivity {
-    private RecyclerView msgRecyclerView;
     private NotificationAdapter adapter;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference msgsRef;
     private ProgressDialog progressDialog;
-    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +37,14 @@ public class Inbox extends AppCompatActivity {
         setContentView(R.layout.activity_inbox);
 
         //Back button on toolbar
-        getSupportActionBar().setTitle("Inbox");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Inbox");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         progressDialog = new ProgressDialog(this);
 
         mAuth = FirebaseAuth.getInstance();
         checkUserStatus();
-        email = mAuth.getCurrentUser().getEmail();
+        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
         msgsRef = database.collection("Users/"+email+"/Messages");
         loadMessages();
     }
@@ -83,14 +83,15 @@ public class Inbox extends AppCompatActivity {
         progressDialog.setTitle("Loading messages..");
         progressDialog.show();
 
-        Query query = msgsRef;
+        String ID_KEY = "Id";
+        Query query = msgsRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notification> options = new FirestoreRecyclerOptions.Builder<Notification>()
                 .setQuery(query, Notification.class)
                 .build();
 
         adapter = new NotificationAdapter(options);
 
-        msgRecyclerView = findViewById(R.id.inbox_recyclerView);
+        RecyclerView msgRecyclerView = findViewById(R.id.inbox_recyclerView);
         msgRecyclerView.setHasFixedSize(true);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         msgRecyclerView.setAdapter(adapter);
