@@ -62,9 +62,9 @@
     <string name="reject">Reject</string>
     <string name="status">Status</string>
     <string name="filterby">Filter by</string>
-    <string name="crime_report">Crime Report</string>
+    <string name="crime_report">Crime Reports</string>
     <string name="local_news">Local News</string>
-    <string name="missing_pet">Missing Pet</string>
+    <string name="missing_pet">Missing Pets</string>
     <string name="events">Events/Entertainment</string>
     <string name="tradesmen_refferals">Tradesmen Referrals</string>
     <string name="fundraiser">Fundraiser</string>

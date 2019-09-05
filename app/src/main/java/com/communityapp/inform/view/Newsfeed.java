@@ -129,7 +129,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
      * @param community Community to filter notices by.
      */
     private void loadNotices(String community) {
-        progressDialog.setTitle("Loading data..");
+        progressDialog.setTitle("Loading notices..");
         progressDialog.show();
 
         query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
@@ -264,31 +264,31 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
                 startActivity(intentInbox);
                 break;
-            case R.id.nav_news:
+            case R.id.news:
                 //Display Local News posts notices
                 categoryNotice("Local News");
                 break;
-            case R.id.nav_crime:
+            case R.id.crime:
                 //Display Crime Report notices
                 categoryNotice("Crime Report");
                 break;
-            case R.id.nav_pets:
+            case R.id.pets:
                 //Display Missing Pet notices
                 categoryNotice("Missing Pet");
                 break;
-            case R.id.nav_events:
+            case R.id.events:
                 //Display Entertainment & Events notices
                 categoryNotice("Events");
                 break;
-            case R.id.nav_fundraiser:
+            case R.id.fundraiser:
                 //Display Fundraiser notices
                 categoryNotice("Fundraiser");
                 break;
-            case R.id.nav_tradesmen:
+            case R.id.tradesmen:
                 //Display Tradesmen referrals notices
                 categoryNotice("Tradesmen Referrals");
                 break;
-            case R.id.nav_recommendations:
+            case R.id.recommendations:
                 //Display Recommendations notices
                 categoryNotice("Recommendations");
                 break;

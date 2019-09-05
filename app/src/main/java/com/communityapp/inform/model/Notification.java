@@ -8,6 +8,11 @@ public class Notification {
     private String Title, Status, Message, Date;
 
     /**
+     * Empty constructor - needed
+     */
+    public Notification(){}
+
+    /**
      * Default system notification sent to user, when request is made
      * @param header Title of the notification i.e. requested post name.
      * @param date Date the notification is sent
@@ -39,9 +44,7 @@ public class Notification {
      * Returns notification title.
      * @return Title of the notification  i.e. requested post name.
      */
-    public String getTitle(){
-        return Title;
-    }
+    public String getTitle(){ return Title; }
 
     /**
      * Returns message sent to user regarding status of requested notice
@@ -55,9 +58,7 @@ public class Notification {
      * Returns date the notification is sent.
      * @return Date of notification.
      */
-    public String getDate(){
-        return Date;
-    }
+    public String getDate(){ return Date; }
 
     /**
      * Returns the status of the notification.

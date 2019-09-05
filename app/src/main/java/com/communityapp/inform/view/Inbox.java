@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -27,7 +28,7 @@ public class Inbox extends AppCompatActivity {
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference msgsRef;
-    private static final String ID_KEY = "Id";
+    private ProgressDialog progressDialog;
     private String email;
 
     @Override
@@ -38,6 +39,9 @@ public class Inbox extends AppCompatActivity {
         //Back button on toolbar
         getSupportActionBar().setTitle("Inbox");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        progressDialog = new ProgressDialog(this);
+
         mAuth = FirebaseAuth.getInstance();
         checkUserStatus();
         email = mAuth.getCurrentUser().getEmail();
@@ -76,7 +80,10 @@ public class Inbox extends AppCompatActivity {
      * Loads all messages sent to user in their account
      */
     private void loadMessages() {
-        Query query = msgsRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
+        progressDialog.setTitle("Loading messages..");
+        progressDialog.show();
+
+        Query query = msgsRef;
         FirestoreRecyclerOptions<Notification> options = new FirestoreRecyclerOptions.Builder<Notification>()
                 .setQuery(query, Notification.class)
                 .build();
@@ -87,5 +94,7 @@ public class Inbox extends AppCompatActivity {
         msgRecyclerView.setHasFixedSize(true);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         msgRecyclerView.setAdapter(adapter);
+        adapter.startListening();
+        progressDialog.dismiss();
     }
 }

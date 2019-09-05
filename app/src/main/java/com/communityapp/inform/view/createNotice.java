@@ -69,7 +69,8 @@ public class createNotice extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private ArrayAdapter<String> dataAdapter;   //display of user selected communities
 
-    String collectionPath = "";
+    String collectionPath;
+    boolean postDisclaimer;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore database;
@@ -84,7 +85,7 @@ public class createNotice extends AppCompatActivity {
     private static final String USERNAME_KEY = "Username";
     private static final String UID_KEY = "User ID";
 
-    private ArrayList<String> admin_requests = new ArrayList<String>(Arrays.asList("Events", "Tradesman referrals", "Fundraiser"));
+    private ArrayList<String> admin_requests = new ArrayList<String>(Arrays.asList("Events/Entertainment", "Tradesmen Referrals", "Fundraiser"));
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -266,7 +267,7 @@ public class createNotice extends AppCompatActivity {
         communities_categories.setVisibility(View.VISIBLE);
     }
 
-    private void setDisclaimer(Boolean request){
+    private void setDisclaimer(boolean request){
         if (request){
             disclaimer.setText("This notice will be sent to Admin for approval before it is posted.");
             disclaimer.setTextColor(getResources().getColor(R.color.color_reject));
@@ -275,6 +276,12 @@ public class createNotice extends AppCompatActivity {
             disclaimer.setText("This notice will be posted to the community's newsfeed.");
             disclaimer.setTextColor(getResources().getColor(R.color.color_accept));
         }
+        postDisclaimer = request;
+
+    }
+
+    private boolean getDisclaimer(){
+        return postDisclaimer;
     }
     /**
      * Displays relevant local news categories to user
@@ -282,7 +289,7 @@ public class createNotice extends AppCompatActivity {
     private void showNews(){
         category = "Local News";
         setBaseCategoryVisible();
-        setDisclaimer(false);
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Headline");
         Body.setHint("Description");
     }
@@ -293,7 +300,7 @@ public class createNotice extends AppCompatActivity {
     private void showCrime(){
         category = "Crime Report";
         setBaseCategoryVisible();
-        setDisclaimer(false);
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Report Title");
         Body.setHint("Description");
     }
@@ -304,7 +311,7 @@ public class createNotice extends AppCompatActivity {
     private void showEvents(){
         category = "Events/Entertainment";
         setBaseCategoryVisible();
-        setDisclaimer(true);
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Event Name");
         Body.setHint("Description");
     }
@@ -315,7 +322,7 @@ public class createNotice extends AppCompatActivity {
     private void showFundraiser(){
         category = "Fundraiser";
         setBaseCategoryVisible();
-        setDisclaimer(true);
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Fundraiser Name");
         Body.setHint("Description");
     }
@@ -326,7 +333,7 @@ public class createNotice extends AppCompatActivity {
     private void showPet(){
         category = "Missing Pet";
         setBaseCategoryVisible();
-        setDisclaimer(false);
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Title");
         Body.setHint("Description of pet, date last seen");
     }
@@ -337,7 +344,7 @@ public class createNotice extends AppCompatActivity {
     private void showTradesmen(){
         category = "Tradesmen Referrals";
         setBaseCategoryVisible();
-        setDisclaimer(true);
+        setDisclaimer(admin_requests.contains(category));
     }
 
     /**
@@ -346,7 +353,7 @@ public class createNotice extends AppCompatActivity {
     private void showRecommendations(){
         category = "Recommendations";
         setBaseCategoryVisible();
-        setDisclaimer(false);
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Recommendation title");
         Body.setHint("Description");
     }
@@ -416,7 +423,7 @@ public class createNotice extends AppCompatActivity {
                             String downloadURI = uriTask.getResult().toString();
 
 
-                            if (admin_requests.contains(category)) { collectionPath = "Requests"; }
+                            if (postDisclaimer) { collectionPath = "Requests"; }
                             else { collectionPath = "Notices"; }
 
                             if (uriTask.isSuccessful()){
@@ -436,19 +443,22 @@ public class createNotice extends AppCompatActivity {
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if (collectionPath.equals("Requests")){
+                                                if (postDisclaimer){
                                                     CollectionReference notifications = database.collection("Users/"+email+"/Messages");
                                                     HashMap<String, Object> msg = new HashMap<>();
                                                     Notification notification = new Notification(title, DatetoString);
-
                                                     msg.put("Title", title);
                                                     msg.put("Date", DatetoString);
                                                     msg.put("Status", notification.getStatus());
                                                     msg.put("Message", notification.getMessage());
+                                                    msg.put("Id", timeStamp);
                                                     notifications.document(timeStamp).set(msg);
+                                                    Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
+                                                }
+                                                else {
+                                                    Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
                                                 }
                                                 progressDialog.dismiss();
-                                                Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
                                                 Intent done = new Intent(createNotice.this, Newsfeed.class);
                                                 startActivity(done);
                                             }
@@ -457,7 +467,7 @@ public class createNotice extends AppCompatActivity {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 progressDialog.dismiss();
-                                                Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                Toast.makeText(createNotice.this, "Error occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
                                             }
                                         });
                             }
@@ -468,7 +478,7 @@ public class createNotice extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             //failed uploading image
                             progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "Error occured" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(createNotice.this, "Error occurred" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -484,8 +494,7 @@ public class createNotice extends AppCompatActivity {
             hashMap.put(COMMUNITY_KEY, communities);
             hashMap.put(UID_KEY, email);
 
-            String collectionPath = "";
-            if (admin_requests.contains(category)) { collectionPath = "Requests"; }
+            if (postDisclaimer) { collectionPath = "Requests"; }
             else { collectionPath = "Notices"; }
 
             //put data in this database
@@ -493,6 +502,22 @@ public class createNotice extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            if (postDisclaimer){
+                                CollectionReference notifications = database.collection("Users/"+email+"/Messages");
+                                HashMap<String, Object> msg = new HashMap<>();
+                                Notification notification = new Notification(title, DatetoString);
+                                msg.put("Title", title);
+                                msg.put("Date", DatetoString);
+                                msg.put("Status", notification.getStatus());
+                                msg.put("Message", notification.getMessage());
+                                notifications.document(timeStamp).set(msg);
+                                Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
+
+                            }
+                            else {
+                                Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
+                            }
+                            progressDialog.dismiss();
                             Intent done = new Intent(createNotice.this, Newsfeed.class);
                             startActivity(done);
                         }
@@ -501,7 +526,7 @@ public class createNotice extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(createNotice.this, "Error Occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
         }
