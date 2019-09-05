@@ -385,7 +385,7 @@ public class createNotice extends AppCompatActivity {
 
         //formatting date of notice
         Date currentDate = new Date();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d ''yy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d yyyy");
         String DatetoString = format.format(currentDate);
 
         //post with image
