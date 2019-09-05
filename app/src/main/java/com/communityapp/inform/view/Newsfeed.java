@@ -50,8 +50,7 @@ import java.util.Objects;
  * The main newsfeed screen.
  * Community posts will be displayed here depending on the communities selected by users in their profile.
  */
-public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        ReminderDialog.SingleChoiceListener  {
+public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener  {
     private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -78,6 +77,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         checkUserStatus();
 
         progressDialog = new ProgressDialog(this);
+
 
         loadNotices(currentcommunity);
         showMenu();
@@ -195,6 +195,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                         navigationView.invalidate();
                         currentcommunity = communityList.get(0);
                         Objects.requireNonNull(getSupportActionBar()).setTitle(currentcommunity);
+                        loadNotices(currentcommunity);
                     }
                 })
                 .addOnFailureListener(e -> {
