@@ -81,6 +81,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         checkUserStatus();
 
         progressDialog = new ProgressDialog(this);
+        relativeLayout = findViewById(R.id.newsfeed);
 
         loadNotices(currentcommunity);
         showMenu();
@@ -141,21 +142,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.dismiss();
         adapter.startListening();
 
-        RelativeLayout relativeLayout = findViewById(R.id.newsfeed);
-        //deleting notice items
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        }).attachToRecyclerView(noticeRecyclerView);
+        deleteNotice(noticeRecyclerView);
     }
 
     /**
@@ -177,7 +164,14 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.dismiss();
         adapter.startListening();
 
-        RelativeLayout relativeLayout = findViewById(R.id.newsfeed);
+        deleteNotice(noticeRecyclerView);
+    }
+
+    /**
+     * Deletes notice from database by using swipe to delete functiom and removes it from recyclerview
+     * @param noticeRecyclerView recyclerview with notice item
+     */
+    private void deleteNotice(RecyclerView noticeRecyclerView){
         //deleting notice items
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {

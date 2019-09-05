@@ -15,9 +15,11 @@ import com.communityapp.inform.model.Notice;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
 public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdapter.RequestHolder> {
+    private OnItemClickListener listener;
 
     public RequestAdapter(@NonNull FirestoreRecyclerOptions<Notice> options) {
         super(options);
@@ -45,7 +47,7 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
             }
         }
 
-        requestHolder.Accept.setOnClickListener(view -> {
+        /*requestHolder.Accept.setOnClickListener(view -> {
             //Post to notices
 
             //send a message to user
@@ -57,7 +59,7 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
         requestHolder.Reject.setOnClickListener(view -> {
             //delete request
             deleteItem(position);
-        });
+        });*/
     }
 
     /**
@@ -83,7 +85,7 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
         ImageView imgResource;
         LinearLayout userEngagements, Feedback;
 
-        private RequestHolder(@NonNull View itemView) {
+        public RequestHolder(@NonNull View itemView) {
             super(itemView);
             Title = itemView.findViewById(R.id.title);
             Category = itemView.findViewById(R.id.category);
@@ -97,6 +99,28 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
 
             Accept = itemView.findViewById(R.id.accept_btn);
             Reject = itemView.findViewById(R.id.reject_btn);
+
+            Accept.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.acceptBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+            Reject.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                if (position!= RecyclerView.NO_POSITION && listener!=null) {
+                    listener.rejectBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
         }
+    }
+    public interface OnItemClickListener {
+        void acceptBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void rejectBtnClick (DocumentSnapshot documentSnapshot, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
     }
 }
