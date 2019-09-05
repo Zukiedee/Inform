@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.communityapp.inform.model.Notice;
 import com.communityapp.inform.presenter.NoticeAdapter;
+import com.communityapp.inform.presenter.RequestAdapter;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,9 +30,9 @@ public class RequestsAdmin extends AppCompatActivity {
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference requests = database.collection("Requests");
-    private NoticeAdapter adapter;
+    private RequestAdapter adapter;
     private ProgressDialog progressDialog;
-    //private static final String ID_KEY = "Id";
+    private static final String ID_KEY = "Id";
     private static final String COMMUNITY_KEY = "Community";
 
 
@@ -50,7 +51,7 @@ public class RequestsAdmin extends AppCompatActivity {
 
         checkUserStatus();
 
-        visbility();
+        //visbility();
 
         String community ="UCT";
         loadRequests(community);
@@ -117,13 +118,13 @@ public class RequestsAdmin extends AppCompatActivity {
     private void loadRequests(String community) {
         progressDialog.setTitle("Loading requests...");
         progressDialog.show();
-        Query query = requests.whereEqualTo(COMMUNITY_KEY, community);
+        Query query = requests.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
 
-        adapter = new NoticeAdapter(options);
+        adapter = new RequestAdapter(options);
         progressDialog.dismiss();
         RecyclerView noticeRecyclerView = findViewById(R.id.inbox_recyclerView);
         noticeRecyclerView.setHasFixedSize(true);

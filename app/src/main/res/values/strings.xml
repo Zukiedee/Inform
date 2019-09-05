@@ -74,6 +74,13 @@
     <string name="enter_email">Enter email address</string>
     <string name="no_disclaimer">This notice will be posted to the selected community\'s newsfeed.</string>
     <string name="disclaimermsg">This notice will be sent to Admin for approval before it is posted.</string>
+    <string name="notice_image_attachment">Notice image attachment</string>
+    <string name="like">Like</string>
+    <string name="comment">Comment</string>
+    <string name="user_icon">User icon</string>
+    <string name="community_app_title">Community App title</string>
+    <string name="select_community">Community</string>
+    <string name="disclaimer_msg_hint">This notice will/will not be posted straight to the newsfeed</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

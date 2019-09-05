@@ -24,7 +24,8 @@
             android:layout_width="349dp"
             android:layout_height="80dp"
             android:layout_marginTop="20dp"
-            app:srcCompat="@drawable/community_app" />
+            app:srcCompat="@drawable/community_app"
+            android:contentDescription="@string/community_app_title" />
 
 
         <ImageView

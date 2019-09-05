@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,7 +26,8 @@
             android:textSize="12sp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            tools:ignore="RelativeOverlap" />
 
         <TextView
             android:id="@+id/subject"
@@ -43,6 +45,7 @@
             android:layout_height="wrap_content"
             android:text="@string/status"
             android:textColor="@color/colorDate"
+            android:layout_marginTop="2dp"
             android:textSize="12sp"
             android:layout_below="@+id/subject" />
 
@@ -50,6 +53,7 @@
             android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="@string/message"
             android:textColor="@color/colorMessage"
             android:textSize="16sp"

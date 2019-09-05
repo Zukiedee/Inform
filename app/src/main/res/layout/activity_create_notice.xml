@@ -53,11 +53,11 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:padding="10dp"
+                android:padding="15dp"
                 android:textStyle="italic"
                 android:textColor="@color/colorPrimary"
                 android:gravity="center_horizontal|center_vertical"
-                android:hint="This notice will/will not be posted straight to the newsfeed"
+                android:hint="@string/disclaimer_msg_hint"
                 android:visibility="visible" />
 
             <EditText
@@ -83,7 +83,7 @@
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="25dp"
-                android:text="Community"
+                android:text="@string/select_community"
                 android:textSize="14sp"
                 android:gravity="bottom"
                 android:textColor="@color/colorPrimaryDark"

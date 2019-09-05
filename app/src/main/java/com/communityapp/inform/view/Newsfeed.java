@@ -51,7 +51,6 @@ import java.util.Objects;
  * Community posts will be displayed here depending on the communities selected by users in their profile.
  */
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener  {
-    private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = database.collection("Notices");
@@ -131,12 +130,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 .build();
 
         adapter = new NoticeAdapter(options);
-        noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
-        adapter.startListening();
         progressDialog.dismiss();
+        adapter.startListening();
     }
 
     /**
@@ -151,11 +150,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 .setQuery(query, Notice.class)
                 .build();
         adapter = new NoticeAdapter(options);
+        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
-        adapter.startListening();
         progressDialog.dismiss();
+        adapter.startListening();
     }
 
     /**
@@ -250,7 +250,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             case R.id.nav_inbox:
 
                 //Navigate to user inbox
-                Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
+                Intent intentInbox = new Intent(Newsfeed.this, RequestsAdmin.class);
                 startActivity(intentInbox);
                 break;
             case R.id.news:
