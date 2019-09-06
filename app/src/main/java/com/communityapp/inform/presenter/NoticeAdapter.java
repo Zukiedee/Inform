@@ -14,6 +14,8 @@ import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapter.NoticeHolder> {
@@ -49,6 +51,11 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
      * @param position position of notice in database
      */
     public void deleteItem(int position){
+        String image = getSnapshots().getSnapshot(position).getString("Image");
+        if(!image.equals("noImage")){
+            StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(image);
+            imageRef.delete();
+        }
         getSnapshots().getSnapshot(position).getReference().delete();
     }
 

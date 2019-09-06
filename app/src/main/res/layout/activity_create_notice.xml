@@ -27,18 +27,6 @@
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="8dp">
 
-            <TextView
-                android:id="@+id/disclaimer"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:gravity="center_horizontal|center_vertical"
-                android:hint="@string/disclaimer_msg_hint"
-                android:padding="15dp"
-                android:textColor="@color/colorPrimary"
-                android:textStyle="italic"
-                android:visibility="visible" />
-
             <Spinner
                 android:id="@+id/noticeCategory"
                 android:layout_width="300dp"

@@ -63,7 +63,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private NoticeAdapter adapter;
     private RelativeLayout relativeLayout;
     private ProgressDialog progressDialog;
-    private String username;
+    private String username, user_email;
     private TextView nav_username;
     private String currentcommunity ="";
 
@@ -121,6 +121,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             startActivity(loginIntent);
             finish();
         }
+        else { user_email = mAuth.getCurrentUser().getEmail(); }
     }
 
     /**
@@ -145,45 +146,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         adapter.startListening();
 
-        //deleteNotice(noticeRecyclerView);
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        }).attachToRecyclerView(noticeRecyclerView);
-
-        adapter.setOnItemClickListener(new NoticeAdapter.OnItemClickListener() {
-            @Override
-            public void addReminderBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                DialogFragment reminder = new ReminderDialog();
-                reminder.setCancelable(false);
-                reminder.show(getSupportFragmentManager(), "Set Reminder");;
-            }
-
-
-            @Override
-            public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void dislikeBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                Toast.makeText(Newsfeed.this, "Disliked", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void commentBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                Toast.makeText(Newsfeed.this, "Commented", Toast.LENGTH_SHORT).show();
-            }
-        });
+        ButtonClicks(noticeRecyclerView);
     }
 
     /**
@@ -206,19 +169,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         adapter.startListening();
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        }).attachToRecyclerView(noticeRecyclerView);
+        ButtonClicks(noticeRecyclerView);
     }
 
     /**
@@ -262,7 +213,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(Newsfeed.this, "Error: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(relativeLayout, "Error occurred: "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     startActivity(new Intent(Newsfeed.this, Profile.class));
                 });
 
@@ -391,4 +342,71 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         super.attachBaseContext(newBase);
         MultiDex.install(this);
     }
+
+    private void ButtonClicks(RecyclerView noticeRecyclerView){
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        }).attachToRecyclerView(noticeRecyclerView);
+
+        adapter.setOnItemClickListener(new NoticeAdapter.OnItemClickListener() {
+            @Override
+            public void addReminderBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                DialogFragment reminder = new ReminderDialog();
+                reminder.setCancelable(false);
+                reminder.show(getSupportFragmentManager(), "Set Reminder");
+            }
+
+            @Override
+            public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                //To do
+                Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void dislikeBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                //To do
+                Toast.makeText(Newsfeed.this, "Disliked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void commentBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                //To do
+                Toast.makeText(Newsfeed.this, "Commented", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /*void insertEvent(String summary, String location, String des, DateTime startDate, DateTime endDate, EventAttendee[] eventAttendees) throws IOException {
+        Event event = new Event()
+                .setSummary(summary)
+                .setLocation(location)
+                .setDescription(des);     EventDateTime start = new EventDateTime()
+                .setDateTime(startDate)
+                .setTimeZone(“America/Los_Angeles”);
+        event.setStart(start);     EventDateTime end = new EventDateTime()
+                .setDateTime(endDate)
+                .setTimeZone(“America/Los_Angeles”);
+        event.setEnd(end);     String[] recurrence = new String[] {“RRULE:FREQ=DAILY;COUNT=1”};
+        event.setRecurrence(Arrays.asList(recurrence));     event.setAttendees(Arrays.asList(eventAttendees));     EventReminder[] reminderOverrides = new EventReminder[] {
+                new EventReminder().setMethod(“email”).setMinutes(24 * 60),
+                new EventReminder().setMethod(“popup”).setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+        event.setReminders(reminders);     String calendarId = “primary”;
+        //event.send
+        if(mService!=null)
+            mService.events().insert(calendarId, event).setSendNotifications(true).execute();
+    }*/
 }

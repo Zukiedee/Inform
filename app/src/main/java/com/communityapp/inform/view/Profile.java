@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.communityapp.inform.presenter.Add_Communities_Dialog;
 import com.example.inform.R;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -39,10 +42,9 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     private EditText username;
     private Spinner user_type_spinner;                                                              //spinner with types of user
     private Button add_communities;                                                                 //button to select communities
-
-    ProgressDialog progressDialog;
-
-    ArrayAdapter<String> dataAdapter;
+    private ScrollView relativeLayout;
+    private ProgressDialog progressDialog;
+    private ArrayAdapter<String> dataAdapter;
 
     //list view
     public ListView selectedCommunities;
@@ -76,6 +78,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         add_communities = findViewById(R.id.add_community_btn);
         username = findViewById(R.id.username_hint);
         TextView email = findViewById(R.id.email_hint);
+        relativeLayout = findViewById(R.id.profile);
 
         user_email = user.getEmail();
         email.setText(user_email);
@@ -120,7 +123,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                         Toast.makeText(Profile.this, "Welcome! Please complete your profile", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> Toast.makeText(Profile.this, "Error Occured!" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Snackbar.make(relativeLayout, "Error occurred: "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show());
     }
 
     @Override
@@ -141,7 +144,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
             try {
                 saveUserInfo();
             }catch (Error e){
-                Toast.makeText(Profile.this, "Error Occured updating profile!", Toast.LENGTH_LONG).show();
+                Snackbar.make(relativeLayout, "Error occurred: "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         }
         return super.onOptionsItemSelected(menuItem);
@@ -179,7 +182,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                         intentMain.putExtra("Communities", communities);
                         startActivity(intentMain);
                     })
-                    .addOnFailureListener(e -> Toast.makeText(Profile.this, "Failed to updated profile: "+ e.getMessage(), Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e -> Snackbar.make(relativeLayout, "Failed to update profile: "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show());
         }
     }
 

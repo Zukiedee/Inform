@@ -31,6 +31,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.tapadoo.alerter.Alerter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -95,7 +96,6 @@ public class createNotice extends AppCompatActivity {
 
         selectNoticeCategory();
 
-        disclaimer = findViewById(R.id.disclaimer);
         Title = findViewById(R.id.notice_headline);
         Body = findViewById(R.id.notice_body);
         imageView = findViewById(R.id.upload_image);
@@ -218,7 +218,6 @@ public class createNotice extends AppCompatActivity {
      */
     private void nothingSelected(){
         Toast.makeText(com.communityapp.inform.view.createNotice.this, "Please select a category", Toast.LENGTH_LONG).show();
-        disclaimer.setVisibility(View.GONE);
         Title.setVisibility(View.GONE);
         Body.setVisibility(View.GONE);
         Body.setVisibility(View.GONE);
@@ -232,7 +231,6 @@ public class createNotice extends AppCompatActivity {
      * Makes the title, body fields, upload a file and submit button visible to user.
      */
     private void setBaseCategoryVisible(){
-        disclaimer.setVisibility(View.VISIBLE);
         Title.setVisibility(View.VISIBLE);
         Body.setVisibility(View.VISIBLE);
         Body.setVisibility(View.VISIBLE);
@@ -250,15 +248,17 @@ public class createNotice extends AppCompatActivity {
      */
     private void setDisclaimer(boolean request){
         if (request){
-            disclaimer.setText(R.string.disclaimermsg);
-            disclaimer.setTextColor(getResources().getColor(R.color.color_reject));
-        }
-        else {
-            disclaimer.setText(R.string.no_disclaimer);
-            disclaimer.setTextColor(getResources().getColor(R.color.color_accept));
+            Alerter.create(this)
+                    .setText(R.string.disclaimermsg)
+                    .setDuration(10000)
+                    .enableSwipeToDismiss()
+                    .setIcon(R.drawable.ic_crime)
+                    .setBackgroundColorRes(R.color.colorReminder)
+                    .enableProgress(true)
+                    .setProgressColorRes(R.color.colorPrimary)
+                    .show();
         }
         postDisclaimer = request;
-
     }
     /**
      * Displays relevant local news categories to user
