@@ -82,6 +82,7 @@
     <string name="select_community">Community</string>
     <string name="disclaimer_msg_hint">This notice will/will not be posted straight to the newsfeed</string>
     <string name="dislike">Dislike</string>
+    <string name="select_date">Select Date</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

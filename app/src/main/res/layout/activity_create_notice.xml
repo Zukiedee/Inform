@@ -68,6 +68,32 @@
                 android:visibility="visible"
                 android:inputType="textMultiLine" />
 
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/ic_calendar"
+                    android:id="@+id/show_date_dialog"
+                    android:background="null"
+                    />
+                <TextView
+                    android:id="@+id/PostDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/colorDescription"
+                    android:text="@string/select_date"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="25dp"

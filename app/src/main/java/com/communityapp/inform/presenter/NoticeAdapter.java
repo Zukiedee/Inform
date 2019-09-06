@@ -18,6 +18,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapter.NoticeHolder> {
     private NoticeAdapter.OnItemClickListener listener;
 
@@ -52,7 +54,7 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
      */
     public void deleteItem(int position){
         String image = getSnapshots().getSnapshot(position).getString("Image");
-        if(!image.equals("noImage")){
+        if(!Objects.requireNonNull(image).equals("noImage")){
             StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(image);
             imageRef.delete();
         }

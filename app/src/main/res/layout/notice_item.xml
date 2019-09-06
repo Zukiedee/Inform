@@ -64,6 +64,7 @@
                 android:textColor="@color/colorDescription"
                 android:text="@string/description"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
         <RelativeLayout

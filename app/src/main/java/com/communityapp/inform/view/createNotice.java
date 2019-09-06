@@ -1,6 +1,7 @@
 package com.communityapp.inform.view;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -36,6 +38,7 @@ import com.tapadoo.alerter.Alerter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
@@ -44,14 +47,15 @@ import java.util.Objects;
  * User creates a notice by selecting a notice category, relevant notices are then shown and user submits notice.
  * Certain notice categories require admin approval.
  */
-public class createNotice extends AppCompatActivity {
+public class createNotice extends AppCompatActivity  implements DatePickerDialog.OnDateSetListener{
     private EditText Title, Body;
     private ImageView imageView;
     private Spinner communities_categories;
-    private TextView upload, community_label, disclaimer;
+    private TextView upload, community_label, PostDate;
     private Button submit;
     private String category, name, email, communities;
     private ProgressDialog progressDialog;
+    private TextView DateText;
 
     private static final int PICK_IMAGE_REQUEST = 100;
     private Uri image_uri = null;
@@ -88,6 +92,14 @@ public class createNotice extends AppCompatActivity {
         database = FirebaseFirestore.getInstance();
 
         checkUserStatus();
+
+        DateText = findViewById(R.id.PostDate);
+        findViewById(R.id.show_date_dialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog();
+            }
+        });
 
         progressDialog = new ProgressDialog(this);
 
@@ -526,5 +538,23 @@ public class createNotice extends AppCompatActivity {
     private void setCollectionPath(boolean request){
         if (request) { collectionPath = "Requests"; }
         else { collectionPath = "Notices"; }
+    }
+
+    private void showDatePickerDialog(){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                this,
+                Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+                );
+        datePickerDialog.show();
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+        String date = ""+ dayOfMonth + (month+1) + year;
+        DateText.setText(date);
     }
 }
