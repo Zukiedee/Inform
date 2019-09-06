@@ -78,7 +78,7 @@
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_calendar"
                     android:id="@+id/show_date_dialog"
-                    android:background="null"
+                    android:background="@null"
                     />
                 <TextView
                     android:id="@+id/PostDate"
