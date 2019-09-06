@@ -44,9 +44,6 @@ import java.util.Objects;
  * Certain notice categories require admin approval.
  */
 public class createNotice extends AppCompatActivity {
-    private static final int PICK_IMAGE_REQUEST = 100;
-    private Uri image_uri = null;
-
     private EditText Title, Body;
     private ImageView imageView;
     private Spinner communities_categories;
@@ -55,11 +52,15 @@ public class createNotice extends AppCompatActivity {
     private String category, name, email, communities;
     private ProgressDialog progressDialog;
 
-    String collectionPath;
-    boolean postDisclaimer;
+    private static final int PICK_IMAGE_REQUEST = 100;
+    private Uri image_uri = null;
+
+    private String collectionPath;
+    private boolean postDisclaimer;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore database;
+    private CollectionReference notifications;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -90,6 +91,7 @@ public class createNotice extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         loadUserInfo();
+        notifications = database.collection("Users/"+email+"/Messages");
 
         selectNoticeCategory();
 
@@ -155,10 +157,9 @@ public class createNotice extends AppCompatActivity {
         DocumentReference userRef = database.document("Users/"+email);
         userRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if(documentSnapshot.exists()){
-                        name = documentSnapshot.getString(USERNAME_KEY);
-                    }else {
-                        Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
+                    if(documentSnapshot.exists()){ name = documentSnapshot.getString(USERNAME_KEY); }
+                    else {
+                        Toast.makeText(createNotice.this, "Please Complete User Profile", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show());
@@ -385,7 +386,7 @@ public class createNotice extends AppCompatActivity {
 
         //formatting date of notice
         Date currentDate = new Date();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d yyyy HH:mm");
         String DatetoString = format.format(currentDate);
 
         //post with image
@@ -400,40 +401,20 @@ public class createNotice extends AppCompatActivity {
 
                         String downloadURI = Objects.requireNonNull(uriTask.getResult()).toString();
 
-
-                        if (postDisclaimer) { collectionPath = "Requests"; }
-                        else { collectionPath = "Notices"; }
+                        setCollectionPath(postDisclaimer);
 
                         if (uriTask.isSuccessful()){
                             // url is received upload post to firebase
-                            HashMap<String, String> hashMap = new HashMap<>();
-                            hashMap.put(CATEGORY_KEY, category);
-                            hashMap.put(DATE_KEY, DatetoString);
-                            hashMap.put(DESCRIPTION_KEY, body);
-                            hashMap.put(ID_KEY, timeStamp);
-                            hashMap.put(IMAGE_KEY, downloadURI);
-                            hashMap.put(TITLE_KEY, title);
-                            hashMap.put(USERNAME_KEY, name);
-                            hashMap.put(COMMUNITY_KEY, communities);
-                            hashMap.put(UID_KEY, email);
+                            HashMap<String, String> hashMap = notice_hashMap(category, DatetoString, body, timeStamp, downloadURI, title, name, communities, email);
 
                             database.collection(collectionPath).document(timeStamp).set(hashMap)
                                     .addOnCompleteListener(task -> {
                                         if (postDisclaimer){
-                                            CollectionReference notifications = database.collection("Users/"+email+"/Messages");
-                                            HashMap<String, Object> msg = new HashMap<>();
-                                            Notification notification = new Notification(title, DatetoString);
-                                            msg.put("Title", title);
-                                            msg.put("Date", DatetoString);
-                                            msg.put("Status", notification.getStatus());
-                                            msg.put("Message", notification.getMessage());
-                                            msg.put("Id", timeStamp);
+                                            HashMap<String, String> msg = user_notification(title, timeStamp, DatetoString);
                                             notifications.document(timeStamp).set(msg);
                                             Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
                                         }
-                                        else {
-                                            Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
-                                        }
+                                        else { Toast.makeText(createNotice.this, "Post published to newsfeed!", Toast.LENGTH_LONG).show(); }
                                         progressDialog.dismiss();
                                         Intent done = new Intent(createNotice.this, Newsfeed.class);
                                         startActivity(done);
@@ -447,43 +428,24 @@ public class createNotice extends AppCompatActivity {
                     .addOnFailureListener(e -> {
                         //failed uploading image
                         progressDialog.dismiss();
-                        Toast.makeText(createNotice.this, "Error occurred" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(createNotice.this, "Failed to upload image. Please try again" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
         else {
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(CATEGORY_KEY, category);
-            hashMap.put(DATE_KEY, DatetoString);
-            hashMap.put(DESCRIPTION_KEY, body);
-            hashMap.put(ID_KEY, timeStamp);
-            hashMap.put(IMAGE_KEY, "noImage");
-            hashMap.put(TITLE_KEY, title);
-            hashMap.put(USERNAME_KEY, name);
-            hashMap.put(COMMUNITY_KEY, communities);
-            hashMap.put(UID_KEY, email);
+            HashMap<String, String> hashMap = notice_hashMap(category, DatetoString, body, timeStamp, "noImage", title, name, communities, email);
 
-            if (postDisclaimer) { collectionPath = "Requests"; }
-            else { collectionPath = "Notices"; }
+            setCollectionPath(postDisclaimer);
 
             //put data in this database
             database.collection(collectionPath).document(timeStamp).set(hashMap)
                     .addOnCompleteListener(task -> {
                         if (postDisclaimer){
-                            CollectionReference notifications = database.collection("Users/"+email+"/Messages");
-                            HashMap<String, Object> msg = new HashMap<>();
-                            Notification notification = new Notification(title, DatetoString);
-                            msg.put("Title", title);
-                            msg.put("Date", DatetoString);
-                            msg.put("Status", notification.getStatus());
-                            msg.put("Message", notification.getMessage());
-                            msg.put("Id", timeStamp);
+                            HashMap<String, String> msg = user_notification(title, timeStamp, DatetoString);
                             notifications.document(timeStamp).set(msg);
                             Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
+                        }
+                        else { Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show(); }
 
-                        }
-                        else {
-                            Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
-                        }
                         progressDialog.dismiss();
                         Intent done = new Intent(createNotice.this, Newsfeed.class);
                         startActivity(done);
@@ -507,5 +469,62 @@ public class createNotice extends AppCompatActivity {
             //post with image
             else { uploadData(title, body, String.valueOf(image_uri)); }
         });
+    }
+
+    /**
+     * Returns hashMap of notice fields to be inserted into the database
+     * @param cat Category
+     * @param date Date posted
+     * @param description Description in body of notice
+     * @param ID ID of notice i.e. timestamp
+     * @param image Image attachment
+     * @param title Title of notice
+     * @param name Username of author of post
+     * @param community Community notice is posted to
+     * @param email Email address of author of post
+     * @return hashMap containing notice fields
+     */
+    private HashMap<String, String> notice_hashMap(String cat, String date, String description, String ID, String image, String title, String name, String community, String email){
+        HashMap<String, String> notice_hashMap = new HashMap<>();
+        notice_hashMap.put(CATEGORY_KEY, cat);
+        notice_hashMap.put(DATE_KEY, date);
+        notice_hashMap.put(DESCRIPTION_KEY, description);
+        notice_hashMap.put(ID_KEY, ID);
+        notice_hashMap.put(IMAGE_KEY, image);
+        notice_hashMap.put(TITLE_KEY, title);
+        notice_hashMap.put(USERNAME_KEY, name);
+        notice_hashMap.put(COMMUNITY_KEY, community);
+        notice_hashMap.put(UID_KEY, email);
+
+        return notice_hashMap;
+    }
+
+    /**
+     * Returns hashMap containing prompt notification sent to user when requesting a notice to be posted
+     * @param title Title of notice being requested
+     * @param ID ID of notification message i.e. timestamp
+     * @param date Date notification sent
+     * @return hashMap containing notification details
+     */
+    private HashMap<String, String> user_notification(String title, String ID, String date){
+        HashMap<String, String> feedback = new HashMap<>();
+        Notification notification = new Notification(title, date);
+        feedback.put("Title", title);
+        feedback.put("Date", date);
+        feedback.put("Status", notification.getStatus());
+        feedback.put("Message", notification.getMessage());
+        feedback.put("Id", ID);
+
+        return feedback;
+    }
+
+    /**
+     * Notice needs admin approval, it is posted to the Requests collection database,
+     * otherwise it is posted directly to the relevant community newsfeed
+     * @param request True if notice needs approval, False otherwise.
+     */
+    private void setCollectionPath(boolean request){
+        if (request) { collectionPath = "Requests"; }
+        else { collectionPath = "Notices"; }
     }
 }
