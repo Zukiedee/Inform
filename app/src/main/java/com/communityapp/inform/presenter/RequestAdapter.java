@@ -40,33 +40,16 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
             requestHolder.imgResource.setVisibility(View.GONE);
         }
         else {
-            try {
-                Picasso.get().load(notice.getImage()).into(requestHolder.imgResource);
-            } catch (Exception e){
-                requestHolder.imgResource.setImageResource(R.drawable.ic_broken_image);
-            }
+            try { Picasso.get().load(notice.getImage()).into(requestHolder.imgResource); }
+            catch (Exception e){ requestHolder.imgResource.setImageResource(R.drawable.ic_broken_image); }
         }
-
-        /*requestHolder.Accept.setOnClickListener(view -> {
-            //Post to notices
-
-            //send a message to user
-
-            //remove request
-            deleteItem(position);
-        });
-
-        requestHolder.Reject.setOnClickListener(view -> {
-            //delete request
-            deleteItem(position);
-        });*/
     }
 
     /**
      * Deletes notice item from firestore database
      * @param position position of notice in database
      */
-    private void deleteItem(int position){
+    public void deleteItem(int position){
         getSnapshots().getSnapshot(position).getReference().delete();
     }
 
@@ -85,7 +68,7 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
         ImageView imgResource;
         LinearLayout userEngagements, Feedback;
 
-        public RequestHolder(@NonNull View itemView) {
+        private RequestHolder(@NonNull View itemView) {
             super(itemView);
             Title = itemView.findViewById(R.id.title);
             Category = itemView.findViewById(R.id.category);
@@ -115,6 +98,10 @@ public class RequestAdapter extends FirestoreRecyclerAdapter<Notice, RequestAdap
             });
         }
     }
+
+    /**
+     * Accept and reject button click methods
+     */
     public interface OnItemClickListener {
         void acceptBtnClick (DocumentSnapshot documentSnapshot, int position);
         void rejectBtnClick (DocumentSnapshot documentSnapshot, int position);

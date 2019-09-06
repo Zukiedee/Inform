@@ -3,11 +3,13 @@ package com.communityapp.inform.view;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,8 +18,7 @@ import com.communityapp.inform.model.Notification;
 import com.communityapp.inform.presenter.RequestAdapter;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -35,6 +36,7 @@ public class RequestsAdmin extends AppCompatActivity {
     private CollectionReference requests = database.collection("Requests");
     private RequestAdapter adapter;
     private ProgressDialog progressDialog;
+    private RelativeLayout relativeLayout;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -52,13 +54,13 @@ public class RequestsAdmin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
 
-        //Back button on toolbar
         Objects.requireNonNull(getSupportActionBar()).setTitle("Requests");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAuth = FirebaseAuth.getInstance();
 
         progressDialog =  new ProgressDialog(this);
+        relativeLayout = findViewById(R.id.inbox);
 
         checkUserStatus();
 
@@ -78,6 +80,7 @@ public class RequestsAdmin extends AppCompatActivity {
                 String name = documentSnapshot.getString(USERNAME_KEY);
                 String communities = documentSnapshot.getString(COMMUNITY_KEY);
                 String email = documentSnapshot.getString(UID_KEY);
+                CollectionReference notifications = database.collection("Users/"+email+"/Messages");
 
                 HashMap<String, String> hashMap = new HashMap<>();
                 hashMap.put(CATEGORY_KEY, category);
@@ -91,39 +94,29 @@ public class RequestsAdmin extends AppCompatActivity {
                 hashMap.put(UID_KEY, email);
 
                 CollectionReference notices = database.collection("Notices");
-                notices.document(timeStamp).set(hashMap)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                CollectionReference notifications = database.collection("Users/"+email+"/Messages");
-                                HashMap<String, Object> msg = new HashMap<>();
-                                Notification notification = new Notification(title, DatetoString);
-                                notification.approve();
-                                msg.put("Title", title);
-                                msg.put("Date", DatetoString);
-                                msg.put("Status", notification.getStatus());
-                                msg.put("Message", notification.getMessage());
-                                msg.put("Id", timeStamp);
-                                notifications.document(timeStamp).set(msg);
-                                Toast.makeText(RequestsAdmin.this, "Notice posted to newsfeed./nFeedback sent to user", Toast.LENGTH_LONG).show();
-
-                            }
+                notices.document(Objects.requireNonNull(timeStamp)).set(hashMap)
+                        .addOnSuccessListener(aVoid -> {
+                            HashMap<String, String> msg = feedback(title, DatetoString, timeStamp);
+                            notifications.document(timeStamp).set(msg);
+                            Toast.makeText(RequestsAdmin.this, "Notice posted to newsfeed.\nFeedback sent to user", Toast.LENGTH_LONG).show();
                         })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(RequestsAdmin.this, "Error: "+e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
+                        .addOnFailureListener(e -> Toast.makeText(RequestsAdmin.this, "Error: "+e.getMessage(), Toast.LENGTH_LONG).show());
             }
 
             @Override
             public void rejectBtnClick(DocumentSnapshot documentSnapshot, int position) {
 
+                String DatetoString = documentSnapshot.getString(DATE_KEY);
+                String timeStamp = documentSnapshot.getString(ID_KEY);
+                String title = documentSnapshot.getString(TITLE_KEY);
+                String email = documentSnapshot.getString(UID_KEY);
 
+                CollectionReference notifications = database.collection("Users/"+email+"/Messages");
+                HashMap<String, String> msg = feedback(title, DatetoString, timeStamp);
+                notifications.document(Objects.requireNonNull(timeStamp)).set(msg);
+                Toast.makeText(RequestsAdmin.this, "Notice Rejected.\nFeedback sent to user", Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
     @Override
@@ -168,10 +161,39 @@ public class RequestsAdmin extends AppCompatActivity {
 
         adapter = new RequestAdapter(options);
         progressDialog.dismiss();
-        RecyclerView noticeRecyclerView = findViewById(R.id.inbox_recyclerView);
-        noticeRecyclerView.setHasFixedSize(true);
-        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        noticeRecyclerView.setAdapter(adapter);
+        RecyclerView requestsRecyclerView = findViewById(R.id.inbox_recyclerView);
+        requestsRecyclerView.setHasFixedSize(true);
+        requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        requestsRecyclerView.setAdapter(adapter);
+
         adapter.startListening();
+        /*
+         * Deletes notice from database by using swipe to delete functiom and removes it from recyclerview
+         */
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        }).attachToRecyclerView(requestsRecyclerView);
+    }
+
+    private HashMap<String, String> feedback(String title, String DatetoString, String timeStamp){
+        HashMap<String, String> msg = new HashMap<>();
+        Notification notification = new Notification(title, DatetoString);
+        notification.approve();
+        msg.put("Title", title);
+        msg.put("Date", DatetoString);
+        msg.put("Status", notification.getStatus());
+        msg.put("Message", notification.getMessage());
+        msg.put("Id", timeStamp);
+        return msg;
     }
 }

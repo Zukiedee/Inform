@@ -27,6 +27,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,6 +44,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -140,9 +142,48 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
         progressDialog.dismiss();
+
         adapter.startListening();
 
-        deleteNotice(noticeRecyclerView);
+        //deleteNotice(noticeRecyclerView);
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        }).attachToRecyclerView(noticeRecyclerView);
+
+        adapter.setOnItemClickListener(new NoticeAdapter.OnItemClickListener() {
+            @Override
+            public void addReminderBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                DialogFragment reminder = new ReminderDialog();
+                reminder.setCancelable(false);
+                reminder.show(getSupportFragmentManager(), "Set Reminder");;
+            }
+
+
+            @Override
+            public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void dislikeBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                Toast.makeText(Newsfeed.this, "Disliked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void commentBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                Toast.makeText(Newsfeed.this, "Commented", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -162,17 +203,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
         progressDialog.dismiss();
+
         adapter.startListening();
 
-        deleteNotice(noticeRecyclerView);
-    }
-
-    /**
-     * Deletes notice from database by using swipe to delete functiom and removes it from recyclerview
-     * @param noticeRecyclerView recyclerview with notice item
-     */
-    private void deleteNotice(RecyclerView noticeRecyclerView){
-        //deleting notice items
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -257,7 +290,10 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        //Logs user out of application. Directs user back to SignIn screen
+        /*
+         Log out alert dialog displayed to user to prompt if they are sure they want to log out.
+         Logs user out of application. Directs user back to SignIn screen
+         */
         if (id == R.id.logout) {
             new AlertDialog.Builder(Newsfeed.this)
                     .setTitle("Log out")
@@ -268,11 +304,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                         startActivity(intentWelcome);
                     })
                     .setNegativeButton("No", (dialogInterface, i) -> {
-
+                        //do nothing
                     })
                     .show();
-
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -294,32 +328,28 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 Intent intentInbox = new Intent(Newsfeed.this, RequestsAdmin.class);
                 startActivity(intentInbox);
                 break;
+                /*
+                Displays community posts filtered by selected category
+                 */
             case R.id.news:
-                //Display Local News posts notices
                 categoryNotice("Local News");
                 break;
             case R.id.crime:
-                //Display Crime Report notices
                 categoryNotice("Crime Report");
                 break;
             case R.id.pets:
-                //Display Missing Pet notices
                 categoryNotice("Missing Pet");
                 break;
             case R.id.events:
-                //Display Entertainment & Events notices
                 categoryNotice("Events");
                 break;
             case R.id.fundraiser:
-                //Display Fundraiser notices
                 categoryNotice("Fundraiser");
                 break;
             case R.id.tradesmen:
-                //Display Tradesmen referrals notices
                 categoryNotice("Tradesmen Referrals");
                 break;
             case R.id.recommendations:
-                //Display Recommendations notices
                 categoryNotice("Recommendations");
                 break;
             default:
@@ -345,7 +375,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         int size = menu.size();
         for (int i = 0; i < size; i++) {
             final MenuItem item = menu.getItem(i);
-            // Un check sub menu items
             if(item.hasSubMenu()) { unCheckAllMenuItems(item.getSubMenu()); }
             else { item.setChecked(false); }
         }

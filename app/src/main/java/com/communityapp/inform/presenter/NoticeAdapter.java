@@ -13,9 +13,11 @@ import com.communityapp.inform.model.Notice;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
 public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapter.NoticeHolder> {
+    private NoticeAdapter.OnItemClickListener listener;
 
     public NoticeAdapter(@NonNull FirestoreRecyclerOptions<Notice> options) {
         super(options);
@@ -40,13 +42,6 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
                 noticeHolder.imgResource.setImageResource(R.drawable.ic_broken_image);
             }
         }
-
-        noticeHolder.likeBtn.setOnClickListener(view -> {
-            //Toast.makeText(context, "Like", Toast.LENGTH_SHORT).show();
-        });
-        noticeHolder.commentBtn.setOnClickListener(view -> {
-            //Toast.makeText(context, "Commented", Toast.LENGTH_SHORT).show();
-        });
     }
 
     /**
@@ -66,7 +61,7 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
 
     class NoticeHolder extends RecyclerView.ViewHolder{
         //initialise views
-        TextView Title, Category, Description, Date, Username, Community, deleteBtn, likeBtn, commentBtn;
+        TextView Title, Category, Description, Date, Username, Community, reminder, likeBtn, dislikeBtn, commentBtn;
         ImageView imgResource;
 
         private NoticeHolder(@NonNull View itemView) {
@@ -79,8 +74,55 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             imgResource = itemView.findViewById(R.id.file);
             Community = itemView.findViewById(R.id.community);
 
-            likeBtn = itemView.findViewById(R.id.like);
+            likeBtn = itemView.findViewById(R.id.Like);
+            dislikeBtn = itemView.findViewById(R.id.Dislike);
             commentBtn = itemView.findViewById(R.id.comment);
+            reminder = itemView.findViewById(R.id.add_reminder);
+
+            reminder.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.addReminderBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+
+            likeBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.likeBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+            dislikeBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.dislikeBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+
+            commentBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.commentBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
         }
+    }
+
+    /**
+     * Accept and reject button click methods
+     */
+    public interface OnItemClickListener {
+        void addReminderBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void likeBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void dislikeBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void commentBtnClick (DocumentSnapshot documentSnapshot, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
