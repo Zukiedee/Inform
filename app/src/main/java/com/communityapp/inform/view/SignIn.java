@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.inform.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,7 +26,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Objects;
 
 /**
- * Default screen for first timw users of the application or logged out users.
+ * Default screen for first time users of the application or logged out users.
  * Redirects users to Google sign in
  */
 public class SignIn extends AppCompatActivity {
@@ -32,6 +34,7 @@ public class SignIn extends AppCompatActivity {
     private GoogleSignInClient client;
     private FirebaseAuth mAuth;
     private ProgressDialog signInProgressBar;
+    private ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +42,8 @@ public class SignIn extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         SignInButton signInButton = findViewById(R.id.sign_in_button);
-
         signInProgressBar = new ProgressDialog(this);
+        constraintLayout = findViewById(R.id.constraint_layout);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -81,7 +84,8 @@ public class SignIn extends AppCompatActivity {
 
             } catch (ApiException e){
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                signInProgressBar.dismiss();
+                Snackbar.make(constraintLayout, "Error signing up. Check your internet connection", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         }
     }
@@ -103,7 +107,7 @@ public class SignIn extends AppCompatActivity {
 
                     } else {
                         // If sign in fails, display a message to the user.
-                        Toast.makeText(SignIn.this,  "Authentication Failed!", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(constraintLayout, "Authentication Failed!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     }
                 });
     }
