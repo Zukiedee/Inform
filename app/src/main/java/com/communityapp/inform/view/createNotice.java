@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,11 +52,12 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
     private EditText Title, Body;
     private ImageView imageView;
     private Spinner communities_categories;
-    private TextView upload, community_label, PostDate;
+    private TextView upload, community_label;
     private Button submit;
-    private String category, name, email, communities;
+    private String category, name, email, communities, PostDate;
     private ProgressDialog progressDialog;
     private TextView DateText;
+    private LinearLayout date_linearLayout;
 
     private static final int PICK_IMAGE_REQUEST = 100;
     private Uri image_uri = null;
@@ -93,14 +95,6 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
 
         checkUserStatus();
 
-        DateText = findViewById(R.id.PostDate);
-        findViewById(R.id.show_date_dialog).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDatePickerDialog();
-            }
-        });
-
         progressDialog = new ProgressDialog(this);
 
         loadUserInfo();
@@ -115,6 +109,9 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit = findViewById(R.id.submit);
         community_label = findViewById(R.id.community_label);
         communities_categories = findViewById(R.id.community);
+        date_linearLayout = findViewById(R.id.eventDate);
+        DateText = findViewById(R.id.PostDate);
+        findViewById(R.id.show_date_dialog).setOnClickListener(view -> showDatePickerDialog());
 
         Title.addTextChangedListener(createNotice);
         Body.addTextChangedListener(createNotice);
@@ -237,6 +234,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit.setVisibility(View.GONE);
         community_label.setVisibility(View.GONE);
         communities_categories.setVisibility(View.GONE);
+        date_linearLayout.setVisibility(View.GONE);
     }
 
     /**
@@ -250,6 +248,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit.setVisibility(View.VISIBLE);
         community_label.setVisibility(View.VISIBLE);
         communities_categories.setVisibility(View.VISIBLE);
+        date_linearLayout.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -281,6 +280,8 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         setDisclaimer(admin_requests.contains(category));
         Title.setHint("Headline");
         Body.setHint("Description");
+        DateText.setText(R.string.news_date);
+        PostDate = "News date: ";
     }
 
     /**
@@ -292,6 +293,8 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         setDisclaimer(admin_requests.contains(category));
         Title.setHint("Report Title");
         Body.setHint("Description");
+        DateText.setText(R.string.crime_date);
+        PostDate = "Crime date: ";
     }
 
     /**
@@ -303,6 +306,8 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         setDisclaimer(admin_requests.contains(category));
         Title.setHint("Event Name");
         Body.setHint("Description");
+        DateText.setText(R.string.event_date);
+        PostDate = "Event date: ";
     }
 
     /**
@@ -314,6 +319,8 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         setDisclaimer(admin_requests.contains(category));
         Title.setHint("Fundraiser Name");
         Body.setHint("Description");
+        DateText.setText(R.string.fundraiser_date);
+        PostDate = "Fundraiser date: ";
     }
 
     /**
@@ -324,7 +331,9 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         setBaseCategoryVisible();
         setDisclaimer(admin_requests.contains(category));
         Title.setHint("Title");
-        Body.setHint("Description of pet, date last seen");
+        Body.setHint("Description of pet");
+        DateText.setText(R.string.pet_date);
+        PostDate = "Last seen: ";
     }
 
     /**
@@ -334,6 +343,8 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         category = "Tradesmen Referrals";
         setBaseCategoryVisible();
         setDisclaimer(admin_requests.contains(category));
+        date_linearLayout.setVisibility(View.GONE);
+        PostDate = null;
     }
 
     /**
@@ -345,6 +356,8 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         setDisclaimer(admin_requests.contains(category));
         Title.setHint("Recommendation title");
         Body.setHint("Description");
+        date_linearLayout.setVisibility(View.GONE);
+        PostDate = null;
     }
 
     /**
@@ -398,7 +411,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
 
         //formatting date of notice
         Date currentDate = new Date();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d yy HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("MMM d yyyy, HH:mm");
         String DatetoString = format.format(currentDate);
 
         //post with image
@@ -476,6 +489,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit.setOnClickListener(view -> {
             String title = Title.getText().toString().trim();
             String body = Body.getText().toString().trim();
+            if (PostDate!=null){ body += "\n\n" + PostDate; }
             //post without image
             if (image_uri == null){ uploadData(title, body, "noImage"); }
             //post with image
@@ -540,6 +554,9 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         else { collectionPath = "Notices"; }
     }
 
+    /**
+     * Displays dialog where user is able to select a date
+     */
     private void showDatePickerDialog(){
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
@@ -547,14 +564,13 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
                 Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),
                 Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-
                 );
         datePickerDialog.show();
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-        String date = ""+ dayOfMonth + (month+1) + year;
-        DateText.setText(date);
+        PostDate += ""+ dayOfMonth+"/"+(month+1)+"/"+year;
+        DateText.setText(PostDate);
     }
 }
