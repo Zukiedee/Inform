@@ -12,12 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 /**
- * User profile interface
+ * User profile user interface
  * User edits name, account type and communities to follow
  */
 public class Profile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
@@ -79,7 +79,6 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         username = findViewById(R.id.username_hint);
         TextView email = findViewById(R.id.email_hint);
         relativeLayout = findViewById(R.id.profile);
-
         user_email = user.getEmail();
         email.setText(user_email);
 
@@ -134,7 +133,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button.
         int id = menuItem.getItemId();
@@ -165,6 +164,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         if (communities.isEmpty()){
             Toast.makeText(this, "Please select at least one community to follow", Toast.LENGTH_SHORT).show();
         }
+
         else {
             //save info
             HashMap<String, Object> userMap = new HashMap<>();
@@ -196,11 +196,13 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         user_type_spinner.setAdapter(dataAdapter);
         user_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    //on selecting a user_type_spinner
-                    user_type = adapterView.getItemAtPosition(i).toString();
+                //on selecting a user_type_spinner
+                user_type = adapterView.getItemAtPosition(i).toString();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 user_type = adapterView.getItemAtPosition(0).toString();
@@ -227,6 +229,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     public void onPositiveButtonClicked(String[] list, ArrayList<String> selectedList) {
         shownList.clear();
         String item;
+
         for(int j = 0; j <selectedList.size(); j++){
             item = selectedList.get(j);
             if(!shownList.contains(item)){ shownList.add(item.trim()); }
