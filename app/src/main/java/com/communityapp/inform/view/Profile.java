@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -53,6 +52,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
     //firebase
     private FirebaseUser user;
+    private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database;
 
     //User database fields
@@ -70,8 +70,8 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Edit Profile");
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        checkUserStatus();
 
         database = FirebaseFirestore.getInstance();
         progressDialog = new ProgressDialog(this);
@@ -80,12 +80,27 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         TextView email = findViewById(R.id.email_hint);
         relativeLayout = findViewById(R.id.profile);
 
-        user_email = user.getEmail();
         email.setText(user_email);
 
         if (user!=null) { DisplayInfo(); }
         setType();
         setCommunities();
+    }
+
+    /**
+     * Verifies that user is signed in
+     */
+    private void checkUserStatus() {
+        //If user is not logged in, redirect to sign in screen
+        if (user_email == null) {
+            Intent loginIntent = new Intent(Profile.this, SignIn.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(loginIntent);
+            finish();
+        } else {
+            user_email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
+            user = mAuth.getCurrentUser();
+        }
     }
 
     /**

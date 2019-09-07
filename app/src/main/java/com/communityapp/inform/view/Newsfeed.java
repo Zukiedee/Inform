@@ -386,9 +386,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 reminder.setCancelable(false);
                 reminder.show(getSupportFragmentManager(), "Set Reminder");
 
-                if (remind_me.equals("30 minutes")){
-                    insertEvent(documentSnapshot.getString("Title"), documentSnapshot.getString("Description"), 30*60*60);
-                }
+                insertEvent();
+
 
             }
 
@@ -412,14 +411,14 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         });
     }
 
-    private void insertEvent(String title, String description, int endTime) {
+    private void insertEvent() {
         ContentResolver contentResolver = this.getContentResolver();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(CalendarContract.Events.TITLE, title);
-        contentValues.put(CalendarContract.Events.DESCRIPTION, description);
+        contentValues.put(CalendarContract.Events.TITLE, "title");
+        contentValues.put(CalendarContract.Events.DESCRIPTION, "description");
         contentValues.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
-        contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + endTime*1000);
+        contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + 30*60*1000);
         contentValues.put(CalendarContract.Events.CALENDAR_ID, 1);
         contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
 
