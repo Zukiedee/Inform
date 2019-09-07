@@ -42,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +75,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private String username, user_email;
     private TextView nav_username;
     private String currentcommunity = "", remind_me;
+    private int reminder;
+    private String title, description;
 
     //database reference keys
     private static final String COMMUNITY_KEY = "Community";
@@ -350,7 +353,34 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     public void onPositiveReminderButtonClicked(String[] list, int pos) {
         //positive button clicked on reminder dialog
         remind_me = list[pos];
-        Toast.makeText(this, "Reminder set for: "+list[pos], Toast.LENGTH_SHORT).show();
+        reminder = 0;
+
+        switch (remind_me) {
+            case "30 minutes":
+                reminder = 30;
+                break;
+            case "1 hour":
+                reminder = 60*60;
+                break;
+            case "1 day":
+                reminder = 60*60*24;
+                break;
+            case "1 week":
+                reminder = 60*60*24*7;
+                break;
+        }
+
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.setTimeInMillis(Calendar.getInstance().getTimeInMillis()+reminder);
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime)
+                .putExtra(CalendarContract.Events.TITLE, title)
+                .putExtra(CalendarContract.Events.DESCRIPTION, description);
+        startActivity(intent);
+
+        //Toast.makeText(this, "Reminder set", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Reminder set for: "+list[pos], Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -386,9 +416,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 reminder.setCancelable(false);
                 reminder.show(getSupportFragmentManager(), "Set Reminder");
 
-                insertEvent();
-
-
+                title = documentSnapshot.getString("Title");
+                description = documentSnapshot.getString("Description");
             }
 
             @Override
@@ -409,34 +438,5 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 Toast.makeText(Newsfeed.this, "Commented", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void insertEvent() {
-        ContentResolver contentResolver = this.getContentResolver();
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put(CalendarContract.Events.TITLE, "title");
-        contentValues.put(CalendarContract.Events.DESCRIPTION, "description");
-        contentValues.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
-        contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + 30*60*1000);
-        contentValues.put(CalendarContract.Events.CALENDAR_ID, 1);
-        contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    Activity#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
-            }
-        }
-        Uri uri = contentResolver.insert(CalendarContract.Events.CONTENT_URI, contentValues);
-
-        Toast.makeText(this, "Reminder set", Toast.LENGTH_SHORT).show();
     }
 }

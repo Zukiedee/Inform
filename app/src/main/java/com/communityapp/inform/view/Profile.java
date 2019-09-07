@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -34,7 +35,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 /**
- * User profile interface
+ * User profile user interface
  * User edits name, account type and communities to follow
  */
 public class Profile extends AppCompatActivity implements Add_Communities_Dialog.MultiChoiceListener {
@@ -52,7 +53,6 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
     //firebase
     private FirebaseUser user;
-    private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database;
 
     //User database fields
@@ -70,8 +70,8 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Edit Profile");
 
-        mAuth = FirebaseAuth.getInstance();
-        checkUserStatus();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         database = FirebaseFirestore.getInstance();
         progressDialog = new ProgressDialog(this);
@@ -79,28 +79,12 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         username = findViewById(R.id.username_hint);
         TextView email = findViewById(R.id.email_hint);
         relativeLayout = findViewById(R.id.profile);
-
+        user_email = user.getEmail();
         email.setText(user_email);
 
         if (user!=null) { DisplayInfo(); }
         setType();
         setCommunities();
-    }
-
-    /**
-     * Verifies that user is signed in
-     */
-    private void checkUserStatus() {
-        //If user is not logged in, redirect to sign in screen
-        if (user_email == null) {
-            Intent loginIntent = new Intent(Profile.this, SignIn.class);
-            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(loginIntent);
-            finish();
-        } else {
-            user_email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
-            user = mAuth.getCurrentUser();
-        }
     }
 
     /**
@@ -149,7 +133,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button.
         int id = menuItem.getItemId();
@@ -180,6 +164,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         if (communities.isEmpty()){
             Toast.makeText(this, "Please select at least one community to follow", Toast.LENGTH_SHORT).show();
         }
+
         else {
             //save info
             HashMap<String, Object> userMap = new HashMap<>();
@@ -211,11 +196,13 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         user_type_spinner.setAdapter(dataAdapter);
         user_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    //on selecting a user_type_spinner
-                    user_type = adapterView.getItemAtPosition(i).toString();
+                //on selecting a user_type_spinner
+                user_type = adapterView.getItemAtPosition(i).toString();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 user_type = adapterView.getItemAtPosition(0).toString();
@@ -242,6 +229,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     public void onPositiveButtonClicked(String[] list, ArrayList<String> selectedList) {
         shownList.clear();
         String item;
+
         for(int j = 0; j <selectedList.size(); j++){
             item = selectedList.get(j);
             if(!shownList.contains(item)){ shownList.add(item.trim()); }

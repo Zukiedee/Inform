@@ -23,10 +23,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.communityapp.inform.model.Notification;
 import com.example.inform.R;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -58,6 +60,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
     private ProgressDialog progressDialog;
     private TextView DateText;
     private LinearLayout date_linearLayout;
+    private ConstraintLayout constraintLayout;
 
     private static final int PICK_IMAGE_REQUEST = 100;
     private Uri image_uri = null;
@@ -112,6 +115,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         date_linearLayout = findViewById(R.id.eventDate);
         DateText = findViewById(R.id.PostDate);
         findViewById(R.id.show_date_dialog).setOnClickListener(view -> showDatePickerDialog());
+        constraintLayout = findViewById(R.id.create_constraint_layout);
 
         Title.addTextChangedListener(createNotice);
         Body.addTextChangedListener(createNotice);
@@ -261,7 +265,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         if (request){
             Alerter.create(this)
                     .setText(R.string.disclaimermsg)
-                    .setDuration(10000)
+                    .setDuration(5000)
                     .enableSwipeToDismiss()
                     .setIcon(R.drawable.ic_crime)
                     .setBackgroundColorRes(R.color.colorReminder)
@@ -411,7 +415,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
 
         //formatting date of notice
         Date currentDate = new Date();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("MMM d yyyy, HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy, HH:mm");
         String DatetoString = format.format(currentDate);
 
         //post with image
@@ -446,14 +450,14 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
                                     })
                                     .addOnFailureListener(e -> {
                                         progressDialog.dismiss();
-                                        Toast.makeText(createNotice.this, "Error occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        Snackbar.make(constraintLayout, "Error occurred! "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                     });
                         }
                     })
                     .addOnFailureListener(e -> {
                         //failed uploading image
                         progressDialog.dismiss();
-                        Toast.makeText(createNotice.this, "Failed to upload image. Please try again" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Snackbar.make(constraintLayout, "Failed to upload image. Please try again\n" + e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     });
         }
         else {
@@ -470,14 +474,13 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
                             Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
                         }
                         else { Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show(); }
-
                         progressDialog.dismiss();
                         Intent done = new Intent(createNotice.this, Newsfeed.class);
                         startActivity(done);
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        Toast.makeText(createNotice.this, "Error Occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Snackbar.make(constraintLayout, "Error occurred! "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     });
         }
     }
@@ -489,7 +492,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit.setOnClickListener(view -> {
             String title = Title.getText().toString().trim();
             String body = Body.getText().toString().trim();
-            if (PostDate!=null){ body += "\n\n" + PostDate; }
+            if (PostDate!=null || PostDate.isEmpty()){ body += "\n\n" + PostDate; }
             //post without image
             if (image_uri == null){ uploadData(title, body, "noImage"); }
             //post with image

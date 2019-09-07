@@ -42,9 +42,7 @@ public class SignIn extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         SignInButton signInButton = findViewById(R.id.sign_in_button);
-
         signInProgressBar = new ProgressDialog(this);
-
         constraintLayout = findViewById(R.id.constraint_layout);
 
         // Configure sign-in to request the user's ID, email address, and basic
