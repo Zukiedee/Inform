@@ -20,6 +20,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
+/**
+ * Handles individual cards i.e. notices in the RecyclerView
+ */
 public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapter.NoticeHolder> {
     private NoticeAdapter.OnItemClickListener listener;
 

@@ -21,8 +21,8 @@ public class ReminderDialog extends DialogFragment {
     private int position = 0;// default selection
 
     public interface SingleChoiceListener {
-        void onPositiveButtonClicked (String[] list, int pos );
-        void onNegativeButtonClicked ();
+        void onPositiveReminderButtonClicked (String[] list, int pos );
+        void onNegativeReminderButtonClicked ();
     }
 
     private SingleChoiceListener mListener;
@@ -45,8 +45,8 @@ public class ReminderDialog extends DialogFragment {
 
         builder.setTitle("Select reminder")
                 .setSingleChoiceItems(reminder_list, 0, (dialogInterface, i) -> position = i)
-                .setPositiveButton("OK", (dialogInterface, i) -> mListener.onPositiveButtonClicked(reminder_list, position))
-                .setNegativeButton("CANCEL", (dialogInterface, i) -> mListener.onNegativeButtonClicked());
+                .setPositiveButton("OK", (dialogInterface, i) -> mListener.onPositiveReminderButtonClicked(reminder_list, position))
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> mListener.onNegativeReminderButtonClicked());
 
 
         return builder.create();

@@ -1,9 +1,15 @@
 package com.communityapp.inform.view;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.communityapp.inform.presenter.NoticeAdapter;
@@ -12,6 +18,7 @@ import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.provider.CalendarContract;
 import android.view.SubMenu;
 import android.view.View;
 
@@ -50,13 +57,14 @@ import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Objects;
 
 /**
  * The main newsfeed screen.
  * Community posts will be displayed here depending on the communities selected by users in their profile.
  */
-public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener  {
+public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener {
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = database.collection("Notices");
@@ -65,7 +73,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private ProgressDialog progressDialog;
     private String username, user_email;
     private TextView nav_username;
-    private String currentcommunity ="";
+    private String currentcommunity = "", remind_me;
 
     //database reference keys
     private static final String COMMUNITY_KEY = "Community";
@@ -112,16 +120,17 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     /**
      * Verifies that user is signed in
      */
-    private void checkUserStatus(){
+    private void checkUserStatus() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //If user is not logged in, redirect to sign in screen
-        if (currentUser== null){
+        if (currentUser == null) {
             Intent loginIntent = new Intent(Newsfeed.this, SignIn.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
             finish();
+        } else {
+            user_email = mAuth.getCurrentUser().getEmail();
         }
-        else { user_email = mAuth.getCurrentUser().getEmail(); }
     }
 
     /**
@@ -153,8 +162,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
      * Displays notices from input category
      * @param category Category to filter notices by
      */
-    private void categoryNotice(String category){
-        progressDialog.setTitle("Loading "+ category+"..");
+    private void categoryNotice(String category) {
+        progressDialog.setTitle("Loading " + category + "..");
         progressDialog.show();
         Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, currentcommunity).whereEqualTo(CATEGORY_KEY, category).orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
@@ -175,7 +184,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     /**
      * Handles drawer navigation menu.
      */
-    private void showMenu(){
+    private void showMenu() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -185,13 +194,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         View view = navigationView.getHeaderView(0);
         TextView nav_email = view.findViewById(R.id.main_email);
 
-        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
-        nav_email.setText(email);
+        nav_email.setText(user_email);
 
-        DocumentReference userRef = database.document("Users/"+email);
+        DocumentReference userRef = database.document("Users/" + user_email);
         userRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if(documentSnapshot.exists()){
+                    if (documentSnapshot.exists()) {
                         nav_username = findViewById(R.id.main_username);
                         username = documentSnapshot.getString(USERNAME_KEY);
                         nav_username.setText(username);
@@ -203,7 +211,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
                         Menu menu = navigationView.getMenu();
                         SubMenu communitiesMenu = menu.addSubMenu("Communities");
-                        for (int i=0; i< communityList.size(); i++){
+                        for (int i = 0; i < communityList.size(); i++) {
                             communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
                         }
                         navigationView.invalidate();
@@ -213,7 +221,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Snackbar.make(relativeLayout, "Error occurred: "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    Snackbar.make(relativeLayout, "Error occurred: " + e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     startActivity(new Intent(Newsfeed.this, Profile.class));
                 });
 
@@ -227,8 +235,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) { drawer.closeDrawer(GravityCompat.START); }
-        else { super.onBackPressed(); }
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -266,7 +277,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handles navigation view item clicks.
         int id = item.getItemId();
-        String title = ""+item.getTitle();
+        String title = "" + item.getTitle();
         switch (id) {
             case R.id.nav_profile:
                 //Navigate to user profile screen
@@ -274,14 +285,15 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(intentProfile);
                 break;
             case R.id.nav_inbox:
+                //navigate to requests inbox if user is admin
 
                 //Navigate to user inbox
                 Intent intentInbox = new Intent(Newsfeed.this, RequestsAdmin.class);
                 startActivity(intentInbox);
                 break;
-                /*
+             /*
                 Displays community posts filtered by selected category
-                 */
+             */
             case R.id.news:
                 categoryNotice("Local News");
                 break;
@@ -305,7 +317,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 break;
             default:
                 NavigationView navigationView = findViewById(R.id.nav_view);
-                Menu menu =  navigationView.getMenu();
+                Menu menu = navigationView.getMenu();
                 unCheckAllMenuItems(menu);
                 loadNotices(title);
                 currentcommunity = title;
@@ -326,16 +338,25 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         int size = menu.size();
         for (int i = 0; i < size; i++) {
             final MenuItem item = menu.getItem(i);
-            if(item.hasSubMenu()) { unCheckAllMenuItems(item.getSubMenu()); }
-            else { item.setChecked(false); }
+            if (item.hasSubMenu()) {
+                unCheckAllMenuItems(item.getSubMenu());
+            } else {
+                item.setChecked(false);
+            }
         }
     }
 
     @Override
-    public void onPositiveButtonClicked(String[] list, int pos) {    }
+    public void onPositiveReminderButtonClicked(String[] list, int pos) {
+        //positive button clicked on reminder dialog
+        remind_me = list[pos];
+        Toast.makeText(this, "Reminder set for: "+list[pos], Toast.LENGTH_SHORT).show();
+    }
 
     @Override
-    public void onNegativeButtonClicked() {    }
+    public void onNegativeReminderButtonClicked() {
+        //negative button clicked on reminder dialog
+    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -343,7 +364,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         MultiDex.install(this);
     }
 
-    private void ButtonClicks(RecyclerView noticeRecyclerView){
+    private void ButtonClicks(RecyclerView noticeRecyclerView) {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -364,6 +385,11 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 DialogFragment reminder = new ReminderDialog();
                 reminder.setCancelable(false);
                 reminder.show(getSupportFragmentManager(), "Set Reminder");
+
+                if (remind_me.equals("30 minutes")){
+                    insertEvent(documentSnapshot.getString("Title"), documentSnapshot.getString("Description"), 30*60*60);
+                }
+
             }
 
             @Override
@@ -386,27 +412,32 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         });
     }
 
-    /*void insertEvent(String summary, String location, String des, DateTime startDate, DateTime endDate, EventAttendee[] eventAttendees) throws IOException {
-        Event event = new Event()
-                .setSummary(summary)
-                .setLocation(location)
-                .setDescription(des);     EventDateTime start = new EventDateTime()
-                .setDateTime(startDate)
-                .setTimeZone(“America/Los_Angeles”);
-        event.setStart(start);     EventDateTime end = new EventDateTime()
-                .setDateTime(endDate)
-                .setTimeZone(“America/Los_Angeles”);
-        event.setEnd(end);     String[] recurrence = new String[] {“RRULE:FREQ=DAILY;COUNT=1”};
-        event.setRecurrence(Arrays.asList(recurrence));     event.setAttendees(Arrays.asList(eventAttendees));     EventReminder[] reminderOverrides = new EventReminder[] {
-                new EventReminder().setMethod(“email”).setMinutes(24 * 60),
-                new EventReminder().setMethod(“popup”).setMinutes(10),
-        };
-        Event.Reminders reminders = new Event.Reminders()
-                .setUseDefault(false)
-                .setOverrides(Arrays.asList(reminderOverrides));
-        event.setReminders(reminders);     String calendarId = “primary”;
-        //event.send
-        if(mService!=null)
-            mService.events().insert(calendarId, event).setSendNotifications(true).execute();
-    }*/
+    private void insertEvent(String title, String description, int endTime) {
+        ContentResolver contentResolver = this.getContentResolver();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(CalendarContract.Events.TITLE, title);
+        contentValues.put(CalendarContract.Events.DESCRIPTION, description);
+        contentValues.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
+        contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + endTime*1000);
+        contentValues.put(CalendarContract.Events.CALENDAR_ID, 1);
+        contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    Activity#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+                return;
+            }
+        }
+        Uri uri = contentResolver.insert(CalendarContract.Events.CONTENT_URI, contentValues);
+
+        Toast.makeText(this, "Reminder set", Toast.LENGTH_SHORT).show();
+    }
 }
