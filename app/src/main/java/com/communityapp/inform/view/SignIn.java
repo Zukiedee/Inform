@@ -3,10 +3,8 @@ package com.communityapp.inform.view;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,20 +15,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import java.util.Objects;
 
 /**
  * Default screen for first timw users of the application or logged out users.
  * Redirects users to Google sign in
  */
 public class SignIn extends AppCompatActivity {
-
     private final static int GOOGLE_SIGN_IN = 234;
     private GoogleSignInClient client;
     private FirebaseAuth mAuth;
@@ -54,18 +51,11 @@ public class SignIn extends AppCompatActivity {
 
         // Build a GoogleSignInClient with the options specified by gso.
         client = GoogleSignIn.getClient(this, googleSignInOptions);
-
         mAuth = FirebaseAuth.getInstance();
 
         signInButton.setSize(SignInButton.SIZE_WIDE);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SignInGoogle();
-            }
-        });
+        signInButton.setOnClickListener(view -> SignInGoogle());
     }
-
 
     /**
      * Prompts the user to select a Google account to sign in with.
@@ -81,22 +71,18 @@ public class SignIn extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == GOOGLE_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
+                firebaseAuthWithGoogle(Objects.requireNonNull(account));
 
             } catch (ApiException e){
                 // Google Sign In failed, update UI appropriately
                 Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-
             }
-
         }
     }
 
@@ -107,20 +93,17 @@ public class SignIn extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            // Sign in success
-                            Toast.makeText(SignIn.this,  "Successfully signed in!", Toast.LENGTH_SHORT).show();
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful()){
+                        // Sign in success
+                        Toast.makeText(SignIn.this,  "Successfully signed in!", Toast.LENGTH_SHORT).show();
 
-                            Intent intentProfile = new Intent(SignIn.this, Profile.class);
-                            startActivity(intentProfile);
+                        Intent intentProfile = new Intent(SignIn.this, Profile.class);
+                        startActivity(intentProfile);
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(SignIn.this,  "Authentification Failed!", Toast.LENGTH_SHORT).show();
-                        }
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Toast.makeText(SignIn.this,  "Authentication Failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

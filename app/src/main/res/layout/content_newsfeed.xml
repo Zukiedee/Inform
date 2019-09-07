@@ -6,6 +6,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorNewsfeedBackground"
         android:orientation="vertical"
+        android:id="@+id/newsfeed"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="com.communityapp.inform.view.Newsfeed"
         tools:showIn="@layout/app_bar_newsfeed">

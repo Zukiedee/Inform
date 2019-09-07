@@ -20,31 +20,31 @@
         android:orderInCategory="3"
         android:visible="true">
         <item
-            android:id="@+id/nav_news"
+            android:id="@+id/news"
             android:icon="@drawable/ic_news"
             android:title="@string/local_news" />
         <item
-            android:id="@+id/nav_crime"
+            android:id="@+id/crime"
             android:icon="@drawable/ic_crime"
             android:title="@string/crime_report" />
         <item
-            android:id="@+id/nav_events"
+            android:id="@+id/events"
             android:icon="@drawable/ic_events"
             android:title="@string/events" />
         <item
-            android:id="@+id/nav_pets"
+            android:id="@+id/pets"
             android:icon="@drawable/ic_pets"
             android:title="@string/missing_pet" />
         <item
-            android:id="@+id/nav_fundraiser"
+            android:id="@+id/fundraiser"
             android:icon="@drawable/ic_fundraiser"
             android:title="@string/fundraiser" />
         <item
-            android:id="@+id/nav_tradesmen"
+            android:id="@+id/tradesmen"
             android:icon="@drawable/ic_tradesmen"
             android:title="@string/tradesmen_refferals" />
         <item
-            android:id="@+id/nav_recommendations"
+            android:id="@+id/recommendations"
             android:icon="@drawable/ic_recommendations"
             android:title="@string/recommendations" />
     </group>

@@ -1,5 +1,6 @@
 package com.communityapp.inform.view;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +10,6 @@ import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.ReminderDialog;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.SubMenu;
@@ -28,16 +27,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.multidex.MultiDex;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
-import android.view.View.OnClickListener;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.communityapp.inform.model.Notice;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -48,22 +50,22 @@ import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
- * The main screen.
- * Community posts will be displayed here.
+ * The main newsfeed screen.
+ * Community posts will be displayed here depending on the communities selected by users in their profile.
  */
 public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ReminderDialog.SingleChoiceListener  {
-    private RecyclerView noticeRecyclerView;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference noticesRef = database.collection("Notices");
-    private Query query = noticesRef;
     private NoticeAdapter adapter;
+    private RelativeLayout relativeLayout;
     private ProgressDialog progressDialog;
-    private String username;
-    TextView nav_username;
-    String currentcommunity ="";
+    private String username, user_email;
+    private TextView nav_username;
+    private String currentcommunity ="";
 
     //database reference keys
     private static final String COMMUNITY_KEY = "Community";
@@ -81,19 +83,16 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         checkUserStatus();
 
         progressDialog = new ProgressDialog(this);
+        relativeLayout = findViewById(R.id.newsfeed);
 
-        //retrieve communities user is following
         loadNotices(currentcommunity);
         showMenu();
 
         //Create a notice button
         FloatingActionButton fab = findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
-                startActivity(intentCreateNotice);
-            }
+        fab.setOnClickListener(view -> {
+            Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
+            startActivity(intentCreateNotice);
         });
     }
 
@@ -122,34 +121,39 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             startActivity(loginIntent);
             finish();
         }
+        else { user_email = mAuth.getCurrentUser().getEmail(); }
     }
 
     /**
-     * Loads notices to be displayed in the general newsfeed
+     * Loads notices to be displayed filtered by community in the general newsfeed
+     * @param community Community to filter notices by.
      */
     private void loadNotices(String community) {
-        progressDialog.setTitle("Loading data..");
+        progressDialog.setTitle("Loading notices..");
         progressDialog.show();
 
-        query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
+        Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
 
         adapter = new NoticeAdapter(options);
-        noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
-        adapter.startListening();
         progressDialog.dismiss();
+
+        adapter.startListening();
+
+        ButtonClicks(noticeRecyclerView);
     }
 
     /**
      * Displays notices from input category
      * @param category Category to filter notices by
      */
-    public void categoryNotice(String category){
+    private void categoryNotice(String category){
         progressDialog.setTitle("Loading "+ category+"..");
         progressDialog.show();
         Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, currentcommunity).whereEqualTo(CATEGORY_KEY, category).orderBy(ID_KEY, Query.Direction.DESCENDING);
@@ -157,17 +161,21 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 .setQuery(query, Notice.class)
                 .build();
         adapter = new NoticeAdapter(options);
+        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
         noticeRecyclerView.setHasFixedSize(true);
         noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         noticeRecyclerView.setAdapter(adapter);
-        adapter.startListening();
         progressDialog.dismiss();
+
+        adapter.startListening();
+
+        ButtonClicks(noticeRecyclerView);
     }
 
     /**
      * Handles drawer navigation menu.
      */
-    public void showMenu(){
+    private void showMenu(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -177,43 +185,36 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         View view = navigationView.getHeaderView(0);
         TextView nav_email = view.findViewById(R.id.main_email);
 
-        String email = mAuth.getCurrentUser().getEmail();
+        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
         nav_email.setText(email);
 
         DocumentReference userRef = database.document("Users/"+email);
         userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            nav_username = findViewById(R.id.main_username);
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        nav_username = findViewById(R.id.main_username);
+                        username = documentSnapshot.getString(USERNAME_KEY);
+                        nav_username.setText(username);
 
-                            username = documentSnapshot.getString(USERNAME_KEY);
+                        //retrieve communities from user's profile and display it in the navigation drawer menu
+                        String communities = documentSnapshot.getString("Communities");
+                        assert communities != null;
+                        ArrayList<String> communityList = new ArrayList<>(Arrays.asList(communities.split(",")));
 
-                            nav_username.setText(username);
-
-                            String communities = documentSnapshot.getString("Communities");
-                            ArrayList<String> communityList = new ArrayList<String>(Arrays.asList(communities.split(",")));
-
-                            Menu menu = navigationView.getMenu();
-                            SubMenu communitiesMenu = menu.addSubMenu("Communities");
-
-                            for (int i=0; i< communityList.size(); i++){
-                                communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
-                            }
-                            navigationView.invalidate();
-                            currentcommunity = communityList.get(0);
-                            getSupportActionBar().setTitle(currentcommunity);
-                            loadNotices(currentcommunity);
+                        Menu menu = navigationView.getMenu();
+                        SubMenu communitiesMenu = menu.addSubMenu("Communities");
+                        for (int i=0; i< communityList.size(); i++){
+                            communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
                         }
+                        navigationView.invalidate();
+                        currentcommunity = communityList.get(0);
+                        Objects.requireNonNull(getSupportActionBar()).setTitle(currentcommunity);
+                        loadNotices(currentcommunity);
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(Newsfeed.this, "Error: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(Newsfeed.this, Profile.class));
-                    }
+                .addOnFailureListener(e -> {
+                    Snackbar.make(relativeLayout, "Error occurred: "+e.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    startActivity(new Intent(Newsfeed.this, Profile.class));
                 });
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -226,11 +227,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        if (drawer.isDrawerOpen(GravityCompat.START)) { drawer.closeDrawer(GravityCompat.START); }
+        else { super.onBackPressed(); }
     }
 
     @Override
@@ -241,23 +239,31 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
-        //Logs user out of application. Directs user back to SignIn screen
+        /*
+         Log out alert dialog displayed to user to prompt if they are sure they want to log out.
+         Logs user out of application. Directs user back to SignIn screen
+         */
         if (id == R.id.logout) {
-            mAuth.signOut();
-            Intent intentWelcome = new Intent(Newsfeed.this, SignIn.class);
-            startActivity(intentWelcome);
+            new AlertDialog.Builder(Newsfeed.this)
+                    .setTitle("Log out")
+                    .setMessage("Are you sure want to log out?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        mAuth.signOut();
+                        Intent intentWelcome = new Intent(Newsfeed.this, SignIn.class);
+                        startActivity(intentWelcome);
+                    })
+                    .setNegativeButton("No", (dialogInterface, i) -> {
+                        //do nothing
+                    })
+                    .show();
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handles navigation view item clicks.
         int id = item.getItemId();
         String title = ""+item.getTitle();
@@ -268,37 +274,33 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(intentProfile);
                 break;
             case R.id.nav_inbox:
+
                 //Navigate to user inbox
-                Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
+                Intent intentInbox = new Intent(Newsfeed.this, RequestsAdmin.class);
                 startActivity(intentInbox);
                 break;
-
-            case R.id.nav_news:
-                //Display Local News posts notices
+                /*
+                Displays community posts filtered by selected category
+                 */
+            case R.id.news:
                 categoryNotice("Local News");
                 break;
-            case R.id.nav_crime:
-                //Display Crime Report notices
+            case R.id.crime:
                 categoryNotice("Crime Report");
                 break;
-            case R.id.nav_pets:
-                //Display Missing Pet notices
+            case R.id.pets:
                 categoryNotice("Missing Pet");
                 break;
-            case R.id.nav_events:
-                //Display Entertainment & Events notices
+            case R.id.events:
                 categoryNotice("Events");
                 break;
-            case R.id.nav_fundraiser:
-                //Display Fundraiser notices
+            case R.id.fundraiser:
                 categoryNotice("Fundraiser");
                 break;
-            case R.id.nav_tradesmen:
-                //Display Tradesmen refferals notices
-                categoryNotice("Tradesmen Refferals");
+            case R.id.tradesmen:
+                categoryNotice("Tradesmen Referrals");
                 break;
-            case R.id.nav_recommendations:
-                //Display Recommendations notices
+            case R.id.recommendations:
                 categoryNotice("Recommendations");
                 break;
             default:
@@ -307,11 +309,10 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 unCheckAllMenuItems(menu);
                 loadNotices(title);
                 currentcommunity = title;
-                getSupportActionBar().setTitle(currentcommunity);
+                Objects.requireNonNull(getSupportActionBar()).setTitle(currentcommunity);
                 item.setChecked(true);
                 break;
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -325,12 +326,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         int size = menu.size();
         for (int i = 0; i < size; i++) {
             final MenuItem item = menu.getItem(i);
-            if(item.hasSubMenu()) {
-                // Un check sub menu items
-                unCheckAllMenuItems(item.getSubMenu());
-            } else {
-                item.setChecked(false);
-            }
+            if(item.hasSubMenu()) { unCheckAllMenuItems(item.getSubMenu()); }
+            else { item.setChecked(false); }
         }
     }
 
@@ -346,5 +343,70 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         MultiDex.install(this);
     }
 
+    private void ButtonClicks(RecyclerView noticeRecyclerView){
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        }).attachToRecyclerView(noticeRecyclerView);
+
+        adapter.setOnItemClickListener(new NoticeAdapter.OnItemClickListener() {
+            @Override
+            public void addReminderBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                DialogFragment reminder = new ReminderDialog();
+                reminder.setCancelable(false);
+                reminder.show(getSupportFragmentManager(), "Set Reminder");
+            }
+
+            @Override
+            public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                //To do
+                Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void dislikeBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                //To do
+                Toast.makeText(Newsfeed.this, "Disliked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void commentBtnClick(DocumentSnapshot documentSnapshot, int position) {
+                //To do
+                Toast.makeText(Newsfeed.this, "Commented", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /*void insertEvent(String summary, String location, String des, DateTime startDate, DateTime endDate, EventAttendee[] eventAttendees) throws IOException {
+        Event event = new Event()
+                .setSummary(summary)
+                .setLocation(location)
+                .setDescription(des);     EventDateTime start = new EventDateTime()
+                .setDateTime(startDate)
+                .setTimeZone(“America/Los_Angeles”);
+        event.setStart(start);     EventDateTime end = new EventDateTime()
+                .setDateTime(endDate)
+                .setTimeZone(“America/Los_Angeles”);
+        event.setEnd(end);     String[] recurrence = new String[] {“RRULE:FREQ=DAILY;COUNT=1”};
+        event.setRecurrence(Arrays.asList(recurrence));     event.setAttendees(Arrays.asList(eventAttendees));     EventReminder[] reminderOverrides = new EventReminder[] {
+                new EventReminder().setMethod(“email”).setMinutes(24 * 60),
+                new EventReminder().setMethod(“popup”).setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+        event.setReminders(reminders);     String calendarId = “primary”;
+        //event.send
+        if(mService!=null)
+            mService.events().insert(calendarId, event).setSendNotifications(true).execute();
+    }*/
 }

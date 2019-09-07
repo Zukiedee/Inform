@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -18,16 +19,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.Objects;
+
 /**
  * Inbox from admin regarding post notification statuses will be posted here
  */
 public class Inbox extends AppCompatActivity {
-    RecyclerView msgRecyclerView;
-    NotificationAdapter adapter;
+    private NotificationAdapter adapter;
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference msgsRef;
-    private static final String ID_KEY = "Id";
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +37,15 @@ public class Inbox extends AppCompatActivity {
         setContentView(R.layout.activity_inbox);
 
         //Back button on toolbar
-        getSupportActionBar().setTitle("Inbox");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Inbox");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mAuth = FirebaseAuth.getInstance();
 
+        progressDialog = new ProgressDialog(this);
+
+        mAuth = FirebaseAuth.getInstance();
         checkUserStatus();
-        msgsRef = database.collection("Users").document(mAuth.getCurrentUser().getEmail()).collection("Messages");
+        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
+        msgsRef = database.collection("Users/"+email+"/Messages");
         loadMessages();
     }
 
@@ -75,6 +80,10 @@ public class Inbox extends AppCompatActivity {
      * Loads all messages sent to user in their account
      */
     private void loadMessages() {
+        progressDialog.setTitle("Loading messages..");
+        progressDialog.show();
+
+        String ID_KEY = "Id";
         Query query = msgsRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Notification> options = new FirestoreRecyclerOptions.Builder<Notification>()
                 .setQuery(query, Notification.class)
@@ -82,9 +91,11 @@ public class Inbox extends AppCompatActivity {
 
         adapter = new NotificationAdapter(options);
 
-        msgRecyclerView = findViewById(R.id.inbox_recyclerView);
+        RecyclerView msgRecyclerView = findViewById(R.id.inbox_recyclerView);
         msgRecyclerView.setHasFixedSize(true);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         msgRecyclerView.setAdapter(adapter);
+        adapter.startListening();
+        progressDialog.dismiss();
     }
 }

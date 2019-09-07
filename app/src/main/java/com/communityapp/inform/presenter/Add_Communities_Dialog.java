@@ -2,7 +2,6 @@ package com.communityapp.inform.presenter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.inform.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Dialog displaying the communities to add.
@@ -25,7 +25,7 @@ public class Add_Communities_Dialog extends DialogFragment {
         void onNeutralButtonClicked ();
     }
 
-    MultiChoiceListener listener;
+    private MultiChoiceListener listener;
 
     @Override
     public void onAttach(Context context) {
@@ -40,39 +40,21 @@ public class Add_Communities_Dialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
 
         final String[] communities_list = getActivity().getResources().getStringArray(R.array.communities_options);
         final ArrayList<String> selected_communities = new ArrayList<>();
 
         builder.setTitle("Select communities");
-        builder.setMultiChoiceItems(communities_list, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
-                if(isChecked){
-                   selected_communities.add(communities_list[position]);
-                }
+        builder.setMultiChoiceItems(communities_list, null, (dialogInterface, position, isChecked) -> {
+            if(isChecked){
+               selected_communities.add(communities_list[position]);
             }
         });
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int position) {
-                        listener.onPositiveButtonClicked(communities_list, selected_communities);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        listener.onNegativeButtonClicked();
-                    }
-                })
-                .setNeutralButton("Clear all", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int pos) {
-                        listener.onNeutralButtonClicked();
-                    }
-        });
+        builder.setPositiveButton("Ok", (dialogInterface, position) -> listener.onPositiveButtonClicked(communities_list, selected_communities))
+                .setNegativeButton("Cancel", (dialogInterface, i) -> listener.onNegativeButtonClicked())
+                .setNeutralButton("Clear all", (dialogInterface, pos) -> listener.onNeutralButtonClicked());
 
         return builder.create();
     }

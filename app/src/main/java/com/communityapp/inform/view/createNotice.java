@@ -1,72 +1,73 @@
 package com.communityapp.inform.view;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.communityapp.inform.model.Notification;
 import com.example.inform.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.tapadoo.alerter.Alerter;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * User creates a notice by selecting a notice category, relevant notices are then shown and user submits notice.
+ * Certain notice categories require admin approval.
  */
-public class createNotice extends AppCompatActivity {
-    private static final int PICK_IMAGE_REQUEST = 100;
-    private Uri image_uri = null;
-
+public class createNotice extends AppCompatActivity  implements DatePickerDialog.OnDateSetListener{
     private EditText Title, Body;
     private ImageView imageView;
     private Spinner communities_categories;
-    private TextView upload;
+    private TextView upload, community_label;
     private Button submit;
-    private String category, name, email, communities;
+    private String category, name, email, communities, PostDate;
     private ProgressDialog progressDialog;
-    public ArrayAdapter<String> dataAdapter;                                             //display of user selected communities
+    private TextView DateText;
+    private LinearLayout date_linearLayout;
+
+    private static final int PICK_IMAGE_REQUEST = 100;
+    private Uri image_uri = null;
+
+    private String collectionPath;
+    private boolean postDisclaimer;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore database;
+    private CollectionReference notifications;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -78,26 +79,27 @@ public class createNotice extends AppCompatActivity {
     private static final String USERNAME_KEY = "Username";
     private static final String UID_KEY = "User ID";
 
+    private ArrayList<String> admin_requests = new ArrayList<>(Arrays.asList("Events/Entertainment", "Tradesmen Referrals", "Fundraiser"));
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_notice);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Create Notice");
+        Objects.requireNonNull(actionBar).setTitle("Create Notice");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        database = FirebaseFirestore.getInstance();
 
         checkUserStatus();
-
-        database = FirebaseFirestore.getInstance();
 
         progressDialog = new ProgressDialog(this);
 
         loadUserInfo();
+        notifications = database.collection("Users/"+email+"/Messages");
 
-        //user selects notice category to reveal relevant fields
         selectNoticeCategory();
 
         Title = findViewById(R.id.notice_headline);
@@ -105,13 +107,18 @@ public class createNotice extends AppCompatActivity {
         imageView = findViewById(R.id.upload_image);
         upload = findViewById(R.id.add_image);
         submit = findViewById(R.id.submit);
+        community_label = findViewById(R.id.community_label);
         communities_categories = findViewById(R.id.community);
+        date_linearLayout = findViewById(R.id.eventDate);
+        DateText = findViewById(R.id.PostDate);
+        findViewById(R.id.show_date_dialog).setOnClickListener(view -> showDatePickerDialog());
 
         Title.addTextChangedListener(createNotice);
         Body.addTextChangedListener(createNotice);
 
         final String[] community_categories = getResources().getStringArray(R.array.communities_options);
-        dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, community_categories);
+        //display of user selected communities
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(createNotice.this, android.R.layout.simple_spinner_item, community_categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         communities_categories.setAdapter(dataAdapter);
         communities_categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -127,12 +134,7 @@ public class createNotice extends AppCompatActivity {
         });
 
         //uploading an image from user gallery
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pickFromGallery();
-            }
-        });
+        upload.setOnClickListener(view -> pickFromGallery());
         submitNotice();
     }
 
@@ -163,22 +165,13 @@ public class createNotice extends AppCompatActivity {
     private void loadUserInfo() {
         DocumentReference userRef = database.document("Users/"+email);
         userRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            name = documentSnapshot.getString(USERNAME_KEY);
-                        }else {
-                            Toast.makeText(createNotice.this, "Complete User Profile", Toast.LENGTH_LONG).show();
-                        }
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){ name = documentSnapshot.getString(USERNAME_KEY); }
+                    else {
+                        Toast.makeText(createNotice.this, "Please Complete User Profile", Toast.LENGTH_LONG).show();
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnFailureListener(e -> Toast.makeText(createNotice.this, "Error: "+ e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
     /**
@@ -193,9 +186,7 @@ public class createNotice extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //on selecting a spinner
                 String item = adapterView.getItemAtPosition(i).toString();
-
                 //show relevant text fields to user
                 switch(item){
                     case "Local News":
@@ -241,7 +232,9 @@ public class createNotice extends AppCompatActivity {
         Body.setVisibility(View.GONE);
         upload.setVisibility(View.GONE);
         submit.setVisibility(View.GONE);
+        community_label.setVisibility(View.GONE);
         communities_categories.setVisibility(View.GONE);
+        date_linearLayout.setVisibility(View.GONE);
     }
 
     /**
@@ -253,17 +246,42 @@ public class createNotice extends AppCompatActivity {
         Body.setVisibility(View.VISIBLE);
         upload.setVisibility(View.VISIBLE);
         submit.setVisibility(View.VISIBLE);
+        community_label.setVisibility(View.VISIBLE);
         communities_categories.setVisibility(View.VISIBLE);
+        date_linearLayout.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Sets disclaimer message for users depending on the notice category selected.
+     * If notice needs admin approval, sets red disclaimer message to alert user that it will not be posted in the communities newsfeed.
+     * If notice does not need admin approval, sets green disclaimer message let the user know it will posted straight to the newsfeed.
+     * @param request True if notice needs approval. False if notice does not require approval.
+     */
+    private void setDisclaimer(boolean request){
+        if (request){
+            Alerter.create(this)
+                    .setText(R.string.disclaimermsg)
+                    .setDuration(10000)
+                    .enableSwipeToDismiss()
+                    .setIcon(R.drawable.ic_crime)
+                    .setBackgroundColorRes(R.color.colorReminder)
+                    .enableProgress(true)
+                    .setProgressColorRes(R.color.colorPrimary)
+                    .show();
+        }
+        postDisclaimer = request;
+    }
     /**
      * Displays relevant local news categories to user
      */
     private void showNews(){
         category = "Local News";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Headline");
         Body.setHint("Description");
+        DateText.setText(R.string.news_date);
+        PostDate = "News date: ";
     }
 
     /**
@@ -272,8 +290,11 @@ public class createNotice extends AppCompatActivity {
     private void showCrime(){
         category = "Crime Report";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Report Title");
         Body.setHint("Description");
+        DateText.setText(R.string.crime_date);
+        PostDate = "Crime date: ";
     }
 
     /**
@@ -282,8 +303,11 @@ public class createNotice extends AppCompatActivity {
     private void showEvents(){
         category = "Events/Entertainment";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Event Name");
         Body.setHint("Description");
+        DateText.setText(R.string.event_date);
+        PostDate = "Event date: ";
     }
 
     /**
@@ -292,8 +316,11 @@ public class createNotice extends AppCompatActivity {
     private void showFundraiser(){
         category = "Fundraiser";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Fundraiser Name");
         Body.setHint("Description");
+        DateText.setText(R.string.fundraiser_date);
+        PostDate = "Fundraiser date: ";
     }
 
     /**
@@ -302,8 +329,11 @@ public class createNotice extends AppCompatActivity {
     private void showPet(){
         category = "Missing Pet";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Title");
-        Body.setHint("Description of pet, date last seen");
+        Body.setHint("Description of pet");
+        DateText.setText(R.string.pet_date);
+        PostDate = "Last seen: ";
     }
 
     /**
@@ -312,6 +342,9 @@ public class createNotice extends AppCompatActivity {
     private void showTradesmen(){
         category = "Tradesmen Referrals";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
+        date_linearLayout.setVisibility(View.GONE);
+        PostDate = null;
     }
 
     /**
@@ -320,8 +353,11 @@ public class createNotice extends AppCompatActivity {
     private void showRecommendations(){
         category = "Recommendations";
         setBaseCategoryVisible();
+        setDisclaimer(admin_requests.contains(category));
         Title.setHint("Recommendation title");
         Body.setHint("Description");
+        date_linearLayout.setVisibility(View.GONE);
+        PostDate = null;
     }
 
     /**
@@ -340,6 +376,9 @@ public class createNotice extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {}
     };
 
+    /**
+     * Selects image from users phone gallery to be attached to their notice
+     */
     private void pickFromGallery(){
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
@@ -349,6 +388,7 @@ public class createNotice extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
+            assert data != null;
             image_uri = data.getData();
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageURI(image_uri);
@@ -371,93 +411,73 @@ public class createNotice extends AppCompatActivity {
 
         //formatting date of notice
         Date currentDate = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d ''yy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("MMM d yyyy, HH:mm");
         String DatetoString = format.format(currentDate);
 
+        //post with image
         if (!uri.equals("noImage")){
-            //post with image
             StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
             ref.putFile(Uri.parse(uri))
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //image is uploaded to firebase storage, now get its url
-                            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                    .addOnSuccessListener(taskSnapshot -> {
+                        //image is uploaded to firebase storage, now get its url
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
 
-                            while (!uriTask.isSuccessful());
+                        while (!uriTask.isSuccessful());
 
-                            String downloadURI = uriTask.getResult().toString();
+                        String downloadURI = Objects.requireNonNull(uriTask.getResult()).toString();
 
-                            if (uriTask.isSuccessful()){
-                                // url is received upload post to firebase
-                                HashMap<String, String> hashMap = new HashMap<>();
-                                hashMap.put(CATEGORY_KEY, category);
-                                hashMap.put(DATE_KEY, DatetoString);
-                                hashMap.put(DESCRIPTION_KEY, body);
-                                hashMap.put(ID_KEY, timeStamp);
-                                hashMap.put(IMAGE_KEY, downloadURI);
-                                hashMap.put(TITLE_KEY, title);
-                                hashMap.put(USERNAME_KEY, name);
-                                hashMap.put(COMMUNITY_KEY, communities);
-                                hashMap.put(UID_KEY, email);
+                        setCollectionPath(postDisclaimer);
 
-                                database.collection("Notices").document(timeStamp).set(hashMap)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show();
-                                                Intent done = new Intent(createNotice.this, Newsfeed.class);
-                                                startActivity(done);
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-                            }
+                        if (uriTask.isSuccessful()){
+                            // url is received upload post to firebase
+                            HashMap<String, String> hashMap = notice_hashMap(category, DatetoString, body, timeStamp, downloadURI, title, name, communities, email);
+
+                            database.collection(collectionPath).document(timeStamp).set(hashMap)
+                                    .addOnCompleteListener(task -> {
+                                        if (postDisclaimer){
+                                            HashMap<String, String> msg = user_notification(title, timeStamp, DatetoString);
+                                            notifications.document(timeStamp).set(msg);
+                                            Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
+                                        }
+                                        else { Toast.makeText(createNotice.this, "Post published to newsfeed!", Toast.LENGTH_LONG).show(); }
+                                        progressDialog.dismiss();
+                                        Intent done = new Intent(createNotice.this, Newsfeed.class);
+                                        startActivity(done);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(createNotice.this, "Error occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    });
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            //failed uploading image
-                            progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "Error occured" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                    .addOnFailureListener(e -> {
+                        //failed uploading image
+                        progressDialog.dismiss();
+                        Toast.makeText(createNotice.this, "Failed to upload image. Please try again" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
         else {
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(CATEGORY_KEY, category);
-            hashMap.put(DATE_KEY, DatetoString);
-            hashMap.put(DESCRIPTION_KEY, body);
-            hashMap.put(ID_KEY, timeStamp);
-            hashMap.put(IMAGE_KEY, "noImage");
-            hashMap.put(TITLE_KEY, title);
-            hashMap.put(USERNAME_KEY, name);
-            hashMap.put(COMMUNITY_KEY, communities);
-            hashMap.put(UID_KEY, email);
+            HashMap<String, String> hashMap = notice_hashMap(category, DatetoString, body, timeStamp, "noImage", title, name, communities, email);
+
+            setCollectionPath(postDisclaimer);
 
             //put data in this database
-            database.collection("Notices").document(timeStamp).set(hashMap)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Intent done = new Intent(createNotice.this, Newsfeed.class);
-                            startActivity(done);
+            database.collection(collectionPath).document(timeStamp).set(hashMap)
+                    .addOnCompleteListener(task -> {
+                        if (postDisclaimer){
+                            HashMap<String, String> msg = user_notification(title, timeStamp, DatetoString);
+                            notifications.document(timeStamp).set(msg);
+                            Toast.makeText(createNotice.this, "Request to post notice sent to admin", Toast.LENGTH_LONG).show();
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(createNotice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        else { Toast.makeText(createNotice.this, "Post published", Toast.LENGTH_LONG).show(); }
 
-                        }
+                        progressDialog.dismiss();
+                        Intent done = new Intent(createNotice.this, Newsfeed.class);
+                        startActivity(done);
+                    })
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(createNotice.this, "Error Occurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
                     });
         }
     }
@@ -466,21 +486,91 @@ public class createNotice extends AppCompatActivity {
      * User clicks submit button and the notice is published to the databsase
      */
     private void submitNotice(){
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String title = Title.getText().toString().trim();
-                String body = Body.getText().toString().trim();
-
-                if (image_uri == null){
-                    //post without image
-                    uploadData(title, body, "noImage");
-
-                } else {
-                    //post with image
-                    uploadData(title, body, String.valueOf(image_uri));
-                }
-            }
+        submit.setOnClickListener(view -> {
+            String title = Title.getText().toString().trim();
+            String body = Body.getText().toString().trim();
+            if (PostDate!=null){ body += "\n\n" + PostDate; }
+            //post without image
+            if (image_uri == null){ uploadData(title, body, "noImage"); }
+            //post with image
+            else { uploadData(title, body, String.valueOf(image_uri)); }
         });
+    }
+
+    /**
+     * Returns hashMap of notice fields to be inserted into the database
+     * @param cat Category
+     * @param date Date posted
+     * @param description Description in body of notice
+     * @param ID ID of notice i.e. timestamp
+     * @param image Image attachment
+     * @param title Title of notice
+     * @param name Username of author of post
+     * @param community Community notice is posted to
+     * @param email Email address of author of post
+     * @return hashMap containing notice fields
+     */
+    private HashMap<String, String> notice_hashMap(String cat, String date, String description, String ID, String image, String title, String name, String community, String email){
+        HashMap<String, String> notice_hashMap = new HashMap<>();
+        notice_hashMap.put(CATEGORY_KEY, cat);
+        notice_hashMap.put(DATE_KEY, date);
+        notice_hashMap.put(DESCRIPTION_KEY, description);
+        notice_hashMap.put(ID_KEY, ID);
+        notice_hashMap.put(IMAGE_KEY, image);
+        notice_hashMap.put(TITLE_KEY, title);
+        notice_hashMap.put(USERNAME_KEY, name);
+        notice_hashMap.put(COMMUNITY_KEY, community);
+        notice_hashMap.put(UID_KEY, email);
+
+        return notice_hashMap;
+    }
+
+    /**
+     * Returns hashMap containing prompt notification sent to user when requesting a notice to be posted
+     * @param title Title of notice being requested
+     * @param ID ID of notification message i.e. timestamp
+     * @param date Date notification sent
+     * @return hashMap containing notification details
+     */
+    private HashMap<String, String> user_notification(String title, String ID, String date){
+        HashMap<String, String> feedback = new HashMap<>();
+        Notification notification = new Notification(title, date);
+        feedback.put("Title", title);
+        feedback.put("Date", date);
+        feedback.put("Status", notification.getStatus());
+        feedback.put("Message", notification.getMessage());
+        feedback.put("Id", ID);
+
+        return feedback;
+    }
+
+    /**
+     * Notice needs admin approval, it is posted to the Requests collection database,
+     * otherwise it is posted directly to the relevant community newsfeed
+     * @param request True if notice needs approval, False otherwise.
+     */
+    private void setCollectionPath(boolean request){
+        if (request) { collectionPath = "Requests"; }
+        else { collectionPath = "Notices"; }
+    }
+
+    /**
+     * Displays dialog where user is able to select a date
+     */
+    private void showDatePickerDialog(){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                this,
+                Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                );
+        datePickerDialog.show();
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+        PostDate += ""+ dayOfMonth+"/"+(month+1)+"/"+year;
+        DateText.setText(PostDate);
     }
 }

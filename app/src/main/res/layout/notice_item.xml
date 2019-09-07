@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -46,9 +47,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="2dp"
                 android:id="@+id/file"
-                app:srcCompat="@drawable/ic_image" />
+                app:srcCompat="@drawable/ic_image"
+                android:contentDescription="@string/notice_image_attachment" />
 
             <TextView
                 android:id="@+id/description"
@@ -58,10 +60,11 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginRight="3dp"
                 android:layout_marginEnd="3dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/colorDescription"
                 android:text="@string/description"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
         <RelativeLayout
@@ -84,7 +87,8 @@
                 android:layout_width="35dp"
                 android:layout_height="34dp"
                 android:layout_centerVertical="true"
-                app:srcCompat="@drawable/ic_user_profile" />
+                app:srcCompat="@drawable/ic_user_profile"
+                android:contentDescription="@string/user_icon" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
@@ -94,6 +98,8 @@
                 android:layout_toEndOf="@+id/user"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
                 android:layout_centerVertical="true"
                 android:id="@+id/userDetails">
 
@@ -148,15 +154,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="53dp"
             android:id="@+id/user_engagement"
             android:layout_below="@id/user_info"
             android:orientation="horizontal"
             android:visibility="visible"
+            android:padding="3dp"
             android:layout_centerHorizontal="true">
 
             <TextView
-                android:id="@+id/like"
+                android:id="@+id/Like"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
@@ -164,9 +171,24 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="@color/white"
-                android:drawableTop="@drawable/ic_recommendations"
+                android:drawableTop="@drawable/ic_like"
                 android:textAlignment="center"
-                android:text="Like"
+                android:text="@string/like"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDate"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/Dislike"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:drawableTop="@drawable/ic_dislike"
+                android:textAlignment="center"
+                android:text="@string/dislike"
                 android:textAllCaps="false"
                 android:textColor="@color/colorDate"
                 android:textSize="12sp" />
@@ -182,8 +204,8 @@
                 android:background="@color/white"
                 android:drawableTop="@drawable/ic_comment"
                 android:textAlignment="center"
-                android:visibility="gone"
-                android:text="Comment"
+                android:visibility="visible"
+                android:text="@string/comment"
                 android:textAllCaps="false"
                 android:textColor="@color/colorDate"
                 android:textSize="12sp" />
@@ -204,31 +226,13 @@
                 android:textAllCaps="false"
                 android:textColor="@color/colorDate"
                 android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/removeNotice"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:drawableTop="@drawable/ic_delete"
-                android:text="@string/remove"
-                android:layout_margin="5dp"
-                android:textAlignment="center"
-                android:textSize="12sp"
-                android:clickable="true"
-                android:focusable="true"
-                android:textAllCaps="false"
-                android:visibility="visible"
-                android:textColor="@color/colorDate"
-                android:background="@color/white" />
-
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             android:layout_below="@+id/user_engagement"
-            android:id="@+id/requests"
+            android:id="@+id/feedback"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -236,23 +240,24 @@
                 android:id="@+id/accept_btn"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_margin="5dp"
                 android:textColor="@color/white"
                 android:background="@color/color_accept"
-                android:text="@string/accept" />
+                android:text="@string/accept"
+                tools:ignore="ButtonStyle" />
 
             <Button
                 android:id="@+id/reject_btn"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_margin="5dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:background="@color/color_reject"
                 android:textColor="@color/white"
                 android:text="@string/reject"
                 app:layout_constraintBottom_toBottomOf="parent"
-                />
+                tools:ignore="ButtonStyle" />
         </LinearLayout>
 
     </RelativeLayout>

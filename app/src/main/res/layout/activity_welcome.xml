@@ -4,63 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="#DCE9F3"
     tools:context="com.communityapp.inform.view.SignIn">
 
     <LinearLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/main_layout"
         android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            android:id="@+id/welcomeMsg"
-            android:layout_width="351dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:gravity="center"
-            android:shadowColor="#DBDCDE"
-            android:text="@string/welcome_to_the_community_app"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#424040"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:fontFamily="sans-serif" />
+        <ImageView
+            android:layout_width="349dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            app:srcCompat="@drawable/community_app"
+            android:contentDescription="@string/community_app_title" />
 
-        <TextView
-            android:id="@+id/welcomeMsg2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/connecting_communities"
-            android:textAlignment="center"
-            android:textColor="@color/colorDate"
-            android:textSize="20sp"
-            android:typeface="normal"
-            app:fontFamily="sans-serif-medium" />
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="190dp"
-            android:layout_height="180dp"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
             android:layout_margin="60dp"
             android:contentDescription="@string/logo"
-            app:srcCompat="@drawable/icon" />
+            app:srcCompat="@drawable/welcome_logo" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
-            android:layout_width="match_parent"
-            android:layout_margin="30dp"
-            android:padding="10dp"
-            android:layout_height="wrap_content" />
-
-
+            android:layout_width="290dp"
+            android:layout_height="60dp"
+            android:layout_margin="30dp"            />
     </LinearLayout>
 
 

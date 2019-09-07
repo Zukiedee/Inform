@@ -62,9 +62,9 @@
     <string name="reject">Reject</string>
     <string name="status">Status</string>
     <string name="filterby">Filter by</string>
-    <string name="crime_report">Crime Report</string>
+    <string name="crime_report">Crime Reports</string>
     <string name="local_news">Local News</string>
-    <string name="missing_pet">Missing Pet</string>
+    <string name="missing_pet">Missing Pets</string>
     <string name="events">Events/Entertainment</string>
     <string name="tradesmen_refferals">Tradesmen Referrals</string>
     <string name="fundraiser">Fundraiser</string>
@@ -72,6 +72,23 @@
     <string name="remove">Remove</string>
     <string name="file_attachment">file attachment</string>
     <string name="enter_email">Enter email address</string>
+    <string name="no_disclaimer">This notice will be posted to the selected community\'s newsfeed.</string>
+    <string name="disclaimermsg">This notice will be sent to Admin for approval before it is posted.</string>
+    <string name="notice_image_attachment">Notice image attachment</string>
+    <string name="like">Like</string>
+    <string name="comment">Comment</string>
+    <string name="user_icon">User icon</string>
+    <string name="community_app_title">Community App title</string>
+    <string name="select_community">Community</string>
+    <string name="disclaimer_msg_hint">This notice will/will not be posted straight to the newsfeed</string>
+    <string name="dislike">Dislike</string>
+    <string name="select_date">Select Date</string>
+    <string name="calender_dialog">Calender dialog</string>
+    <string name="crime_date">Set date that crime occurred</string>
+    <string name="event_date">Set date of event</string>
+    <string name="fundraiser_date">Set fundraiser date</string>
+    <string name="news_date">Set news date</string>
+    <string name="pet_date">Set date last seen</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

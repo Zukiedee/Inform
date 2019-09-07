@@ -3,7 +3,6 @@ package com.communityapp.inform.presenter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,16 +13,22 @@ import com.communityapp.inform.model.Notice;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapter.NoticeHolder> {
+    private NoticeAdapter.OnItemClickListener listener;
 
     public NoticeAdapter(@NonNull FirestoreRecyclerOptions<Notice> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull NoticeHolder noticeHolder, int i, @NonNull Notice notice) {
+    protected void onBindViewHolder(@NonNull NoticeHolder noticeHolder, int position, @NonNull Notice notice) {
         noticeHolder.Title.setText(notice.getTitle());
         noticeHolder.Description.setText(notice.getDescription());
         noticeHolder.Date.setText(notice.getDate());
@@ -41,59 +46,19 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
                 noticeHolder.imgResource.setImageResource(R.drawable.ic_broken_image);
             }
         }
-
-        noticeHolder.likeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, "Like", Toast.LENGTH_SHORT).show();
-            }
-        });
-        noticeHolder.commentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, "Commented", Toast.LENGTH_SHORT).show();
-            }
-        });
-        noticeHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
-                deleteItem(i);
-            }
-        });
-
-
-        noticeHolder.Accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Post to notices
-
-                //send a message to user
-
-                //remove request
-                deleteItem(i);
-            }
-        });
-
-        noticeHolder.Reject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //delete request
-                deleteItem(i);
-            }
-        });
     }
 
     /**
-     * Deletes notice item from firestore database
+     * Deletes notice document item from FireStore database
      * @param position position of notice in database
      */
-    private void deleteItem(int position){
+    public void deleteItem(int position){
+        String image = getSnapshots().getSnapshot(position).getString("Image");
+        if(!Objects.requireNonNull(image).equals("noImage")){
+            StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(image);
+            imageRef.delete();
+        }
         getSnapshots().getSnapshot(position).getReference().delete();
-    }
-
-    private void setReminder(){
-
     }
 
     @NonNull
@@ -105,8 +70,7 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
 
     class NoticeHolder extends RecyclerView.ViewHolder{
         //initialise views
-        TextView Title, Category, Description, Date, Username, Community, deleteBtn, likeBtn, commentBtn;
-        Button Accept, Reject;
+        TextView Title, Category, Description, Date, Username, Community, reminder, likeBtn, dislikeBtn, commentBtn;
         ImageView imgResource;
 
         private NoticeHolder(@NonNull View itemView) {
@@ -119,13 +83,55 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             imgResource = itemView.findViewById(R.id.file);
             Community = itemView.findViewById(R.id.community);
 
-            Accept = itemView.findViewById(R.id.accept_btn);
-            Reject = itemView.findViewById(R.id.reject_btn);
-
-            deleteBtn = itemView.findViewById(R.id.removeNotice);
-            likeBtn = itemView.findViewById(R.id.like);
+            likeBtn = itemView.findViewById(R.id.Like);
+            dislikeBtn = itemView.findViewById(R.id.Dislike);
             commentBtn = itemView.findViewById(R.id.comment);
-            TextView reminder = itemView.findViewById(R.id.add_reminder);
+            reminder = itemView.findViewById(R.id.add_reminder);
+
+            reminder.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.addReminderBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+
+            likeBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.likeBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+            dislikeBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.dislikeBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
+
+            commentBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                //handle click if notice not deleted
+                if (position!= RecyclerView.NO_POSITION && listener!=null){
+                    listener.commentBtnClick(getSnapshots().getSnapshot(position), position);
+                }
+            });
         }
+    }
+
+    /**
+     * Accept and reject button click methods
+     */
+    public interface OnItemClickListener {
+        void addReminderBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void likeBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void dislikeBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void commentBtnClick (DocumentSnapshot documentSnapshot, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
