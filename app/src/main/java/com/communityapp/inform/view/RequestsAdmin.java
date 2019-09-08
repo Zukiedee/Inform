@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class RequestsAdmin extends AppCompatActivity {
-
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference requests = database.collection("Requests");
@@ -47,7 +46,6 @@ public class RequestsAdmin extends AppCompatActivity {
     private static final String COMMUNITY_KEY = "Community";
     private static final String USERNAME_KEY = "Username";
     private static final String UID_KEY = "User ID";
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +68,6 @@ public class RequestsAdmin extends AppCompatActivity {
         adapter.setOnItemClickListener(new RequestAdapter.OnItemClickListener() {
             @Override
             public void acceptBtnClick(DocumentSnapshot documentSnapshot, int position) {
-
                 String category = documentSnapshot.getString(CATEGORY_KEY);
                 String DatetoString = documentSnapshot.getString(DATE_KEY);
                 String body = documentSnapshot.getString(DESCRIPTION_KEY);
@@ -105,7 +102,6 @@ public class RequestsAdmin extends AppCompatActivity {
 
             @Override
             public void rejectBtnClick(DocumentSnapshot documentSnapshot, int position) {
-
                 String DatetoString = documentSnapshot.getString(DATE_KEY);
                 String timeStamp = documentSnapshot.getString(ID_KEY);
                 String title = documentSnapshot.getString(TITLE_KEY);
@@ -168,7 +164,7 @@ public class RequestsAdmin extends AppCompatActivity {
 
         adapter.startListening();
         /*
-         * Deletes notice from database by using swipe to delete functiom and removes it from recyclerview
+         * Deletes notice from database by using swipe to delete function and removes it from RecyclerView
          */
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
