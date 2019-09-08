@@ -1,5 +1,6 @@
 package com.communityapp.inform.view;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,6 +30,8 @@ import com.communityapp.inform.model.Notice;
 import com.communityapp.inform.presenter.NoticeAdapter;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -40,8 +43,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -74,6 +80,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
         //initialize firebase
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseFirestore.getInstance();
         checkUserStatus();
 
         progressDialog = new ProgressDialog(this);
@@ -267,7 +274,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 break;
             case R.id.nav_inbox:
                 //navigate to requests inbox if user is admin
-                //TODO
                 if (user_type.equals("Admin")){  startActivity(new Intent(Newsfeed.this, RequestsAdmin.class)); }
                 else { startActivity(new Intent(Newsfeed.this, Inbox.class));   }
                 break;
@@ -377,21 +383,10 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             }
 
             @Override
-            public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                //TODO
-                Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void dislikeBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                //TODO
-                Toast.makeText(Newsfeed.this, "Disliked", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void commentBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                //TODO
-                Toast.makeText(Newsfeed.this, "Commented", Toast.LENGTH_SHORT).show();
+            public void addComments(DocumentSnapshot documentSnapshot) {
+                Intent intent = new Intent(Newsfeed.this, addComment.class);
+                intent.putExtra("Id", documentSnapshot.getString("Id"));
+                startActivity(intent);
             }
         });
     }

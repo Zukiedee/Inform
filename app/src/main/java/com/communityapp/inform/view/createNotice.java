@@ -525,7 +525,6 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         notice_hashMap.put(USERNAME_KEY, name);
         notice_hashMap.put(COMMUNITY_KEY, community);
         notice_hashMap.put(UID_KEY, email);
-        notice_hashMap.put("Likes", "0");
 
         return notice_hashMap;
     }

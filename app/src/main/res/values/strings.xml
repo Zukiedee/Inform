@@ -91,6 +91,7 @@
     <string name="pet_date">Set date last seen</string>
     <string name="empty">Empty</string>
     <string name="nothing">Nothing to show</string>
+    <string name="add_a_comment">Add a comment</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
