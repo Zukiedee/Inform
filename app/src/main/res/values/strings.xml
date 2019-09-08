@@ -89,6 +89,8 @@
     <string name="fundraiser_date">Set fundraiser date</string>
     <string name="news_date">Set news date</string>
     <string name="pet_date">Set date last seen</string>
+    <string name="empty">Empty</string>
+    <string name="nothing">Nothing to show</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

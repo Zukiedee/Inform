@@ -1,5 +1,6 @@
 package com.communityapp.inform.view;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,9 +27,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
+/**
+ * Notice requests received to admin from users in the relevant community regarding will be displayed here
+ * Admin reviews the notice request and either accepts or rejects the notice.
+ * Admin then deletes the notice from requests by swipe-to-delete function.
+ */
 public class RequestsAdmin extends AppCompatActivity {
     private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -36,6 +44,7 @@ public class RequestsAdmin extends AppCompatActivity {
     private RequestAdapter adapter;
     private ProgressDialog progressDialog;
     private RelativeLayout relativeLayout;
+    RecyclerView requestsRecyclerView;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -59,13 +68,37 @@ public class RequestsAdmin extends AppCompatActivity {
 
         progressDialog =  new ProgressDialog(this);
         relativeLayout = findViewById(R.id.inbox);
+        requestsRecyclerView = findViewById(R.id.inbox_recyclerView);
 
         checkUserStatus();
 
         String community ="UCT";
         loadRequests(community);
 
+        adapter.startListening();
+        /*
+         * Deletes notice from database by using swipe to delete function and removes it from RecyclerView
+         */
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+                Snackbar.make(relativeLayout, "Request deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        }).attachToRecyclerView(requestsRecyclerView);
+
         adapter.setOnItemClickListener(new RequestAdapter.OnItemClickListener() {
+            String id = String.valueOf(System.currentTimeMillis());
+            //formatting date of feedback
+            Date currentDate = new Date();
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy, HH:mm");
+            String date = format.format(currentDate);
             @Override
             public void acceptBtnClick(DocumentSnapshot documentSnapshot, int position) {
                 String category = documentSnapshot.getString(CATEGORY_KEY);
@@ -93,23 +126,21 @@ public class RequestsAdmin extends AppCompatActivity {
                 CollectionReference notices = database.collection("Notices");
                 notices.document(Objects.requireNonNull(timeStamp)).set(hashMap)
                         .addOnSuccessListener(aVoid -> {
-                            HashMap<String, String> msg = feedback(title, DatetoString, timeStamp);
-                            notifications.document(timeStamp).set(msg);
+                            HashMap<String, String> msg = feedback(title, date, id, true);
+                            notifications.document(id).set(msg);
                             Toast.makeText(RequestsAdmin.this, "Notice posted to newsfeed.\nFeedback sent to user", Toast.LENGTH_LONG).show();
                         })
-                        .addOnFailureListener(e -> Toast.makeText(RequestsAdmin.this, "Error: "+e.getMessage(), Toast.LENGTH_LONG).show());
+                        .addOnFailureListener(e -> Toast.makeText(RequestsAdmin.this, "Error! "+e.getMessage(), Toast.LENGTH_LONG).show());
             }
 
             @Override
             public void rejectBtnClick(DocumentSnapshot documentSnapshot, int position) {
-                String DatetoString = documentSnapshot.getString(DATE_KEY);
-                String timeStamp = documentSnapshot.getString(ID_KEY);
                 String title = documentSnapshot.getString(TITLE_KEY);
                 String email = documentSnapshot.getString(UID_KEY);
 
                 CollectionReference notifications = database.collection("Users/"+email+"/Messages");
-                HashMap<String, String> msg = feedback(title, DatetoString, timeStamp);
-                notifications.document(Objects.requireNonNull(timeStamp)).set(msg);
+                HashMap<String, String> msg = feedback(title, date, id, false);
+                notifications.document(Objects.requireNonNull(id)).set(msg);
                 Toast.makeText(RequestsAdmin.this, "Notice Rejected.\nFeedback sent to user", Toast.LENGTH_LONG).show();
             }
         });
@@ -157,34 +188,17 @@ public class RequestsAdmin extends AppCompatActivity {
 
         adapter = new RequestAdapter(options);
         progressDialog.dismiss();
-        RecyclerView requestsRecyclerView = findViewById(R.id.inbox_recyclerView);
         requestsRecyclerView.setHasFixedSize(true);
         requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         requestsRecyclerView.setAdapter(adapter);
-
         adapter.startListening();
-        /*
-         * Deletes notice from database by using swipe to delete function and removes it from RecyclerView
-         */
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        }).attachToRecyclerView(requestsRecyclerView);
     }
 
-    private HashMap<String, String> feedback(String title, String DatetoString, String timeStamp){
+    private HashMap<String, String> feedback(String title, String DatetoString, String timeStamp, boolean approve){
         HashMap<String, String> msg = new HashMap<>();
         Notification notification = new Notification(title, DatetoString);
-        notification.approve();
+        if (approve) notification.approve();
+        else notification.reject();
         msg.put("Title", title);
         msg.put("Date", DatetoString);
         msg.put("Status", notification.getStatus());

@@ -184,7 +184,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.dismiss();
 
         adapter.startListening();
-
         ButtonClicks(noticeRecyclerView);
     }
 
@@ -272,7 +271,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 }
                 //Navigate to user inbox
                 else {
-                    Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
+                    Intent intentInbox = new Intent(Newsfeed.this, RequestsAdmin.class);
                     startActivity(intentInbox);
                 }
                 break;
@@ -369,6 +368,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
                 //TODO
+
                 Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
             }
 

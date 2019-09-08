@@ -47,7 +47,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="2dp"
                 android:id="@+id/file"
                 app:srcCompat="@drawable/ic_image"
                 android:contentDescription="@string/notice_image_attachment" />
@@ -60,7 +59,6 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginRight="3dp"
                 android:layout_marginEnd="3dp"
-                android:layout_marginTop="2dp"
                 android:textColor="@color/colorDescription"
                 android:text="@string/description"
                 android:textSize="16sp" />
