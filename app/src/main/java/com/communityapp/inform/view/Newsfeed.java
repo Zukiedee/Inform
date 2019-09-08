@@ -55,7 +55,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     private NoticeAdapter adapter;
     private RelativeLayout relativeLayout;
     private ProgressDialog progressDialog;
-    private String username, user_email, user_type;
+    private String username, user_email, user_type, admin_community="";
     private TextView nav_username;
     private String currentcommunity;
     private String title, description;
@@ -98,6 +98,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                         username = documentSnapshot.getString(USERNAME_KEY);
                         nav_username.setText(username);
                         user_type = documentSnapshot.getString(TYPE_KEY);
+                        if (user_type.equals("Admin")) {
+                            admin_community = documentSnapshot.getString("Admin Community");
+                        }
 
                         //retrieve communities from user's profile and display it in the navigation drawer menu
                         String communities = documentSnapshot.getString("Communities");
@@ -265,19 +268,12 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             case R.id.nav_inbox:
                 //navigate to requests inbox if user is admin
                 //TODO
-                if (user_type.equals("Admin")){
-                    Intent intentInbox = new Intent(Newsfeed.this, Inbox.class);
-                    startActivity(intentInbox);
-                }
-                //Navigate to user inbox
-                else {
-                    Intent intentInbox = new Intent(Newsfeed.this, RequestsAdmin.class);
-                    startActivity(intentInbox);
-                }
+                if (user_type.equals("Admin")){  startActivity(new Intent(Newsfeed.this, RequestsAdmin.class)); }
+                else { startActivity(new Intent(Newsfeed.this, Inbox.class));   }
                 break;
              /*
-                Displays community posts filtered by selected category
-             */
+              * Displays community posts filtered by selected category
+              */
             case R.id.news:
                 categoryNotice("Local News");
                 break;
@@ -346,15 +342,30 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                if (user_type.equals("Admin")){
+                    if (admin_community.equals(currentcommunity)) {
+                        new AlertDialog.Builder(Newsfeed.this)
+                                .setTitle("Delete notice")
+                                .setMessage("Are you sure want to delete this notice?")
+                                .setPositiveButton("Yes", (dialogInterface, i) -> {
+                                    adapter.deleteItem(viewHolder.getAdapterPosition());
+                                    Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                })
+                                .setNegativeButton("No", (dialogInterface, i) -> {
+                                    //do nothing
+                                }).show();
+                    }
+                }
             }
         }).attachToRecyclerView(noticeRecyclerView);
 
         adapter.setOnItemClickListener(new NoticeAdapter.OnItemClickListener() {
             @Override
             public void addReminderBtnClick(DocumentSnapshot documentSnapshot, int position) {
-
+            /*
+             * Extracts the title and description of the notice the user desires to set a reminder for.
+             * Redirects user Google calendar to set the reminder.
+             */
                 title = documentSnapshot.getString("Title");
                 description = documentSnapshot.getString("Description");
 
@@ -368,7 +379,6 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void likeBtnClick(DocumentSnapshot documentSnapshot, int position) {
                 //TODO
-
                 Toast.makeText(Newsfeed.this, "Liked", Toast.LENGTH_SHORT).show();
             }
 

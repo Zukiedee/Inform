@@ -172,6 +172,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
                 .addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()){ name = documentSnapshot.getString(USERNAME_KEY); }
                     else {
+                        startActivity(new Intent(createNotice.this, Profile.class));
                         Toast.makeText(createNotice.this, "Please Complete User Profile", Toast.LENGTH_LONG).show();
                     }
                 })
@@ -492,7 +493,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit.setOnClickListener(view -> {
             String title = Title.getText().toString().trim();
             String body = Body.getText().toString().trim();
-            if (PostDate!=null || PostDate.isEmpty()){ body += "\n\n" + PostDate; }
+            if (PostDate!=null || !PostDate.isEmpty()){ body += "\n\n" + PostDate; }
             //post without image
             if (image_uri == null){ uploadData(title, body, "noImage"); }
             //post with image
