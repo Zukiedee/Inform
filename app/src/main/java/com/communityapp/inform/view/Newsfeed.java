@@ -1,6 +1,5 @@
 package com.communityapp.inform.view;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -30,8 +28,6 @@ import com.communityapp.inform.model.Notice;
 import com.communityapp.inform.presenter.NoticeAdapter;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -43,11 +39,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -105,6 +98,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                         username = documentSnapshot.getString(USERNAME_KEY);
                         nav_username.setText(username);
                         user_type = documentSnapshot.getString(TYPE_KEY);
+                        assert user_type != null;
                         if (user_type.equals("Admin")) {
                             admin_community = documentSnapshot.getString("Admin Community");
                         }
