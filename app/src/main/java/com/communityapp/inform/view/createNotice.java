@@ -266,7 +266,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         if (request){
             Alerter.create(this)
                     .setText(R.string.disclaimermsg)
-                    .setDuration(5000)
+                    .setDuration(3500)
                     .enableSwipeToDismiss()
                     .setIcon(R.drawable.ic_crime)
                     .setBackgroundColorRes(R.color.colorReminder)

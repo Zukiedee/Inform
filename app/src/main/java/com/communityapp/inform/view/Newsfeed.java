@@ -258,7 +258,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handles navigation view item clicks.
         int id = item.getItemId();
-        String title = "" + item.getTitle();
+        String title = item.getTitle().toString();
         switch (id) {
             case R.id.nav_profile:
                 //Navigate to user profile screen

@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -44,7 +45,8 @@ public class RequestsAdmin extends AppCompatActivity {
     private RequestAdapter adapter;
     private ProgressDialog progressDialog;
     private RelativeLayout relativeLayout;
-    RecyclerView requestsRecyclerView;
+    private RecyclerView requestsRecyclerView;
+    private String community;
 
     private static final String TITLE_KEY = "Title";
     private static final String CATEGORY_KEY = "Category";
@@ -72,10 +74,77 @@ public class RequestsAdmin extends AppCompatActivity {
 
         checkUserStatus();
 
-        String community ="UCT";
+        community="";
         loadRequests(community);
+        loadCommunity();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkUserStatus();
         adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        checkUserStatus();
+        adapter.stopListening();
+    }
+
+    /**
+     * Verifies that user is signed in
+     */
+    private void checkUserStatus(){
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //If user is not logged in, redirect to sign in screen
+        if (currentUser== null){
+            Intent loginIntent = new Intent(RequestsAdmin.this, SignIn.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(loginIntent);
+            finish();
+        }
+    }
+
+    /**
+     * Retrieves user's community to receive requests.
+     */
+    private void loadCommunity() {
+        DocumentReference userRef = database.document("Users/"+mAuth.getCurrentUser().getEmail());
+        userRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        community = documentSnapshot.getString("Admin Community");
+                        loadRequests(community);
+                    }
+                    else {
+                        startActivity(new Intent(RequestsAdmin.this, Newsfeed.class));
+                        Toast.makeText(RequestsAdmin.this, "No community exists", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(RequestsAdmin.this, "Error! "+ e.getMessage(),Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Loads notices to be displayed in the general newsfeed
+     */
+    private void loadRequests(String community) {
+        progressDialog.setTitle("Loading requests...");
+        progressDialog.show();
+        Query query = requests.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
+                .setQuery(query, Notice.class)
+                .build();
+
+        adapter = new RequestAdapter(options);
+        progressDialog.dismiss();
+        requestsRecyclerView.setHasFixedSize(true);
+        requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        requestsRecyclerView.setAdapter(adapter);
+        adapter.startListening();
+
         /*
          * Deletes notice from database by using swipe to delete function and removes it from RecyclerView
          */
@@ -144,54 +213,6 @@ public class RequestsAdmin extends AppCompatActivity {
                 Toast.makeText(RequestsAdmin.this, "Notice Rejected.\nFeedback sent to user", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkUserStatus();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        checkUserStatus();
-        adapter.stopListening();
-    }
-
-    /**
-     * Verifies that user is signed in
-     */
-    private void checkUserStatus(){
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        //If user is not logged in, redirect to sign in screen
-        if (currentUser== null){
-            Intent loginIntent = new Intent(RequestsAdmin.this, SignIn.class);
-            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(loginIntent);
-            finish();
-        }
-    }
-
-    /**
-     * Loads notices to be displayed in the general newsfeed
-     */
-    private void loadRequests(String community) {
-        progressDialog.setTitle("Loading requests...");
-        progressDialog.show();
-        Query query = requests.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
-
-        FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
-                .setQuery(query, Notice.class)
-                .build();
-
-        adapter = new RequestAdapter(options);
-        progressDialog.dismiss();
-        requestsRecyclerView.setHasFixedSize(true);
-        requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        requestsRecyclerView.setAdapter(adapter);
-        adapter.startListening();
     }
 
     private HashMap<String, String> feedback(String title, String DatetoString, String timeStamp, boolean approve){
