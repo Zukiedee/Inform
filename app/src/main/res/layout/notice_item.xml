@@ -45,9 +45,8 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="280dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="2dp"
                 android:id="@+id/file"
                 app:srcCompat="@drawable/ic_image"
                 android:contentDescription="@string/notice_image_attachment" />
@@ -60,7 +59,6 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginRight="3dp"
                 android:layout_marginEnd="3dp"
-                android:layout_marginTop="2dp"
                 android:textColor="@color/colorDescription"
                 android:text="@string/description"
                 android:textSize="16sp" />
@@ -159,73 +157,56 @@
             android:layout_below="@id/user_info"
             android:orientation="horizontal"
             android:visibility="visible"
-            android:padding="3dp"
+            android:paddingTop="5dp"
             android:layout_centerHorizontal="true">
 
-            <TextView
-                android:id="@+id/Like"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@color/white"
-                android:drawableTop="@drawable/ic_like"
-                android:textAlignment="center"
-                android:text="@string/like"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDate"
-                android:textSize="12sp" />
-            <TextView
-                android:id="@+id/Dislike"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_comment"
+                    android:background="@null"
+                    android:id="@+id/commentBtn"/>
+                <TextView
+                    android:id="@+id/comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:textAlignment="center"
+                    android:visibility="visible"
+                    android:text="@string/comment"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorDate"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@color/white"
-                android:drawableTop="@drawable/ic_dislike"
-                android:textAlignment="center"
-                android:text="@string/dislike"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDate"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/comment"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@color/white"
-                android:drawableTop="@drawable/ic_comment"
-                android:textAlignment="center"
-                android:visibility="visible"
-                android:text="@string/comment"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDate"
-                android:textSize="12sp" />
-
-
-            <TextView
-                android:id="@+id/add_reminder"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@color/white"
-                android:drawableTop="@drawable/ic_add_reminder"
-                android:textAlignment="center"
-                android:text="@string/add_reminder"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDate"
-                android:textSize="12sp" />
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_add_reminder"
+                    android:background="@null"
+                    android:id="@+id/reminderBtn"/>
+                <TextView
+                    android:id="@+id/reminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:textAlignment="center"
+                    android:text="@string/add_reminder"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorDate"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

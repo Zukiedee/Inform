@@ -1,8 +1,11 @@
 package com.communityapp.inform.presenter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +23,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
+/**
+ * Handles individual cards i.e. notices in the RecyclerView
+ */
 public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapter.NoticeHolder> {
     private NoticeAdapter.OnItemClickListener listener;
 
@@ -70,8 +76,9 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
 
     class NoticeHolder extends RecyclerView.ViewHolder{
         //initialise views
-        TextView Title, Category, Description, Date, Username, Community, reminder, likeBtn, dislikeBtn, commentBtn;
+        TextView Title, Category, Description, Date, Username, Community;
         ImageView imgResource;
+        ImageButton  commentBtn, reminder;
 
         private NoticeHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,11 +89,9 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
             Username = itemView.findViewById(R.id.userPosted);
             imgResource = itemView.findViewById(R.id.file);
             Community = itemView.findViewById(R.id.community);
+            commentBtn = itemView.findViewById(R.id.commentBtn);
 
-            likeBtn = itemView.findViewById(R.id.Like);
-            dislikeBtn = itemView.findViewById(R.id.Dislike);
-            commentBtn = itemView.findViewById(R.id.comment);
-            reminder = itemView.findViewById(R.id.add_reminder);
+            reminder = itemView.findViewById(R.id.reminderBtn);
 
             reminder.setOnClickListener(view -> {
                 int position = getAdapterPosition();
@@ -96,26 +101,11 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
                 }
             });
 
-            likeBtn.setOnClickListener(view -> {
-                int position = getAdapterPosition();
-                //handle click if notice not deleted
-                if (position!= RecyclerView.NO_POSITION && listener!=null){
-                    listener.likeBtnClick(getSnapshots().getSnapshot(position), position);
-                }
-            });
-            dislikeBtn.setOnClickListener(view -> {
-                int position = getAdapterPosition();
-                //handle click if notice not deleted
-                if (position!= RecyclerView.NO_POSITION && listener!=null){
-                    listener.dislikeBtnClick(getSnapshots().getSnapshot(position), position);
-                }
-            });
-
             commentBtn.setOnClickListener(view -> {
                 int position = getAdapterPosition();
                 //handle click if notice not deleted
                 if (position!= RecyclerView.NO_POSITION && listener!=null){
-                    listener.commentBtnClick(getSnapshots().getSnapshot(position), position);
+                    listener.addComments(getSnapshots().getSnapshot(position));
                 }
             });
         }
@@ -126,9 +116,7 @@ public class NoticeAdapter extends FirestoreRecyclerAdapter<Notice, NoticeAdapte
      */
     public interface OnItemClickListener {
         void addReminderBtnClick (DocumentSnapshot documentSnapshot, int position);
-        void likeBtnClick (DocumentSnapshot documentSnapshot, int position);
-        void dislikeBtnClick (DocumentSnapshot documentSnapshot, int position);
-        void commentBtnClick (DocumentSnapshot documentSnapshot, int position);
+        void addComments(DocumentSnapshot documentSnapshot);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

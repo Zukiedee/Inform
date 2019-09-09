@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DCE9F3"
+    android:id="@+id/constraint_layout"
     tools:context="com.communityapp.inform.view.SignIn">
 
     <LinearLayout

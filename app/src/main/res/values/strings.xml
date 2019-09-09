@@ -33,7 +33,6 @@
     <string name="submit">Submit</string>
     <string name="notice_headline">Notice Headline</string>
     <string name="headline">Headline</string>
-    <string name="subheadline">Sub-headline</string>
     <string name="more_information">More information</string>
     <string name="author">Author</string>
     <string name="body">Body</string>
@@ -55,8 +54,6 @@
     <string name="logo">logo</string>
     <string name="category">category</string>
     <string name="inbox">Inbox</string>
-    <string name="area_1">Area 1</string>
-    <string name="area_2">Area 2</string>
     <string name="user_type">Type of user</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
@@ -72,16 +69,13 @@
     <string name="remove">Remove</string>
     <string name="file_attachment">file attachment</string>
     <string name="enter_email">Enter email address</string>
-    <string name="no_disclaimer">This notice will be posted to the selected community\'s newsfeed.</string>
     <string name="disclaimermsg">This notice will be sent to Admin for approval before it is posted.</string>
     <string name="notice_image_attachment">Notice image attachment</string>
-    <string name="like">Like</string>
     <string name="comment">Comment</string>
     <string name="user_icon">User icon</string>
     <string name="community_app_title">Community App title</string>
     <string name="select_community">Community</string>
     <string name="disclaimer_msg_hint">This notice will/will not be posted straight to the newsfeed</string>
-    <string name="dislike">Dislike</string>
     <string name="select_date">Select Date</string>
     <string name="calender_dialog">Calender dialog</string>
     <string name="crime_date">Set date that crime occurred</string>
@@ -89,6 +83,8 @@
     <string name="fundraiser_date">Set fundraiser date</string>
     <string name="news_date">Set news date</string>
     <string name="pet_date">Set date last seen</string>
+    <string name="nothing">Nothing to show</string>
+    <string name="add_a_comment">Add a comment</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">
