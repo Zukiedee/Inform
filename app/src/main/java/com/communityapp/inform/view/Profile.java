@@ -71,6 +71,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         Objects.requireNonNull(getSupportActionBar()).setTitle("Edit Profile");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         database = FirebaseFirestore.getInstance();
         progressDialog = new ProgressDialog(this);
@@ -78,11 +79,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         username = findViewById(R.id.username_hint);
         TextView email = findViewById(R.id.email_hint);
         relativeLayout = findViewById(R.id.profile);
-
-        if (mAuth.getCurrentUser() == null){
-            startActivity(new Intent(Profile.this, SignIn.class));
-        }
-        user_email = mAuth.getCurrentUser().getEmail();
+        user_email = user.getEmail();
         email.setText(user_email);
 
         if (user!=null) { DisplayInfo(); }
