@@ -366,7 +366,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
     }
 
     /**
-     * Ensures all fields are filled in
+     * Ensures all essential fields are filled in i.e. Title and Description
      */
     private TextWatcher createNotice = new TextWatcher() {
         @Override
@@ -493,7 +493,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         submit.setOnClickListener(view -> {
             String title = Title.getText().toString().trim();
             String body = Body.getText().toString().trim();
-            if (PostDate!=null || !PostDate.isEmpty()){ body += "\n\n" + PostDate; }
+            if (actualDate!=null && !actualDate.isEmpty()){ body += "\n\n" + actualDate; }
             //post without image
             if (image_uri == null){ uploadData(title, body, "noImage"); }
             //post with image
@@ -575,6 +575,6 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
         actualDate = PostDate +""+ dayOfMonth+"/"+(month+1)+"/"+year;
-        DateText.setText(PostDate);
+        DateText.setText(actualDate);
     }
 }

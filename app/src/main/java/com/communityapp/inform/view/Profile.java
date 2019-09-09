@@ -107,7 +107,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                         if (type_position == -1) user_type_spinner.setSelection(0);
                         else user_type_spinner.setSelection(type_position);
 
-                        shownList = new ArrayList<>(Arrays.asList(communities.split(",")));
+                        shownList = new ArrayList<>(Arrays.asList(communities.split(", ")));
                         selectedCommunities.setVisibility(View.VISIBLE);
                         community_list_Adapter = new ArrayAdapter<>(Profile.this, android.R.layout.simple_list_item_1, shownList);
                         selectedCommunities.setAdapter(community_list_Adapter);
@@ -231,8 +231,8 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         String item;
 
         for(int j = 0; j <selectedList.size(); j++){
-            item = selectedList.get(j);
-            if(!shownList.contains(item)){ shownList.add(item.trim()); }
+            item = selectedList.get(j).trim();
+            if(!shownList.contains(item)){ shownList.add(item); }
         }
         selectedCommunities.setVisibility(View.VISIBLE);
         community_list_Adapter.notifyDataSetChanged();

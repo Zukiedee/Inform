@@ -89,7 +89,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         TextView nav_email = nav_view.findViewById(R.id.main_email);
         nav_email.setText(user_email);
 
-        loadNotices(currentcommunity);
+        loadAllNotices();
         DocumentReference userRef = database.document("Users/" + user_email);
         userRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -168,6 +168,25 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         } else {
             user_email = mAuth.getCurrentUser().getEmail();
         }
+    }
+
+    /**
+     * Loads notices to be displayed filtered by community in the general newsfeed
+     */
+    private void loadAllNotices() {
+        progressDialog.setTitle("Loading notices..");
+        progressDialog.show();
+
+        Query query = noticesRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
+        FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
+                .setQuery(query, Notice.class)
+                .build();
+
+        adapter = new NoticeAdapter(options);
+        RecyclerView noticeRecyclerView = findViewById(R.id.NoticeRecyclerView);
+        noticeRecyclerView.setHasFixedSize(true);
+        noticeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        noticeRecyclerView.setAdapter(adapter);
     }
 
     /**
