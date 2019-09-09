@@ -12,9 +12,9 @@ import com.communityapp.inform.model.Notification;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class NotificationAdapter extends FirestoreRecyclerAdapter<Notification, NotificationAdapter.NotificationHolder> {
-
     public NotificationAdapter(@NonNull FirestoreRecyclerOptions<Notification> options) { super(options); }
 
     @NonNull
@@ -22,6 +22,14 @@ public class NotificationAdapter extends FirestoreRecyclerAdapter<Notification, 
     public NotificationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false);
         return new NotificationHolder(v);
+    }
+
+    /**
+     * Deletes notification message item from FireStore database
+     * @param position position of notice in database
+     */
+    public void deleteItem(int position){
+        getSnapshots().getSnapshot(position).getReference().delete();
     }
 
     @Override
