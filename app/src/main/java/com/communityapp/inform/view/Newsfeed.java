@@ -271,9 +271,9 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 if (user_type.equals("Admin")){  startActivity(new Intent(Newsfeed.this, RequestsAdmin.class)); }
                 else { startActivity(new Intent(Newsfeed.this, Inbox.class));   }
                 break;
-             /*
-              * Displays community posts filtered by selected category
-              */
+            /*
+             * Displays community posts filtered by selected category
+             */
             case R.id.news:
                 categoryNotice("Local News");
                 break;
@@ -362,10 +362,10 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         adapter.setOnItemClickListener(new NoticeAdapter.OnItemClickListener() {
             @Override
             public void addReminderBtnClick(DocumentSnapshot documentSnapshot, int position) {
-            /*
-             * Extracts the title and description of the notice the user desires to set a reminder for.
-             * Redirects user Google calendar to set the reminder.
-             */
+                /*
+                 * Extracts the title and description of the notice the user desires to set a reminder for.
+                 * Redirects user Google calendar to set the reminder.
+                 */
                 title = documentSnapshot.getString("Title");
                 description = documentSnapshot.getString("Description");
 
