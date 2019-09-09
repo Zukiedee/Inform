@@ -66,6 +66,6 @@ public class Notification {
      * @return Status of the notice request.
      */
     public String getStatus() {
-        return "Status: "+ Status;
+        return Status;
     }
 }

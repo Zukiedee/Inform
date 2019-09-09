@@ -45,7 +45,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     private ScrollView relativeLayout;
     private ProgressDialog progressDialog;
     private ArrayAdapter<String> dataAdapter;
-    private TextView email;
+    private TextView email, user_type_label;
 
     //list view
     public ListView selectedCommunities;
@@ -78,6 +78,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
         username = findViewById(R.id.username_hint);
         email = findViewById(R.id.email_hint);
         relativeLayout = findViewById(R.id.profile);
+        user_type_label = findViewById(R.id.user_type);
 
         checkUserStatus();
 
@@ -119,10 +120,15 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
                         username.setText(uname);
 
-                        int type_position = dataAdapter.getPosition(type);
-                        if (type_position == -1) user_type_spinner.setSelection(0);
-                        else user_type_spinner.setSelection(type_position);
-
+                        if (!type.equals("Admin")){
+                            int type_position = dataAdapter.getPosition(type);
+                            if (type_position == -1) user_type_spinner.setSelection(0);
+                            else user_type_spinner.setSelection(type_position);
+                        }
+                        else {
+                            user_type_spinner.setVisibility(View.GONE);
+                            user_type_label.append(": Admin");
+                        }
                         shownList = new ArrayList<>(Arrays.asList(communities.split(", ")));
                         selectedCommunities.setVisibility(View.VISIBLE);
                         community_list_Adapter = new ArrayAdapter<>(Profile.this, android.R.layout.simple_list_item_1, shownList);
