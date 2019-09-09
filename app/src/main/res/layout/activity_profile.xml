@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:id="@+id/profile"
     tools:context="com.communityapp.inform.view.Profile">
 
@@ -46,9 +47,7 @@
         <EditText
             android:id="@+id/username_hint"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:padding="5dp"
-            android:background="@drawable/rounded_input"
+            android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/enter_username"
             android:textSize="16sp"
@@ -106,9 +105,7 @@
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/rounded_input"
-            android:padding="5dp"
-            android:layout_height="40dp" />
+            android:layout_height="30dp" />
 
         <View
             android:id="@+id/divider2"
@@ -138,7 +135,6 @@
             android:id="@+id/selectedCommunities"
             android:layout_width="match_parent"
             android:layout_height="500dp"
-            android:background="@drawable/rounded_input"
             android:visibility="gone"
             tools:ignore="NestedScrolling" />
 
