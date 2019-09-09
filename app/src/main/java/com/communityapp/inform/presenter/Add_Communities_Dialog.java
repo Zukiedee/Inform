@@ -59,3 +59,4 @@ public class Add_Communities_Dialog extends DialogFragment {
         return builder.create();
     }
 }
+
