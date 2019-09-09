@@ -45,6 +45,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     private ScrollView relativeLayout;
     private ProgressDialog progressDialog;
     private ArrayAdapter<String> dataAdapter;
+    private TextView email;
 
     //list view
     public ListView selectedCommunities;
@@ -52,7 +53,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
     public ArrayAdapter<String> community_list_Adapter;                                             //display of user selected communities
 
     //firebase
-    private FirebaseUser user;
+    private FirebaseAuth mAuth; //Firebase authentication
     private FirebaseFirestore database;
 
     //User database fields
@@ -70,30 +71,45 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Edit Profile");
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-
+        mAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
         progressDialog = new ProgressDialog(this);
         add_communities = findViewById(R.id.add_community_btn);
         username = findViewById(R.id.username_hint);
-        TextView email = findViewById(R.id.email_hint);
+        email = findViewById(R.id.email_hint);
         relativeLayout = findViewById(R.id.profile);
-        user_email = user.getEmail();
-        email.setText(user_email);
 
-        if (user!=null) { DisplayInfo(); }
+        checkUserStatus();
+
+        if (mAuth.getCurrentUser()!=null) { DisplayInfo(); }
         setType();
         setCommunities();
     }
 
+    /**
+     * Verifies if user is signed in
+     */
+    private void checkUserStatus(){
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //If user is not logged in, redirect to sign in screen
+        if (currentUser== null){
+            Intent loginIntent = new Intent(Profile.this, SignIn.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(loginIntent);
+            finish();
+        }
+        else {
+            user_email = currentUser.getEmail();
+            email.setText(user_email);
+        }
+    }
     /**
      * Display the user details - allows user to update profile
      */
     private void DisplayInfo() {
         progressDialog.setTitle("Loading profile..");
         progressDialog.show();
-        DocumentReference userRef = database.collection("Users").document(Objects.requireNonNull(user.getEmail()));
+        DocumentReference userRef = database.collection("Users").document(Objects.requireNonNull(user_email));
         userRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()){
@@ -115,8 +131,8 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
                         progressDialog.dismiss();
                     }
                     else {
-                        if (user.getDisplayName()!=null){
-                            username.setText(user.getDisplayName());
+                        if (mAuth.getCurrentUser().getDisplayName()!=null){
+                            username.setText(mAuth.getCurrentUser().getDisplayName());
                         }
                         progressDialog.dismiss();
                         Toast.makeText(Profile.this, "Welcome! Please complete your profile", Toast.LENGTH_SHORT).show();
