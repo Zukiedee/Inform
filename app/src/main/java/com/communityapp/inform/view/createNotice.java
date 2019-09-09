@@ -56,7 +56,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
     private Spinner communities_categories;
     private TextView upload, community_label;
     private Button submit;
-    private String category, name, email, communities, PostDate;
+    private String category, name, email, communities, PostDate, actualDate;
     private ProgressDialog progressDialog;
     private TextView DateText;
     private LinearLayout date_linearLayout;
@@ -574,7 +574,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-        PostDate += ""+ dayOfMonth+"/"+(month+1)+"/"+year;
+        actualDate = PostDate +""+ dayOfMonth+"/"+(month+1)+"/"+year;
         DateText.setText(PostDate);
     }
 }

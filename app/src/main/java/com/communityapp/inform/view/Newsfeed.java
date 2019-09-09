@@ -114,7 +114,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                             communitiesMenu.add(communityList.get(i).trim()).setIcon(R.drawable.ic_location);
                         }
                         navigationView.invalidate();
-                        currentcommunity = communityList.get(0);
+                        currentcommunity = communityList.get(0).trim();
+
                         Objects.requireNonNull(getSupportActionBar()).setTitle(currentcommunity);
                         loadNotices(currentcommunity);
                     }
@@ -136,6 +137,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
             Intent intentCreateNotice = new Intent(Newsfeed.this, createNotice.class);
             startActivity(intentCreateNotice);
         });
+
+        adapter.startListening();
     }
 
     @Override
@@ -175,7 +178,8 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
         progressDialog.setTitle("Loading notices..");
         progressDialog.show();
 
-        Query query = noticesRef.whereEqualTo(COMMUNITY_KEY, community).orderBy(ID_KEY, Query.Direction.DESCENDING);
+        Query query = noticesRef.orderBy(ID_KEY, Query.Direction.DESCENDING);
+        query = query.whereEqualTo(COMMUNITY_KEY, community);
         FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
                 .setQuery(query, Notice.class)
                 .build();
