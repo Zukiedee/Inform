@@ -170,6 +170,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_comment"
+                    android:paddingLeft="15dp"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:paddingRight="15dp"
                     android:background="@null"
                     android:id="@+id/commentBtn"/>
                 <TextView
@@ -194,6 +198,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_add_reminder"
+                    android:paddingLeft="15dp"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:paddingRight="15dp"
                     android:background="@null"
                     android:id="@+id/reminderBtn"/>
                 <TextView

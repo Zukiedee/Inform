@@ -23,8 +23,8 @@
         android:padding="3dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:layout_marginBottom="10dp">
+        android:background="@drawable/rounded_input"
+        android:layout_margin="10dp">
 
         <EditText
             android:layout_width="0dp"
