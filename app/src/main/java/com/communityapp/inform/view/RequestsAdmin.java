@@ -1,6 +1,7 @@
 package com.communityapp.inform.view;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -157,8 +158,18 @@ public class RequestsAdmin extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Snackbar.make(relativeLayout, "Request deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                new AlertDialog.Builder(RequestsAdmin.this)
+                        .setTitle("Delete Request")
+                        .setMessage("Are you sure want to permanently delete this request?")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            adapter.deleteItem(viewHolder.getAdapterPosition());
+                            Snackbar.make(relativeLayout, "Request deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                        })
+                        .setNegativeButton("No", (dialogInterface, i) -> {
+                            //do nothing
+                        }).show();
+
+
             }
         }).attachToRecyclerView(requestsRecyclerView);
 

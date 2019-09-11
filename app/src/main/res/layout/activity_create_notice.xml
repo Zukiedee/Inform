@@ -53,44 +53,81 @@
                 android:layout_marginBottom="5dp"
                 android:background="?android:attr/listDivider" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:text="@string/Title"
+                android:id="@+id/TitleLabel"
+                android:textSize="14sp"
+                android:gravity="bottom"
+                android:layout_margin="8dp"
+                android:textColor="@color/colorPrimaryDark" />
+
             <EditText
                 android:id="@+id/notice_headline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/rounded_input"
+                android:textSize="16sp"
+                android:padding="8dp"
                 android:ems="10"
                 android:hint="@string/headline"
-                android:inputType="textCapWords"
+                android:inputType="textCapWords|textMultiLine"
                 android:visibility="visible" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:text="@string/description"
+                android:id="@+id/DescriptionLabel"
+                android:textSize="14sp"
+                android:gravity="bottom"
+                android:layout_margin="8dp"
+                android:textColor="@color/colorPrimaryDark" />
 
             <EditText
                 android:id="@+id/notice_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/rounded_input"
+                android:textSize="16sp"
+                android:padding="8dp"
                 android:ems="10"
                 android:gravity="start|top"
                 android:hint="@string/body"
                 android:visibility="visible"
                 android:inputType="textCapSentences|textMultiLine" />
 
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:text="@string/date"
+                android:id="@+id/DateLabel"
+                android:textSize="14sp"
+                android:gravity="bottom"
+                android:layout_margin="8dp"
+                android:textColor="@color/colorPrimaryDark" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="3dp"
                 android:orientation="horizontal"
                 android:id="@+id/eventDate"
                 android:gravity="center_vertical"
-                android:layout_margin="8dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:background="@drawable/rounded_input"
+                android:layout_margin="5dp">
 
                 <ImageButton
                     android:layout_width="35dp"
                     android:layout_height="30dp"
                     app:srcCompat="@drawable/ic_calendar"
                     android:id="@+id/show_date_dialog"
-                    android:background="@drawable/rounded_btn"
+                    android:padding="10dp"
                     android:focusable="true"
+                    android:background="@null"
                     android:contentDescription="@string/calender_dialog" />
                 <TextView
                     android:id="@+id/PostDate"
@@ -101,15 +138,16 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginEnd="3dp"
                     android:layout_marginTop="2dp"
+                    android:padding="5dp"
                     android:textColor="@color/colorDescription"
-                    android:text="@string/select_date"
+                    android:hint="@string/select_date"
                     android:textSize="16sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
-                android:text="@string/select_community"
+                android:text="@string/community_label"
                 android:textSize="14sp"
                 android:gravity="bottom"
                 android:layout_margin="8dp"
@@ -120,7 +158,7 @@
                 android:id="@+id/community"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_margin="8dp" />
+                android:layout_margin="2dp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

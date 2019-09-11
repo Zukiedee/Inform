@@ -71,7 +71,7 @@
     <string name="enter_email">Enter email address</string>
     <string name="disclaimermsg">This notice will be sent to Admin for approval before it is posted.</string>
     <string name="notice_image_attachment">Notice image attachment</string>
-    <string name="comment">Comment</string>
+    <string name="comment">Comments</string>
     <string name="user_icon">User icon</string>
     <string name="community_app_title">Community App title</string>
     <string name="select_community">Community</string>
@@ -85,6 +85,7 @@
     <string name="pet_date">Set date last seen</string>
     <string name="nothing">Nothing to show</string>
     <string name="add_a_comment">Add a comment</string>
+    <string name="community_label">Post to the following community</string>
 
     <!-- Strings related to user types -->
     <string-array name="user_type">

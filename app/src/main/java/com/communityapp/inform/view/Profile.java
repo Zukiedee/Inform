@@ -82,7 +82,7 @@ public class Profile extends AppCompatActivity implements Add_Communities_Dialog
 
         checkUserStatus();
 
-        if (mAuth.getCurrentUser()!=null) { DisplayInfo(); }
+        DisplayInfo();
         setType();
         setCommunities();
     }

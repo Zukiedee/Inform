@@ -20,17 +20,17 @@
         android:id="@+id/comment_text"
         android:orientation="horizontal"
         android:visibility="visible"
-        android:padding="3dp"
+        android:padding="5dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:layout_marginBottom="10dp">
+        android:background="@drawable/rounded_input"
+        android:layout_margin="10dp">
 
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:inputType="textCapSentences"
+            android:inputType="textCapSentences|textMultiLine"
             android:id="@+id/the_comment"
             android:hint="@string/add_a_comment"
             android:textSize="18sp" />

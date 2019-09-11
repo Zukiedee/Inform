@@ -369,7 +369,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                     if (admin_community.equals(currentcommunity)) {
                         new AlertDialog.Builder(Newsfeed.this)
                                 .setTitle("Delete notice")
-                                .setMessage("Are you sure want to delete this notice?")
+                                .setMessage("Are you sure want to permanently delete this notice?")
                                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                                     adapter.deleteItem(viewHolder.getAdapterPosition());
                                     Snackbar.make(relativeLayout, "Notice deleted", Snackbar.LENGTH_LONG).setAction("Action", null).show();

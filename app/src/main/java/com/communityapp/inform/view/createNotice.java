@@ -54,7 +54,7 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
     private EditText Title, Body;
     private ImageView imageView;
     private Spinner communities_categories;
-    private TextView upload, community_label;
+    private TextView upload, community_label, date_label, title_label, description_label;
     private Button submit;
     private String category, name, email, communities, PostDate, actualDate;
     private ProgressDialog progressDialog;
@@ -114,6 +114,9 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         communities_categories = findViewById(R.id.community);
         date_linearLayout = findViewById(R.id.eventDate);
         DateText = findViewById(R.id.PostDate);
+        date_label = findViewById(R.id.DateLabel);
+        description_label = findViewById(R.id.DescriptionLabel);
+        title_label = findViewById(R.id.TitleLabel);
         findViewById(R.id.show_date_dialog).setOnClickListener(view -> showDatePickerDialog());
         constraintLayout = findViewById(R.id.create_constraint_layout);
 
@@ -240,6 +243,9 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         community_label.setVisibility(View.GONE);
         communities_categories.setVisibility(View.GONE);
         date_linearLayout.setVisibility(View.GONE);
+        date_label.setVisibility(View.GONE);
+        description_label.setVisibility(View.GONE);
+        title_label.setVisibility(View.GONE);
     }
 
     /**
@@ -254,6 +260,9 @@ public class createNotice extends AppCompatActivity  implements DatePickerDialog
         community_label.setVisibility(View.VISIBLE);
         communities_categories.setVisibility(View.VISIBLE);
         date_linearLayout.setVisibility(View.VISIBLE);
+        date_label.setVisibility(View.VISIBLE);
+        description_label.setVisibility(View.VISIBLE);
+        title_label.setVisibility(View.VISIBLE);
     }
 
     /**

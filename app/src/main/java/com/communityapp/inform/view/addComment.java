@@ -97,7 +97,10 @@ public class addComment extends AppCompatActivity {
             comments.put("Comment", the_comment);
 
             commentsRef.document(timeStamp).set(comments)
-                    .addOnSuccessListener(aVoid -> Toast.makeText(addComment.this, "Comment added!", Toast.LENGTH_SHORT).show())
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(addComment.this, "Comment added!", Toast.LENGTH_SHORT).show();
+                        comment.setText("");
+                    })
                     .addOnFailureListener(e -> Toast.makeText(addComment.this, "Error adding comment", Toast.LENGTH_LONG).show());
         });
     }
