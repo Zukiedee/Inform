@@ -307,7 +307,7 @@ public class Newsfeed extends AppCompatActivity implements NavigationView.OnNavi
                 categoryNotice("Missing Pet");
                 break;
             case R.id.events:
-                categoryNotice("Events");
+                categoryNotice("Events/Entertainment");
                 break;
             case R.id.fundraiser:
                 categoryNotice("Fundraiser");

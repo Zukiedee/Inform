@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.communityapp.inform.model.Notice;
 import com.communityapp.inform.model.Notification;
+import com.communityapp.inform.presenter.NoticeAdapter;
 import com.communityapp.inform.presenter.RequestAdapter;
 import com.example.inform.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -75,9 +76,11 @@ public class RequestsAdmin extends AppCompatActivity {
 
         checkUserStatus();
 
+        loadAllRequests();
         community="";
-        loadRequests(community);
+
         loadCommunity();
+        loadRequests(community);
     }
 
     @Override
@@ -125,6 +128,26 @@ public class RequestsAdmin extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(RequestsAdmin.this, "Error! "+ e.getMessage(),Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Loads notices to be displayed filtered by community in the general newsfeed
+     */
+    private void loadAllRequests() {
+        progressDialog.setTitle("Loading requests...");
+        progressDialog.show();
+        Query query = requests.orderBy(ID_KEY, Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<Notice> options = new FirestoreRecyclerOptions.Builder<Notice>()
+                .setQuery(query, Notice.class)
+                .build();
+
+        adapter = new RequestAdapter(options);
+        progressDialog.dismiss();
+        requestsRecyclerView.setHasFixedSize(true);
+        requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        requestsRecyclerView.setAdapter(adapter);
+        adapter.startListening();
     }
 
     /**
